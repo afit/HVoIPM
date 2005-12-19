@@ -15,9 +15,18 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 	/// VoIP adapter device. As there's no neat way to get into
 	/// the thing, this implementation works just by HTML scraping.
 	/// </summary>
-    public class LinksysPAP2DeviceMonitor : DeviceMonitor {
+    public class LinksysPAP2DeviceStateMonitor : DeviceStateMonitor {
 	    
 		protected DeviceState mDeviceState = new DeviceState( new LineState[] { } );
+		
+		public LinksysPAP2DeviceStateMonitor( String name ) {
+			mName = name;
+		}
+	    
+		protected String mName;
+		public String Name {
+			get{ return mName; }
+		}
 	    
         public void Run() {
 			while( true ) {

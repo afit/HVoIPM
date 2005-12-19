@@ -30,6 +30,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
@@ -38,7 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="State\CallState.cs" />
-    <Compile Include="Monitor\DeviceMonitor.cs" />
+    <Compile Include="Monitor\DeviceStateMonitor.cs" />
     <Compile Include="State\DeviceState.cs" />
     <Compile Include="Forms\FormMain.cs">
       <SubType>Form</SubType>
@@ -46,7 +47,7 @@
     <Compile Include="Forms\FormMain.Designer.cs">
       <DependentUpon>FormMain.cs</DependentUpon>
     </Compile>
-    <Compile Include="Monitor\Impl\LinksysPAP2DeviceMonitor.cs" />
+    <Compile Include="Monitor\Impl\LinksysPAP2DeviceStateMonitor.cs" />
     <Compile Include="State\LineState.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -81,6 +82,9 @@
       <Project>{7F933AFE-0DCF-48C8-8881-2962FE99AED9}</Project>
       <Name>LothianProductionsCommon</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="HVoIPM-64x.bmp" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

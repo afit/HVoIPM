@@ -9,17 +9,17 @@ using System.Windows.Forms;
 using LothianProductions.Util.Http;
 using LothianProductions.VoIP;
 using LothianProductions.VoIP.Monitor;
+using LothianProductions.VoIP.State;
 
 namespace LothianProductions.VoIP.Forms {
     public partial class FormMain : Form {
-		protected StateManager mStateManager = StateManager.Instance();
 		protected String mDeviceState = "";
 		
         public FormMain() {
             InitializeComponent();
             // FIXME implement proper thread-handling, if the textbox is to remain
             Control.CheckForIllegalCrossThreadCalls = false;
-			mStateManager.StateUpdate += new StateUpdateHandler( this.StateManagerUpdated );
+			StateManager.Instance().StateUpdate += new StateUpdateHandler( this.StateManagerUpdated );
 			this.Hide();
         }
 
@@ -38,8 +38,9 @@ namespace LothianProductions.VoIP.Forms {
 				this.Show();
         }
 
-		public void StateManagerUpdated( DeviceMonitor monitor, StateUpdateEventArgs e ) {
-			String newState = monitor.GetDeviceState().ToString();
+		public void StateManagerUpdated( DeviceStateMonitor monitor, StateUpdateEventArgs e ) {
+			DeviceState deviceState = monitor.GetDeviceState();
+			String newState = deviceState.ToString();
 			
 			if( mDeviceState != newState ) {
 				String[] splitDeviceState = mDeviceState.Split( '\n' );
@@ -62,13 +63,36 @@ namespace LothianProductions.VoIP.Forms {
 				}
 						
 				mDeviceState = newState;
+				
+				// Repopulate checkboxes for error checking.
+				// Maybe we should only repopulate for the device
+				// that's being updated.
+				ListboxLines.Items.Clear();
+				
+				for( int i = 0; i < deviceState.LineStates.Length; i++ ) {
+					ListboxLines.Items.Add( monitor.Name + " (" + monitor.GetType().Name + ") #" + i, true );
+				}
 			}
-
-			TextBoxStatus.Text = newState;
 		}
 
 		private void toolStripQuit_Click( object sender, EventArgs e ) {
-			Application.ExitThread();
+			Application.Exit();
+		}
+
+		private void ButtonQuit_Click( object sender, EventArgs e ) {
+			toolStripQuit_Click( sender, e );
+		}
+
+		private void ButtonHide_Click( object sender, EventArgs e ) {
+			this.Hide();
+		}
+
+		private void ButtonDump_Click( object sender, EventArgs e ) {
+			MessageBox.Show( mDeviceState, "Monitored device status", MessageBoxButtons.OK, MessageBoxIcon.Information );
+		}
+
+		private void ButtonReload_Click( object sender, EventArgs e ) {
+			StateManager.Instance().ReloadDeviceStateMonitors();
 		}
     }
 }

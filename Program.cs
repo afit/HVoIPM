@@ -13,6 +13,7 @@ namespace LothianProductions.VoIP {
         static void Main() {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault( false );
+            StateManager.Instance();
             new FormMain();
             Application.Run();
         }

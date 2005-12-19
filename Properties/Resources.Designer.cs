@@ -59,5 +59,12 @@ namespace LothianProductions.VoIP.Monitor.Properties {
                 resourceCulture = value;
             }
         }
+        
+        internal static System.Drawing.Bitmap HVoIPM_64x {
+            get {
+                object obj = ResourceManager.GetObject("HVoIPM-64x", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }
