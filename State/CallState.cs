@@ -24,5 +24,12 @@ namespace LothianProductions.VoIP.State {
             get{ return mDuration; }
             set{ mDuration = value; }
         }
+        
+	    public override String ToString() {
+			StringBuilder builder = new StringBuilder();
+			builder.Append( " -- Call activity: " ).Append( CallActivity ).AppendLine();
+			builder.Append( " -- Call duration: " ).Append( Duration ).AppendLine();
+			return builder.ToString();
+		}
     }
 }

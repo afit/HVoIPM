@@ -20,6 +20,7 @@ namespace LothianProductions.VoIP.Forms {
             // FIXME implement proper thread-handling, if the textbox is to remain
             Control.CheckForIllegalCrossThreadCalls = false;
 			mStateManager.StateUpdate += new StateUpdateHandler( this.StateManagerUpdated );
+			this.Hide();
         }
 
         private void FormMain_FormClosing( object sender, FormClosingEventArgs e ) {
@@ -41,13 +42,28 @@ namespace LothianProductions.VoIP.Forms {
 			String newState = monitor.GetDeviceState().ToString();
 			
 			if( mDeviceState != newState ) {
-				NotifyIcon.BalloonTipIcon = ToolTipIcon.Info;
-				NotifyIcon.BalloonTipTitle = "State changed";
-				NotifyIcon.BalloonTipText = newState; //newState.Substring( 0, 50 );
-				NotifyIcon.ShowBalloonTip( 5000 );
+				String[] splitDeviceState = mDeviceState.Split( '\n' );
+				String[] splitNewState = newState.Split( '\n' );
+				
+				// If the number of lines have changed, a significant configuration
+				// change has occured: lines or calls have been added. Note that this
+				// might have happened anyway, but the number of lines may remain the same
+				// so this is not foolproof.
+				if( splitDeviceState.Length != splitNewState.Length )
+					NotifyIcon.ShowBalloonTip( 5000, "Significant state change", newState, ToolTipIcon.Warning  );
+				else {
+					// We know a minor change has occurred, but what is it?					
+					StringBuilder builder = new StringBuilder();
+					for( int i = 0; i < splitNewState.Length; i++ )
+						if( splitDeviceState[ i ] != splitNewState[ i ] )
+							builder.Append( splitNewState[ i ] ).AppendLine();
+
+					NotifyIcon.ShowBalloonTip( 1000, "State change", builder.ToString(), ToolTipIcon.Info );
+				}
+						
 				mDeviceState = newState;
 			}
-			
+
 			TextBoxStatus.Text = newState;
 		}
 

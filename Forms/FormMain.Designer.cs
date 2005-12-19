@@ -56,9 +56,12 @@ namespace LothianProductions.VoIP.Forms {
 			// 
 			// TextBoxStatus
 			// 
+			this.TextBoxStatus.BackColor = System.Drawing.SystemColors.Control;
 			this.TextBoxStatus.Location = new System.Drawing.Point( 16, 23 );
 			this.TextBoxStatus.Multiline = true;
 			this.TextBoxStatus.Name = "TextBoxStatus";
+			this.TextBoxStatus.ReadOnly = true;
+			this.TextBoxStatus.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.TextBoxStatus.Size = new System.Drawing.Size( 261, 284 );
 			this.TextBoxStatus.TabIndex = 0;
 			// 
@@ -78,7 +81,8 @@ namespace LothianProductions.VoIP.Forms {
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler( this.FormMain_FormClosing );
 			this.NotifyIconContextMenuStrip.ResumeLayout( false );
 			this.ResumeLayout( false );
-			this.PerformLayout();			
+			this.PerformLayout();
+
         }
 
         #endregion
