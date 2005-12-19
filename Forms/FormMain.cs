@@ -30,14 +30,6 @@ namespace LothianProductions.VoIP.Forms {
             this.Hide();
         }
 
-        private void NotifyIcon_Click( object sender, EventArgs e ) {
-			// FIXME need to differentiate buttons here
-			if( this.Visible )
-				this.Hide();
-			else
-				this.Show();
-        }
-
 		public void StateManagerUpdated( DeviceStateMonitor monitor, StateUpdateEventArgs e ) {
 			DeviceState deviceState = monitor.GetDeviceState();
 			String newState = deviceState.ToString();
@@ -76,7 +68,9 @@ namespace LothianProductions.VoIP.Forms {
 		}
 
 		private void toolStripQuit_Click( object sender, EventArgs e ) {
-			Application.Exit();
+			NotifyIcon.Visible = false;
+			this.Hide();
+			Environment.Exit( 1 );
 		}
 
 		private void ButtonQuit_Click( object sender, EventArgs e ) {
@@ -93,6 +87,16 @@ namespace LothianProductions.VoIP.Forms {
 
 		private void ButtonReload_Click( object sender, EventArgs e ) {
 			StateManager.Instance().ReloadDeviceStateMonitors();
+		}
+
+		private void NotifyIcon_MouseClick( object sender, MouseEventArgs e ) {
+			// FIXME need to differentiate buttons here
+			if( e.Button != MouseButtons.Left )
+				return;
+			if( this.Visible )
+				this.Hide();
+			else
+				this.Show();
 		}
     }
 }

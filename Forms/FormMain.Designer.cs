@@ -39,6 +39,8 @@ namespace LothianProductions.VoIP.Forms {
 			this.ButtonHide = new System.Windows.Forms.Button();
 			this.ButtonReload = new System.Windows.Forms.Button();
 			this.label3 = new System.Windows.Forms.Label();
+			this.checkBox1 = new System.Windows.Forms.CheckBox();
+			this.checkBox2 = new System.Windows.Forms.CheckBox();
 			this.NotifyIconContextMenuStrip.SuspendLayout();
 			( (System.ComponentModel.ISupportInitialize) ( this.pictureBox1 ) ).BeginInit();
 			this.SuspendLayout();
@@ -49,7 +51,7 @@ namespace LothianProductions.VoIP.Forms {
 			this.NotifyIcon.Icon = ( (System.Drawing.Icon) ( resources.GetObject( "NotifyIcon.Icon" ) ) );
 			this.NotifyIcon.Text = "Hardware VoIP Monitor";
 			this.NotifyIcon.Visible = true;
-			this.NotifyIcon.Click += new System.EventHandler( this.NotifyIcon_Click );
+			this.NotifyIcon.MouseClick += new System.Windows.Forms.MouseEventHandler( this.NotifyIcon_MouseClick );
 			// 
 			// NotifyIconContextMenuStrip
 			// 
@@ -118,7 +120,7 @@ namespace LothianProductions.VoIP.Forms {
 			this.ListboxLines.FormattingEnabled = true;
 			this.ListboxLines.Location = new System.Drawing.Point( 12, 139 );
 			this.ListboxLines.Name = "ListboxLines";
-			this.ListboxLines.Size = new System.Drawing.Size( 403, 184 );
+			this.ListboxLines.Size = new System.Drawing.Size( 205, 184 );
 			this.ListboxLines.TabIndex = 6;
 			// 
 			// ButtonDump
@@ -170,11 +172,33 @@ namespace LothianProductions.VoIP.Forms {
 			this.label3.TabIndex = 11;
 			this.label3.Text = "Monitor the following lines for fatal errors:";
 			// 
+			// checkBox1
+			// 
+			this.checkBox1.AutoSize = true;
+			this.checkBox1.Location = new System.Drawing.Point( 227, 140 );
+			this.checkBox1.Name = "checkBox1";
+			this.checkBox1.Size = new System.Drawing.Size( 89, 20 );
+			this.checkBox1.TabIndex = 12;
+			this.checkBox1.Text = "Log changes";
+			this.checkBox1.UseVisualStyleBackColor = true;
+			// 
+			// checkBox2
+			// 
+			this.checkBox2.AutoSize = true;
+			this.checkBox2.Location = new System.Drawing.Point( 227, 166 );
+			this.checkBox2.Name = "checkBox2";
+			this.checkBox2.Size = new System.Drawing.Size( 81, 20 );
+			this.checkBox2.TabIndex = 13;
+			this.checkBox2.Text = "checkBox2";
+			this.checkBox2.UseVisualStyleBackColor = true;
+			// 
 			// FormMain
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF( 6F, 16F );
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size( 427, 337 );
+			this.Controls.Add( this.checkBox2 );
+			this.Controls.Add( this.checkBox1 );
 			this.Controls.Add( this.label3 );
 			this.Controls.Add( this.ButtonReload );
 			this.Controls.Add( this.ButtonHide );
@@ -217,6 +241,8 @@ namespace LothianProductions.VoIP.Forms {
 		private System.Windows.Forms.Button ButtonHide;
 		private System.Windows.Forms.Button ButtonReload;
 		private System.Windows.Forms.Label label3;
+		private System.Windows.Forms.CheckBox checkBox1;
+		private System.Windows.Forms.CheckBox checkBox2;
     }
 }
 
