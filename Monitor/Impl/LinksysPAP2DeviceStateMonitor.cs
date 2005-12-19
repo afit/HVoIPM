@@ -15,15 +15,32 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 	/// VoIP adapter device. As there's no neat way to get into
 	/// the thing, this implementation works just by HTML scraping.
 	/// </summary>
-    public class LinksysPAP2DeviceStateMonitor : DeviceStateMonitor {
-	    
+    public class LinksysPAP2DeviceStateMonitor : IDeviceStateMonitor {
+
+        string mName;
+        DeviceState mDeviceState;
 		public LinksysPAP2DeviceStateMonitor( String name ) {
 			mName = name;
 		}
+
+        public string Name {
+            get {
+                return mName;
+            }
+        }
+
+        public DeviceState GetDeviceState() {
+            return mDeviceState;
+        }
 	    
-        public override void Run() {
+        public void Run() {
 			while( true ) {
-				String page = HttpHelper.HttpGet( new Uri( "http://phone" ), "", "", "", 1000 );
+                string page = "";
+                try {
+                    page = HttpHelper.HttpGet(new Uri("http://phone"), "", "", "", 1000);
+                } catch (System.Net.WebException we) {
+                    throw new DeviceNotRespondingException("The PAP2 is not responding to a status request");
+                }
 				
 				// We know there will be two lines for the device, each with
 				// two calls.

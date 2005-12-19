@@ -38,7 +38,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Monitor\DeviceStateMonitor.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="State\CallState.cs" />
     <Compile Include="Monitor\IDeviceStateMonitor.cs" />
     <Compile Include="State\DeviceState.cs" />

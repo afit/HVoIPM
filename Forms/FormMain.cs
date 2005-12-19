@@ -20,6 +20,7 @@ namespace LothianProductions.VoIP.Forms {
             // FIXME implement proper thread-handling, if the textbox is to remain
             Control.CheckForIllegalCrossThreadCalls = false;
 			StateManager.Instance().StateUpdate += new StateUpdateHandler( this.StateManagerUpdated );
+            Logger.Instance().Log("Started Hardware VoIP Monitor application");
 			this.Hide();
         }
 
@@ -30,7 +31,7 @@ namespace LothianProductions.VoIP.Forms {
             this.Hide();
         }
 
-		public void StateManagerUpdated( DeviceStateMonitor monitor, StateUpdateEventArgs e ) {
+		public void StateManagerUpdated( IDeviceStateMonitor monitor, StateUpdateEventArgs e ) {
 			DeviceState deviceState = monitor.GetDeviceState();
 			String newState = deviceState.ToString();
 			
@@ -68,7 +69,8 @@ namespace LothianProductions.VoIP.Forms {
 		}
 
 		private void toolStripQuit_Click( object sender, EventArgs e ) {
-			NotifyIcon.Visible = false;
+            Logger.Instance().Log("Ended Hardware VoIP Monitor application");
+            NotifyIcon.Visible = false;
 			this.Hide();
 			Environment.Exit( 1 );
 		}

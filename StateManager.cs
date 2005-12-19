@@ -18,7 +18,7 @@ namespace LothianProductions.VoIP {
 		}        
 	}
 	
-	public delegate void StateUpdateHandler( DeviceStateMonitor monitor, StateUpdateEventArgs e );
+	public delegate void StateUpdateHandler( IDeviceStateMonitor monitor, StateUpdateEventArgs e );
 
 	/// <summary>
 	/// Doesn't handle multiple or custom device monitors yet.
@@ -31,7 +31,7 @@ namespace LothianProductions.VoIP {
 		}
 		
 		public event StateUpdateHandler StateUpdate;
-		protected Dictionary<DeviceStateMonitor, Thread> mDeviceStateMonitors = new Dictionary<DeviceStateMonitor,Thread>();
+		protected Dictionary<IDeviceStateMonitor, Thread> mDeviceStateMonitors = new Dictionary<IDeviceStateMonitor,Thread>();
     
 		protected StateManager() {
 			// Initialize device monitors, have to give each its own thread.
@@ -41,7 +41,7 @@ namespace LothianProductions.VoIP {
 		public void ReloadDeviceStateMonitors() {
 			lock (mDeviceStateMonitors) {
 				// Stop currently running threads.
-				foreach( DeviceStateMonitor monitor in mDeviceStateMonitors.Keys )
+				foreach( IDeviceStateMonitor monitor in mDeviceStateMonitors.Keys )
 					mDeviceStateMonitors[ monitor ].Abort();
 					
 				mDeviceStateMonitors.Clear();
@@ -54,7 +54,7 @@ namespace LothianProductions.VoIP {
 				foreach( String key in config.Keys ) {				
 					Type type = Type.GetType( config[ key ], true );
 
-					DeviceStateMonitor monitor = (DeviceStateMonitor) type.InvokeMember(
+					IDeviceStateMonitor monitor = (IDeviceStateMonitor) type.InvokeMember(
 						"",
 						BindingFlags.CreateInstance | BindingFlags.Public | BindingFlags.Instance,
 						null,
@@ -67,15 +67,16 @@ namespace LothianProductions.VoIP {
 					mDeviceStateMonitors.Add( monitor, thread );
 					thread.Start();
                 }
+                Logger.Instance().Log("Loaded " + mDeviceStateMonitors.Count + " device state monitor(s)");
 			}
 		}
 		
-		public IList<DeviceStateMonitor> DeviceStateMonitors {
+		public IList<IDeviceStateMonitor> DeviceStateMonitors {
 			// FIXME this is very inefficient
-			get{ return new List<DeviceStateMonitor>( mDeviceStateMonitors.Keys ); }
+			get{ return new List<IDeviceStateMonitor>( mDeviceStateMonitors.Keys ); }
 		}
 
-		public void DeviceStateUpdated( DeviceStateMonitor monitor, IList<IStateChange> changes ) {
+		public void DeviceStateUpdated( IDeviceStateMonitor monitor, IList<IStateChange> changes ) {
 			if( StateUpdate != null )
 				StateUpdate( monitor, new StateUpdateEventArgs() );
 				
