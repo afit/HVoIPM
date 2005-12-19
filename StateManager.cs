@@ -75,9 +75,11 @@ namespace LothianProductions.VoIP {
 			get{ return new List<DeviceStateMonitor>( mDeviceStateMonitors.Keys ); }
 		}
 
-		public void DeviceStateUpdated( DeviceStateMonitor monitor ) {
+		public void DeviceStateUpdated( DeviceStateMonitor monitor, IList<IStateChange> changes ) {
 			if( StateUpdate != null )
 				StateUpdate( monitor, new StateUpdateEventArgs() );
+				
+			// Clever logging stuff here.
 		}
     }
 }

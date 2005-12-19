@@ -1,16 +1,24 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 
+using LothianProductions.VoIP.Monitor;
 using LothianProductions.VoIP.State;
 
 namespace LothianProductions.VoIP.Monitor {
-	public interface DeviceStateMonitor {
-		void Run();
-		DeviceState GetDeviceState();
+
+	public abstract class DeviceStateMonitor : IDeviceStateMonitor {
+
+		protected DeviceState mDeviceState = new DeviceState( new LineState[] { } );
+
+		protected String mName;
+		public String Name {
+			get{ return mName; }
+		}
 		
-		String Name {
-			get;
+		public abstract void Run();
+
+		public DeviceState GetDeviceState() {
+			return mDeviceState;
 		}
 	}
 }

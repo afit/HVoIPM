@@ -17,18 +17,11 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 	/// </summary>
     public class LinksysPAP2DeviceStateMonitor : DeviceStateMonitor {
 	    
-		protected DeviceState mDeviceState = new DeviceState( new LineState[] { } );
-		
 		public LinksysPAP2DeviceStateMonitor( String name ) {
 			mName = name;
 		}
 	    
-		protected String mName;
-		public String Name {
-			get{ return mName; }
-		}
-	    
-        public void Run() {
+        public override void Run() {
 			while( true ) {
 				String page = HttpHelper.HttpGet( new Uri( "http://phone" ), "", "", "", 1000 );
 				
@@ -60,7 +53,7 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 
 				mDeviceState = state;
 				
-				StateManager.Instance().DeviceStateUpdated( this );
+				StateManager.Instance().DeviceStateUpdated( this, new List<IStateChange>() );
 				Thread.Sleep( 1000 );
 			}
         }
@@ -83,10 +76,6 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 			else if( state == "Offline" )
 				return RegistrationState.Offline;
 			return RegistrationState.Other;
-        }
-
-        public DeviceState GetDeviceState() {
-			return mDeviceState;
         }
     }
 }

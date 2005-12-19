@@ -7,7 +7,7 @@
     <ProjectGuid>{D219639B-B6AA-4D12-9B39-887D8FC7D01C}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LothianProductions.VoIP.Monitor</RootNamespace>
+    <RootNamespace>LothianProductions.VoIP</RootNamespace>
     <AssemblyName>Hardware VoIP Monitor</AssemblyName>
     <StartupObject>LothianProductions.VoIP.Program</StartupObject>
   </PropertyGroup>
@@ -38,8 +38,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="State\CallState.cs" />
     <Compile Include="Monitor\DeviceStateMonitor.cs" />
+    <Compile Include="State\CallState.cs" />
+    <Compile Include="Monitor\IDeviceStateMonitor.cs" />
     <Compile Include="State\DeviceState.cs" />
     <Compile Include="Forms\FormMain.cs">
       <SubType>Form</SubType>
@@ -76,6 +77,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="StateManager.cs" />
+    <Compile Include="State\IStateChange.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LothianProductionsCommon2\LothianProductionsCommon.csproj">
