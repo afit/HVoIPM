@@ -77,7 +77,7 @@
     <Compile Include="StateManager.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\LothianProductionsCommon2\LothianProductionsCommon.csproj">
+    <ProjectReference Include="..\LothianProductionsCommon2\LothianProductionsCommon.csproj">
       <Project>{7F933AFE-0DCF-48C8-8881-2962FE99AED9}</Project>
       <Name>LothianProductionsCommon</Name>
     </ProjectReference>
