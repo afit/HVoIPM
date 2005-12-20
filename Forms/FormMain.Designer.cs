@@ -30,10 +30,7 @@ namespace LothianProductions.VoIP.Forms {
 			this.toolStripQuit = new System.Windows.Forms.ToolStripMenuItem();
 			this.pictureBox1 = new System.Windows.Forms.PictureBox();
 			this.label1 = new System.Windows.Forms.Label();
-			this.label2 = new System.Windows.Forms.Label();
-			this.linkLabel1 = new System.Windows.Forms.LinkLabel();
-			this.linkLabel2 = new System.Windows.Forms.LinkLabel();
-			this.ListboxLines = new System.Windows.Forms.CheckedListBox();
+			this.LabelLinks = new System.Windows.Forms.LinkLabel();
 			this.ButtonDump = new System.Windows.Forms.Button();
 			this.ButtonQuit = new System.Windows.Forms.Button();
 			this.ButtonHide = new System.Windows.Forms.Button();
@@ -41,6 +38,9 @@ namespace LothianProductions.VoIP.Forms {
 			this.label3 = new System.Windows.Forms.Label();
 			this.checkBox1 = new System.Windows.Forms.CheckBox();
 			this.checkBox2 = new System.Windows.Forms.CheckBox();
+			this.TreeStates = new System.Windows.Forms.TreeView();
+			this.listBox1 = new System.Windows.Forms.ListBox();
+			this.textBox1 = new System.Windows.Forms.TextBox();
 			this.NotifyIconContextMenuStrip.SuspendLayout();
 			( (System.ComponentModel.ISupportInitialize) ( this.pictureBox1 ) ).BeginInit();
 			this.SuspendLayout();
@@ -86,42 +86,15 @@ namespace LothianProductions.VoIP.Forms {
 			this.label1.TabIndex = 2;
 			this.label1.Text = "Hardware VoIP Monitor";
 			// 
-			// label2
+			// LabelLinks
 			// 
-			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point( 67, 36 );
-			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size( 326, 16 );
-			this.label2.TabIndex = 3;
-			this.label2.Text = "© Lothian Productions 2005, all rights reserved. About HVoIPM.";
-			// 
-			// linkLabel1
-			// 
-			this.linkLabel1.AutoSize = true;
-			this.linkLabel1.Location = new System.Drawing.Point( 311, 51 );
-			this.linkLabel1.Name = "linkLabel1";
-			this.linkLabel1.Size = new System.Drawing.Size( 78, 16 );
-			this.linkLabel1.TabIndex = 4;
-			this.linkLabel1.TabStop = true;
-			this.linkLabel1.Text = "About HVoIPM";
-			// 
-			// linkLabel2
-			// 
-			this.linkLabel2.AutoSize = true;
-			this.linkLabel2.Location = new System.Drawing.Point( 78, 51 );
-			this.linkLabel2.Name = "linkLabel2";
-			this.linkLabel2.Size = new System.Drawing.Size( 109, 16 );
-			this.linkLabel2.TabIndex = 5;
-			this.linkLabel2.TabStop = true;
-			this.linkLabel2.Text = "Lothian Productions";
-			// 
-			// ListboxLines
-			// 
-			this.ListboxLines.FormattingEnabled = true;
-			this.ListboxLines.Location = new System.Drawing.Point( 12, 139 );
-			this.ListboxLines.Name = "ListboxLines";
-			this.ListboxLines.Size = new System.Drawing.Size( 205, 184 );
-			this.ListboxLines.TabIndex = 6;
+			this.LabelLinks.AutoSize = true;
+			this.LabelLinks.LinkArea = new System.Windows.Forms.LinkArea( 0, 0 );
+			this.LabelLinks.Location = new System.Drawing.Point( 67, 36 );
+			this.LabelLinks.Name = "LabelLinks";
+			this.LabelLinks.Size = new System.Drawing.Size( 326, 16 );
+			this.LabelLinks.TabIndex = 5;
+			this.LabelLinks.Text = "© Lothian Productions 2005, all rights reserved. About HVoIPM.";
 			// 
 			// ButtonDump
 			// 
@@ -175,7 +148,7 @@ namespace LothianProductions.VoIP.Forms {
 			// checkBox1
 			// 
 			this.checkBox1.AutoSize = true;
-			this.checkBox1.Location = new System.Drawing.Point( 227, 140 );
+			this.checkBox1.Location = new System.Drawing.Point( 312, 140 );
 			this.checkBox1.Name = "checkBox1";
 			this.checkBox1.Size = new System.Drawing.Size( 89, 20 );
 			this.checkBox1.TabIndex = 12;
@@ -185,18 +158,45 @@ namespace LothianProductions.VoIP.Forms {
 			// checkBox2
 			// 
 			this.checkBox2.AutoSize = true;
-			this.checkBox2.Location = new System.Drawing.Point( 227, 166 );
+			this.checkBox2.Location = new System.Drawing.Point( 312, 166 );
 			this.checkBox2.Name = "checkBox2";
 			this.checkBox2.Size = new System.Drawing.Size( 81, 20 );
 			this.checkBox2.TabIndex = 13;
 			this.checkBox2.Text = "checkBox2";
 			this.checkBox2.UseVisualStyleBackColor = true;
 			// 
+			// TreeStates
+			// 
+			this.TreeStates.Location = new System.Drawing.Point( 12, 139 );
+			this.TreeStates.Name = "TreeStates";
+			this.TreeStates.Size = new System.Drawing.Size( 294, 321 );
+			this.TreeStates.TabIndex = 14;
+			this.TreeStates.AfterSelect += new System.Windows.Forms.TreeViewEventHandler( this.TreeStates_AfterSelect );
+			// 
+			// listBox1
+			// 
+			this.listBox1.FormattingEnabled = true;
+			this.listBox1.ItemHeight = 16;
+			this.listBox1.Location = new System.Drawing.Point( 315, 250 );
+			this.listBox1.Name = "listBox1";
+			this.listBox1.Size = new System.Drawing.Size( 147, 84 );
+			this.listBox1.TabIndex = 15;
+			// 
+			// textBox1
+			// 
+			this.textBox1.Location = new System.Drawing.Point( 318, 217 );
+			this.textBox1.Name = "textBox1";
+			this.textBox1.Size = new System.Drawing.Size( 143, 20 );
+			this.textBox1.TabIndex = 16;
+			// 
 			// FormMain
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF( 6F, 16F );
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size( 427, 337 );
+			this.ClientSize = new System.Drawing.Size( 475, 472 );
+			this.Controls.Add( this.textBox1 );
+			this.Controls.Add( this.listBox1 );
+			this.Controls.Add( this.TreeStates );
 			this.Controls.Add( this.checkBox2 );
 			this.Controls.Add( this.checkBox1 );
 			this.Controls.Add( this.label3 );
@@ -204,12 +204,9 @@ namespace LothianProductions.VoIP.Forms {
 			this.Controls.Add( this.ButtonHide );
 			this.Controls.Add( this.ButtonQuit );
 			this.Controls.Add( this.ButtonDump );
-			this.Controls.Add( this.ListboxLines );
-			this.Controls.Add( this.linkLabel2 );
-			this.Controls.Add( this.linkLabel1 );
-			this.Controls.Add( this.label2 );
 			this.Controls.Add( this.label1 );
 			this.Controls.Add( this.pictureBox1 );
+			this.Controls.Add( this.LabelLinks );
 			this.Font = new System.Drawing.Font( "Trebuchet MS", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ( (byte) ( 0 ) ) );
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
 			this.Margin = new System.Windows.Forms.Padding( 3, 4, 3, 4 );
@@ -232,10 +229,7 @@ namespace LothianProductions.VoIP.Forms {
 		private System.Windows.Forms.ToolStripMenuItem toolStripQuit;
 		private System.Windows.Forms.PictureBox pictureBox1;
 		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.Label label2;
-		private System.Windows.Forms.LinkLabel linkLabel1;
-		private System.Windows.Forms.LinkLabel linkLabel2;
-		private System.Windows.Forms.CheckedListBox ListboxLines;
+		private System.Windows.Forms.LinkLabel LabelLinks;
 		private System.Windows.Forms.Button ButtonDump;
 		private System.Windows.Forms.Button ButtonQuit;
 		private System.Windows.Forms.Button ButtonHide;
@@ -243,6 +237,9 @@ namespace LothianProductions.VoIP.Forms {
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.CheckBox checkBox1;
 		private System.Windows.Forms.CheckBox checkBox2;
+		private System.Windows.Forms.TreeView TreeStates;
+		private System.Windows.Forms.ListBox listBox1;
+		private System.Windows.Forms.TextBox textBox1;
     }
 }
 

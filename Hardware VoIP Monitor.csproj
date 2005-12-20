@@ -39,6 +39,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Logger.cs" />
+    <Compile Include="Monitor\DeviceNotRespondingException.cs" />
+    <Compile Include="Monitor\DeviceStateMonitor.cs" />
     <Compile Include="State\CallState.cs" />
     <Compile Include="Monitor\IDeviceStateMonitor.cs" />
     <Compile Include="State\DeviceState.cs" />
@@ -78,6 +80,8 @@
     </Compile>
     <Compile Include="StateManager.cs" />
     <Compile Include="State\IStateChange.cs" />
+    <Compile Include="State\NodeTags\INodeTag.cs" />
+    <Compile Include="State\StateBehaviour.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LothianProductionsCommon2\LothianProductionsCommon.csproj">

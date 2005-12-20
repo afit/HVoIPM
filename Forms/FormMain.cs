@@ -14,12 +14,15 @@ using LothianProductions.VoIP.State;
 namespace LothianProductions.VoIP.Forms {
     public partial class FormMain : Form {
 		protected String mDeviceState = "";
+		protected Dictionary<TreeNode, Object> mTreeMapping = new Dictionary<TreeNode,object>();
 		
         public FormMain() {
             InitializeComponent();
             // FIXME implement proper thread-handling, if the textbox is to remain
             Control.CheckForIllegalCrossThreadCalls = false;
 			StateManager.Instance().StateUpdate += new StateUpdateHandler( this.StateManagerUpdated );
+			LabelLinks.Links.Add( 2, 19, "www.lothianproductions.co.uk" );
+			LabelLinks.Links.Add( 49, 12, "www.lothianproductions.co.uk/hvoipm" );
             Logger.Instance().Log("Started Hardware VoIP Monitor application");
 			this.Hide();
         }
@@ -60,12 +63,29 @@ namespace LothianProductions.VoIP.Forms {
 				// Repopulate checkboxes for error checking.
 				// Maybe we should only repopulate for the device
 				// that's being updated.
-				ListboxLines.Items.Clear();
+				TreeStates.Nodes.Clear();
+				mTreeMapping.Clear();
+				
+				TreeNode deviceNode = TreeStates.Nodes.Add( monitor.Name + " (" + monitor.GetType().Name + ")" );
+				mTreeMapping.Add( deviceNode, monitor );
 				
 				for( int i = 0; i < deviceState.LineStates.Length; i++ ) {
-					ListboxLines.Items.Add( monitor.Name + " (" + monitor.GetType().Name + ") #" + i, true );
+					TreeNode lineNode = deviceNode.Nodes.Add( "Line #" + i );
+					lineNode.Nodes.Add( "Last called number = " + deviceState.LineStates[ i ].LastCalledNumber );
+					lineNode.Nodes.Add( "Last caller number = " + deviceState.LineStates[ i ].LastCallerNumber );
+					lineNode.Nodes.Add( "Registration state = " + deviceState.LineStates[ i ].RegistrationState );
+					for( int j = 0; j < deviceState.LineStates[ i ].CallStates.Length; j++ ) {
+						TreeNode callNode = lineNode.Nodes.Add( "Call #" + j );
+						callNode.Nodes.Add( "Call activity = " + deviceState.LineStates[ i ].CallStates[ j ].CallActivity );
+						callNode.Nodes.Add( "Duration = " + deviceState.LineStates[ i ].CallStates[ j ].Duration );
+					}
 				}
+
+				TreeStates.ExpandAll();
 			}
+			
+
+			
 		}
 
 		private void toolStripQuit_Click( object sender, EventArgs e ) {
@@ -92,13 +112,16 @@ namespace LothianProductions.VoIP.Forms {
 		}
 
 		private void NotifyIcon_MouseClick( object sender, MouseEventArgs e ) {
-			// FIXME need to differentiate buttons here
 			if( e.Button != MouseButtons.Left )
 				return;
 			if( this.Visible )
 				this.Hide();
 			else
 				this.Show();
+		}
+
+		private void TreeStates_AfterSelect( object sender, TreeViewEventArgs e ) {
+			MessageBox.Show( e.Node.Text );
 		}
     }
 }

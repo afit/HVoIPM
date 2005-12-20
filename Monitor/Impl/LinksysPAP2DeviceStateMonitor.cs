@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
 using System.Threading;
 
@@ -15,67 +16,78 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 	/// VoIP adapter device. As there's no neat way to get into
 	/// the thing, this implementation works just by HTML scraping.
 	/// </summary>
-    public class LinksysPAP2DeviceStateMonitor : IDeviceStateMonitor {
+    public class LinksysPAP2DeviceStateMonitor : DeviceStateMonitor {
 
-        string mName;
-        DeviceState mDeviceState;
 		public LinksysPAP2DeviceStateMonitor( String name ) {
 			mName = name;
+			
+			// We know there will be two lines for the device, each with
+			// two calls.
+			mDeviceState = new DeviceState( new LineState[] {
+				new LineState( new CallState[] { new CallState(), new CallState() } ),
+				new LineState( new CallState[] { new CallState(), new CallState() } )
+			} );
 		}
-
-        public string Name {
-            get {
-                return mName;
-            }
-        }
-
-        public DeviceState GetDeviceState() {
-            return mDeviceState;
-        }
 	    
-        public void Run() {
+        public override void Run() {
 			while( true ) {
-                string page = "";
-                try {
-                    page = HttpHelper.HttpGet(new Uri("http://phone"), "", "", "", 1000);
-                } catch (System.Net.WebException we) {
-                    throw new DeviceNotRespondingException("The PAP2 is not responding to a status request");
-                }
+				// Lock to prevent recursion synchronicity problems
+				// caused by slow wgetting.
+				lock (this) {
+					String page;
+					try {
+						page = HttpHelper.HttpGet(new Uri("http://phone"), "", "", "", 1000);
+					} catch (WebException e) {
+						throw new DeviceNotRespondingException( "The device is not responding to status requests", e );
+					}
+					
+					IList<StateChange> changes = new List<StateChange>();
+					AnalyseLineState( page, 0, changes );	
+					AnalyseLineState( page, 1, changes );
 				
-				// We know there will be two lines for the device, each with
-				// two calls.
-				DeviceState state = new DeviceState( new LineState[] {
-					new LineState( new CallState[] { new CallState(), new CallState() } ),
-					new LineState( new CallState[] { new CallState(), new CallState() } )
-				} );
+					// FIXME safer to use event here?	
+					StateManager.Instance().DeviceStateUpdated( this, changes );
+				}			
 				
-				state.LineStates[ 0 ].LastCalledNumber = StringHelper.ExtractSubstring( page, "Last Called Number:<td><font color=\"darkblue\">", "<", "Line 1 Status" );
-				state.LineStates[ 1 ].LastCalledNumber = StringHelper.ExtractSubstring( page, "Last Called Number:<td><font color=\"darkblue\">", "<", "Line 2 Status" );
-
-				state.LineStates[ 0 ].LastCallerNumber = StringHelper.ExtractSubstring( page, "Last Caller Number:<td><font color=\"darkblue\">", "<", "Line 1 Status" );
-				state.LineStates[ 1 ].LastCallerNumber = StringHelper.ExtractSubstring( page, "Last Caller Number:<td><font color=\"darkblue\">", "<", "Line 2 Status" );
-
-				state.LineStates[ 0 ].RegistrationState = GetRegistrationState( StringHelper.ExtractSubstring( page, "Registration State:<td><font color=\"darkblue\">", "<", "Line 1 Status" ) );
-				state.LineStates[ 1 ].RegistrationState = GetRegistrationState( StringHelper.ExtractSubstring( page, "Registration State:<td><font color=\"darkblue\">", "<", "Line 2 Status" ) );
-
-				state.LineStates[ 0 ].CallStates[ 0 ].CallActivity = GetCallActivity( StringHelper.ExtractSubstring( page, "Call 1 Type:<td><font color=\"darkblue\">", "<", "Line 1 Status" ) );
-				state.LineStates[ 0 ].CallStates[ 1 ].CallActivity = GetCallActivity( StringHelper.ExtractSubstring( page, "Call 2 Type:<td><font color=\"darkblue\">", "<", "Line 1 Status" ) );
-				state.LineStates[ 1 ].CallStates[ 0 ].CallActivity = GetCallActivity( StringHelper.ExtractSubstring( page, "Call 1 Type:<td><font color=\"darkblue\">", "<", "Line 2 Status" ) );
-				state.LineStates[ 1 ].CallStates[ 1 ].CallActivity = GetCallActivity( StringHelper.ExtractSubstring( page, "Call 2 Type:<td><font color=\"darkblue\">", "<", "Line 2 Status" ) );
-
-				state.LineStates[ 0 ].CallStates[ 0 ].Duration = StringHelper.ExtractSubstring( page, "Call 1 Duration:<td><font color=\"darkblue\">", "<", "Line 1 Status" );
-				state.LineStates[ 0 ].CallStates[ 1 ].Duration = StringHelper.ExtractSubstring( page, "Call 2 Duration:<td><font color=\"darkblue\">", "<", "Line 1 Status" );
-				state.LineStates[ 1 ].CallStates[ 0 ].Duration = StringHelper.ExtractSubstring( page, "Call 1 Duration:<td><font color=\"darkblue\">", "<", "Line 2 Status" );			
-				state.LineStates[ 1 ].CallStates[ 1 ].Duration = StringHelper.ExtractSubstring( page, "Call 2 Duration:<td><font color=\"darkblue\">", "<", "Line 2 Status" );
-
-				mDeviceState = state;
-				
-				StateManager.Instance().DeviceStateUpdated( this, new List<IStateChange>() );
 				Thread.Sleep( 1000 );
 			}
         }
+        
+        protected virtual void AnalyseLineState( String page, int lineIndex, IList<StateChange> changes ) {
+			String lastCalledNumber = StringHelper.ExtractSubstring( page, "Last Called Number:<td><font color=\"darkblue\">", "<", "Line " + ( lineIndex + 1 )+ " Status" );
+			if( lastCalledNumber != mDeviceState.LineStates[ lineIndex ].LastCalledNumber )
+				changes.Add( new LineStateChange( lineIndex, "LastCalledNumber", mDeviceState.LineStates[ lineIndex ].LastCalledNumber, lastCalledNumber ) );
+			mDeviceState.LineStates[ lineIndex ].LastCalledNumber = lastCalledNumber;
+				
+			String lastCallerNumber = StringHelper.ExtractSubstring( page, "Last Caller Number:<td><font color=\"darkblue\">", "<", "Line " + ( lineIndex + 1 ) + " Status" );
+			if( lastCallerNumber != mDeviceState.LineStates[ 0 ].LastCallerNumber )
+				changes.Add( new LineStateChange( lineIndex, "LastCallerNumber", mDeviceState.LineStates[ lineIndex ].LastCallerNumber, lastCallerNumber ) );
+			mDeviceState.LineStates[ lineIndex ].LastCallerNumber = lastCallerNumber;
 
-		public static CallActivity GetCallActivity( String activity ) {
+			RegistrationState registrationState = GetRegistrationState( StringHelper.ExtractSubstring( page, "Registration State:<td><font color=\"darkblue\">", "<", "Line " + ( lineIndex + 1 ) + " Status" ) );
+			if( registrationState != mDeviceState.LineStates[ lineIndex ].RegistrationState )
+				changes.Add( new LineStateChange( lineIndex, "RegistrationState", mDeviceState.LineStates[ lineIndex ].RegistrationState.ToString(), registrationState.ToString() ) );
+			mDeviceState.LineStates[ lineIndex ].RegistrationState = registrationState;
+
+			// Analyse both calls for the line. (We know this device only
+			// supports two calls per line.)
+			AnalyseCallState( page, lineIndex, 0, changes );
+			AnalyseCallState( page, lineIndex, 1, changes );
+        }
+        
+        protected virtual void AnalyseCallState( String page, int callIndex, int lineIndex, IList<StateChange> changes ) {
+			CallActivity callActivity = GetCallActivity( StringHelper.ExtractSubstring( page, "Call " + ( callIndex + 1 ) + " Type:<td><font color=\"darkblue\">", "<", "Line " + ( lineIndex + 1 ) + " Status" ) );
+			if( callActivity != mDeviceState.LineStates[ lineIndex ].CallStates[ callIndex ].CallActivity )
+				changes.Add( new CallStateChange( callIndex, "callActivity", mDeviceState.LineStates[ lineIndex ].CallStates[ callIndex ].CallActivity.ToString(), callActivity.ToString() ) );
+			mDeviceState.LineStates[ lineIndex ].CallStates[ callIndex ].CallActivity = callActivity;
+			
+			String duration = StringHelper.ExtractSubstring( page, "Call " + ( callIndex + 1 ) + " Duration:<td><font color=\"darkblue\">", "<", "Line " + ( lineIndex + 1 ) + " Status" );
+			if( duration != mDeviceState.LineStates[ lineIndex ].CallStates[ callIndex ].Duration )
+				changes.Add( new CallStateChange( callIndex, "duration", mDeviceState.LineStates[ lineIndex ].CallStates[ callIndex ].Duration, duration ) );
+			mDeviceState.LineStates[ lineIndex ].CallStates[ callIndex ].Duration = duration;
+        }
+
+		public virtual CallActivity GetCallActivity( String activity ) {
 			if( activity == "" )
 				return CallActivity.Idle;
 			else if( activity == "Inbound" )
@@ -87,7 +99,7 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 			return CallActivity.Other;
 		}
         
-        public static RegistrationState GetRegistrationState( String state ) {
+        public virtual RegistrationState GetRegistrationState( String state ) {
 			if( state == "Online" )
 				return RegistrationState.Online;
 			else if( state == "Offline" )

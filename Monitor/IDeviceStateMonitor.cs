@@ -13,15 +13,4 @@ namespace LothianProductions.VoIP.Monitor {
 			get;
 		}
 	}
-
-    public class DeviceNotRespondingException : ApplicationException
-    {
-        public DeviceNotRespondingException()
-            : base("A device is not responding to a status request") {
-        }
-
-        public DeviceNotRespondingException(string strMessage)
-            : base(strMessage) {
-        }
-    }
 }

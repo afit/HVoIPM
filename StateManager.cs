@@ -14,8 +14,14 @@ using LothianProductions.VoIP.State;
 namespace LothianProductions.VoIP {
 
 	public class StateUpdateEventArgs : EventArgs {
-		public StateUpdateEventArgs() {
-		}        
+		public StateUpdateEventArgs( IList<StateChange> changes ) {
+			mStateChanges = changes;
+		}
+
+		protected IList<StateChange> mStateChanges;
+		public IList<StateChange> StateChanges {
+			get{ return mStateChanges; }
+		}
 	}
 	
 	public delegate void StateUpdateHandler( IDeviceStateMonitor monitor, StateUpdateEventArgs e );
@@ -76,9 +82,9 @@ namespace LothianProductions.VoIP {
 			get{ return new List<IDeviceStateMonitor>( mDeviceStateMonitors.Keys ); }
 		}
 
-		public void DeviceStateUpdated( IDeviceStateMonitor monitor, IList<IStateChange> changes ) {
+		public void DeviceStateUpdated( IDeviceStateMonitor monitor, IList<StateChange> changes ) {
 			if( StateUpdate != null )
-				StateUpdate( monitor, new StateUpdateEventArgs() );
+				StateUpdate( monitor, new StateUpdateEventArgs( changes ) );
 				
 			// Clever logging stuff here.
 		}

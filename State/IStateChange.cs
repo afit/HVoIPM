@@ -3,25 +3,53 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace LothianProductions.VoIP.State {
-	public interface IStateChange {
+	public abstract class StateChange {
+		protected String mProperty;
 		String Property {
-			get;
+			get{ return mProperty; }
 		}
-		String ChangedFrom {
-			get;
+		
+		protected String mChangedFrom;
+		public String ChangedFrom {
+			get{ return mChangedFrom; }
 		}
-		String ChangedTo {
-			get;
+		
+		protected String mChangedTo;
+		public String ChangedTo {
+			get{ return mChangedTo; }
+		}
+		
+		protected int mIndex;
+		public int Index {
+			get{ return mIndex; }
 		}
 	}
 	
-	public interface IDeviceStateChange : IStateChange {
+	public class DeviceStateChange : StateChange {
+		public DeviceStateChange( int index, String property, String changedFrom, String changedTo ) {
+			mIndex = index;
+			mProperty = property;
+			mChangedFrom = changedFrom;
+			mChangedTo = changedTo;
+		}
 	}
 
-	public interface ILineStateChange : IStateChange {
+	public class LineStateChange : StateChange {
+		public LineStateChange( int index, String property, String changedFrom, String changedTo ) {
+			mIndex = index;
+			mProperty = property;
+			mChangedFrom = changedFrom;
+			mChangedTo = changedTo;
+		}
 	}
 
-	public interface ICallStateChange : IStateChange {
+	public class CallStateChange : StateChange {
+		public CallStateChange( int index, String property, String changedFrom, String changedTo ) {
+			mIndex = index;
+			mProperty = property;
+			mChangedFrom = changedFrom;
+			mChangedTo = changedTo;
+		}
 	}
 
 }

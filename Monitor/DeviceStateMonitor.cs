@@ -7,8 +7,7 @@ using LothianProductions.VoIP.State;
 namespace LothianProductions.VoIP.Monitor {
 
 	public abstract class DeviceStateMonitor : IDeviceStateMonitor {
-
-		protected DeviceState mDeviceState = new DeviceState( new LineState[] { } );
+		protected DeviceState mDeviceState;
 
 		protected String mName;
 		public String Name {
@@ -21,14 +20,4 @@ namespace LothianProductions.VoIP.Monitor {
 			return mDeviceState;
 		}
 	}
-
-    public class DeviceNotRespondingException : ApplicationException
-    {
-        public DeviceNotRespondingException() {
-            DeviceNotRespondingException("A device is not responding to a status request");
-        }
-
-        public DeviceNotRespondingException(string strMessage) : base( strMessage ) {
-        }
-    }
 }
