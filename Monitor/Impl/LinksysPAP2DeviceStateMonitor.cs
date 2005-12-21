@@ -36,7 +36,7 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 				lock (this) {
 					String page;
 					try {
-						page = HttpHelper.HttpGet( new Uri("http://phone"), "", "", "", 1000 );
+						page = HttpHelper.HttpGet( new Uri( "http://phone" ), "", "", "", 1000 );
 					} catch (WebException e) {
 						throw new DeviceNotRespondingException( "The device is not responding to status requests", e );
 					}

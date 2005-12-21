@@ -15,8 +15,8 @@ using LothianProductions.VoIP.State;
 
 namespace LothianProductions.VoIP.Forms {
     public partial class FormMain : Form {
-		protected Dictionary<TreeNode, Object> mTreeMapping = new Dictionary<TreeNode,object>();
-		
+		Dictionary<Object, Dictionary<String, StateChangeBehaviour>> mStateProperties = new Dictionary<Object, Dictionary<String, StateChangeBehaviour>>();
+				
         public FormMain() {
             InitializeComponent();
             // FIXME implement proper thread-handling, if the textbox is to remain
@@ -37,14 +37,17 @@ namespace LothianProductions.VoIP.Forms {
             this.Hide();
         }
 
-		Dictionary<Object, StateChangeBehaviour> mStateBehaviours = new Dictionary<Object, StateChangeBehaviour>();
-
-		protected StateChangeBehaviour LookupBehaviour( StateChange change ) {		
+		protected StateChangeBehaviour LookupBehaviour( Object state, String property ) {		
 			// Behaviour not set yet.
-			if( ! mStateBehaviours.ContainsKey( change.Underlying + "-" + change.Property ) )
-				mStateBehaviours.Add( change.Underlying + "-" + change.Property, new StateChangeBehaviour() );
+			if( ! mStateProperties.ContainsKey( state ) )
+				mStateProperties.Add( state, new Dictionary<String, StateChangeBehaviour>() );
 			
-			return mStateBehaviours[ change.Underlying + "-" + change.Property ];
+			Dictionary<String, StateChangeBehaviour> propertyBehaviours = mStateProperties[ state ];
+			
+			if( ! propertyBehaviours.ContainsKey( property ) )
+				propertyBehaviours.Add( property, new StateChangeBehaviour() );
+				
+			return propertyBehaviours[ property ];			
 		}
 
 		public void StateManagerUpdated( IDeviceStateMonitor monitor, StateUpdateEventArgs e ) {
@@ -55,7 +58,7 @@ namespace LothianProductions.VoIP.Forms {
 			bool systemTrayWarning = false;
 			
 			foreach( StateChange change in e.StateChanges ) {
-				StateChangeBehaviour behaviour = LookupBehaviour( change );
+				StateChangeBehaviour behaviour = LookupBehaviour( change.Underlying, change.Property );
 			
 				if( behaviour.ShowBubble ) {
 					if( bubbleTextBuilder.Length > 0 )
@@ -98,22 +101,27 @@ namespace LothianProductions.VoIP.Forms {
 		    // FIXME Maybe we should only repopulate for the device
 		    // that's being updated.
 		    TreeStates.Nodes.Clear();
-		    mTreeMapping.Clear();
+		    
+		    // Use each node's key as a property name. Use each node's tag object as a state.
 
 			foreach( IDeviceStateMonitor monitor in StateManager.Instance().DeviceStateMonitors ) {
-				TreeNode deviceNode = TreeStates.Nodes.Add( monitor.Name + " (" + monitor.GetType().Name + ")" );
-				mTreeMapping.Add( deviceNode, monitor );
-			    DeviceState deviceState = monitor.GetDeviceState();
+				DeviceState deviceState = monitor.GetDeviceState();
+				
+				TreeNode deviceNode = TreeStates.Nodes.Add( "", deviceState.Name + " (" + monitor.GetType().Name + " " + monitor.Name + ")" );
+				deviceNode.Tag = deviceState;
 				
 				for( int i = 0; i < deviceState.LineStates.Length; i++ ) {
-					TreeNode lineNode = deviceNode.Nodes.Add( "Line #" + i );
-					lineNode.Nodes.Add( "Last called number = " + deviceState.LineStates[ i ].LastCalledNumber );
-					lineNode.Nodes.Add( "Last caller number = " + deviceState.LineStates[ i ].LastCallerNumber );
-					lineNode.Nodes.Add( "Registration state = " + deviceState.LineStates[ i ].RegistrationState );
+					TreeNode lineNode = deviceNode.Nodes.Add( "", "Line " + deviceState.LineStates[ i ].Name );
+					lineNode.Tag = deviceState.LineStates[ i ];
+					lineNode.Nodes.Add( "lastCalledNumber", "Last called number = " + deviceState.LineStates[ i ].LastCalledNumber ).Tag = deviceState.LineStates[ i ];
+					lineNode.Nodes.Add( "lastCallerNumber", "Last caller number = " + deviceState.LineStates[ i ].LastCallerNumber ).Tag = deviceState.LineStates[ i ];
+					lineNode.Nodes.Add( "registrationState", "Registration state = " + deviceState.LineStates[ i ].RegistrationState ).Tag = deviceState.LineStates[ i ];
+					
 					for( int j = 0; j < deviceState.LineStates[ i ].CallStates.Length; j++ ) {
-						TreeNode callNode = lineNode.Nodes.Add( "Call #" + j );
-						callNode.Nodes.Add( "Call activity = " + deviceState.LineStates[ i ].CallStates[ j ].CallActivity );
-						callNode.Nodes.Add( "Duration = " + deviceState.LineStates[ i ].CallStates[ j ].Duration );
+						TreeNode callNode = lineNode.Nodes.Add( "Call " + deviceState.LineStates[ i ].CallStates[ j ].Name );
+						callNode.Tag = deviceState.LineStates[ i ].CallStates[ j ];
+						callNode.Nodes.Add( "callActivity", "Call activity = " + deviceState.LineStates[ i ].CallStates[ j ].CallActivity ).Tag = deviceState.LineStates[ i ].CallStates[ j ];
+						callNode.Nodes.Add( "duration", "Duration = " + deviceState.LineStates[ i ].CallStates[ j ].Duration ).Tag = deviceState.LineStates[ i ].CallStates[ j ];
 					}
 				}
 			}
@@ -131,11 +139,7 @@ namespace LothianProductions.VoIP.Forms {
 		private void ButtonQuit_Click( object sender, EventArgs e ) {
 			toolStripQuit_Click( sender, e );
 		}
-
-		//private void ButtonDump_Click( object sender, EventArgs e ) {
-		//    MessageBox.Show( mDeviceState, "Monitored device status", MessageBoxButtons.OK, MessageBoxIcon.Information );
-		//}
-
+		
 		private void ButtonReload_Click( object sender, EventArgs e ) {
 			StateManager.Instance().ReloadDeviceStateMonitors();
 		}
@@ -159,7 +163,8 @@ namespace LothianProductions.VoIP.Forms {
 		}
 
 		private void TreeStates_AfterSelect( object sender, TreeViewEventArgs e ) {
-			MessageBox.Show( e.Node.Text );
+			StateChangeBehaviour behaviour = LookupBehaviour( e.Node.Tag, e.Node.Name );
+			MessageBox.Show( e.Node.Text + ":" + behaviour );
 		}
     }
 }

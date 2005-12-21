@@ -31,7 +31,6 @@ namespace LothianProductions.VoIP.Forms {
 			this.pictureBox1 = new System.Windows.Forms.PictureBox();
 			this.label1 = new System.Windows.Forms.Label();
 			this.LabelLinks = new System.Windows.Forms.LinkLabel();
-			this.ButtonDump = new System.Windows.Forms.Button();
 			this.ButtonQuit = new System.Windows.Forms.Button();
 			this.ButtonReload = new System.Windows.Forms.Button();
 			this.label3 = new System.Windows.Forms.Label();
@@ -95,15 +94,6 @@ namespace LothianProductions.VoIP.Forms {
 			this.LabelLinks.TabIndex = 5;
 			this.LabelLinks.Text = "© Lothian Productions 2005, all rights reserved. About HVoIPM.";
 			// 
-			// ButtonDump
-			// 
-			this.ButtonDump.Location = new System.Drawing.Point( 15, 79 );
-			this.ButtonDump.Name = "ButtonDump";
-			this.ButtonDump.Size = new System.Drawing.Size( 83, 27 );
-			this.ButtonDump.TabIndex = 7;
-			this.ButtonDump.Text = "&Dump status";
-			this.ButtonDump.UseVisualStyleBackColor = true;
-			// 
 			// ButtonQuit
 			// 
 			this.ButtonQuit.Location = new System.Drawing.Point( 283, 79 );
@@ -129,9 +119,9 @@ namespace LothianProductions.VoIP.Forms {
 			this.label3.AutoSize = true;
 			this.label3.Location = new System.Drawing.Point( 9, 120 );
 			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size( 221, 16 );
+			this.label3.Size = new System.Drawing.Size( 132, 16 );
 			this.label3.TabIndex = 11;
-			this.label3.Text = "Monitor the following lines for fatal errors:";
+			this.label3.Text = "Full device monitor data:";
 			// 
 			// checkBox1
 			// 
@@ -190,7 +180,6 @@ namespace LothianProductions.VoIP.Forms {
 			this.Controls.Add( this.label3 );
 			this.Controls.Add( this.ButtonReload );
 			this.Controls.Add( this.ButtonQuit );
-			this.Controls.Add( this.ButtonDump );
 			this.Controls.Add( this.label1 );
 			this.Controls.Add( this.pictureBox1 );
 			this.Controls.Add( this.LabelLinks );
@@ -217,7 +206,6 @@ namespace LothianProductions.VoIP.Forms {
 		private System.Windows.Forms.PictureBox pictureBox1;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.LinkLabel LabelLinks;
-		private System.Windows.Forms.Button ButtonDump;
 		private System.Windows.Forms.Button ButtonQuit;
 		private System.Windows.Forms.Button ButtonReload;
 		private System.Windows.Forms.Label label3;

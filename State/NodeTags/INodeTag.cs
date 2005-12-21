@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace LothianProductions.VoIP.State.NodeTags {
-	interface INodeTag {
-	}
+	//interface INodeTag {
+	//}
 	
-	public class CallNodeTag {
+	//public class CallNodeTag {
 		
-	}
+	//}
 	
 
 }
