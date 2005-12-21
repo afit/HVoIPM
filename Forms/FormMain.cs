@@ -37,12 +37,18 @@ namespace LothianProductions.VoIP.Forms {
             this.Hide();
         }
 
-		protected StateChangeBehaviour LookupBehaviour( StateChange change ) {
-			return new StateChangeBehaviour();
+		Dictionary<Object, StateChangeBehaviour> mStateBehaviours = new Dictionary<Object, StateChangeBehaviour>();
+
+		protected StateChangeBehaviour LookupBehaviour( StateChange change ) {		
+			// Behaviour not set yet.
+			if( ! mStateBehaviours.ContainsKey( change.Underlying + "-" + change.Property ) )
+				mStateBehaviours.Add( change.Underlying + "-" + change.Property, new StateChangeBehaviour() );
+			
+			return mStateBehaviours[ change.Underlying + "-" + change.Property ];
 		}
 
 		public void StateManagerUpdated( IDeviceStateMonitor monitor, StateUpdateEventArgs e ) {
-		
+			
 			// Iterate through state changes and deal with them as appropriate:
 			StringBuilder bubbleTextBuilder = new StringBuilder();
 			bool showApplication = false;

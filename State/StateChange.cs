@@ -18,6 +18,10 @@ namespace LothianProductions.VoIP.State {
 		public String ChangedTo {
 			get{ return mChangedTo; }
 		}
+		
+		public abstract Object Underlying {
+			get;
+		}
 	}
 	
 	public class DeviceStateChange : StateChange {
@@ -32,11 +36,15 @@ namespace LothianProductions.VoIP.State {
 		public DeviceState DeviceState {
 			get{ return mDeviceState; }
 		}
+		
+		public override Object Underlying {
+			get{ return mDeviceState; }
+		}
 	}
 
 	public class LineStateChange : StateChange {
 		public LineStateChange( LineState lineState, String property, String changedFrom, String changedTo ) {
-			mLineState = LineState;
+			mLineState = lineState;
 			mProperty = property;
 			mChangedFrom = changedFrom;
 			mChangedTo = changedTo;
@@ -44,6 +52,10 @@ namespace LothianProductions.VoIP.State {
 		
 		protected LineState mLineState;
 		public LineState LineState {
+			get{ return mLineState; }
+		}
+		
+		public override Object Underlying {
 			get{ return mLineState; }
 		}
 	}
@@ -58,6 +70,10 @@ namespace LothianProductions.VoIP.State {
 		
 		protected CallState mCallState;
 		public CallState CallState {
+			get{ return mCallState; }
+		}
+		
+		public override Object Underlying {
 			get{ return mCallState; }
 		}
 	}

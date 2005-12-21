@@ -11,9 +11,16 @@ namespace LothianProductions.VoIP.State {
     }
 
     public class LineState {
-		public LineState( CallState[] callStates ) {
+		public LineState( String name, CallState[] callStates ) {
+			mName = name;
 			CallStates = callStates;
 		}
+    
+		protected String mName;
+        public String Name {
+            get{ return mName; }
+            set{ mName = value; }
+        }
     
         protected String mLastCalledNumber;
         public String LastCalledNumber {

@@ -23,9 +23,9 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 			
 			// We know there will be two lines for the device, each with
 			// two calls.
-			mDeviceState = new DeviceState( new LineState[] {
-				new LineState( new CallState[] { new CallState(), new CallState() } ),
-				new LineState( new CallState[] { new CallState(), new CallState() } )
+			mDeviceState = new DeviceState( name, new LineState[] {
+				new LineState( "1", new CallState[] { new CallState( "1" ), new CallState( "2" ) } ),
+				new LineState( "2", new CallState[] { new CallState( "1" ), new CallState( "2" ) } )
 			} );
 		}
 	    
@@ -42,8 +42,8 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 					}
 					
 					IList<StateChange> changes = new List<StateChange>();
-					AnalyseLineState( page, mDeviceState.LineStates[ 0 ], 0, changes );	
-					AnalyseLineState( page, mDeviceState.LineStates[ 1 ], 1, changes );
+					AnalyseLineState( page, mDeviceState.LineStates[ 0 ], changes );	
+					AnalyseLineState( page, mDeviceState.LineStates[ 1 ], changes );
 				
 					// FIXME safer to use event here?	
 					if( changes.Count > 0 )
@@ -54,36 +54,36 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 			}
         }
         
-        // FIXME refactor, removing indexes to allow for line names? (and call names?)
-        protected virtual void AnalyseLineState( String page, LineState lineState, int lineIndex, IList<StateChange> changes ) {
-			String lastCalledNumber = StringHelper.ExtractSubstring( page, "Last Called Number:<td><font color=\"darkblue\">", "<", "Line " + ( lineIndex + 1 )+ " Status" );
+        protected virtual void AnalyseLineState( String page, LineState lineState, IList<StateChange> changes ) {
+
+			String lastCalledNumber = StringHelper.ExtractSubstring( page, "Last Called Number:<td><font color=\"darkblue\">", "<", "Line " + lineState.Name + " Status" );
 			if( lastCalledNumber != lineState.LastCalledNumber )
 				changes.Add( new LineStateChange( lineState, "LastCalledNumber", lineState.LastCalledNumber, lastCalledNumber ) );
 			lineState.LastCalledNumber = lastCalledNumber;
 				
-			String lastCallerNumber = StringHelper.ExtractSubstring( page, "Last Caller Number:<td><font color=\"darkblue\">", "<", "Line " + ( lineIndex + 1 ) + " Status" );
+			String lastCallerNumber = StringHelper.ExtractSubstring( page, "Last Caller Number:<td><font color=\"darkblue\">", "<", "Line " + lineState.Name + " Status" );
 			if( lastCallerNumber != lineState.LastCallerNumber )
 				changes.Add( new LineStateChange( lineState, "LastCallerNumber", lineState.LastCallerNumber, lastCallerNumber ) );
 			lineState.LastCallerNumber = lastCallerNumber;
 
-			RegistrationState registrationState = GetRegistrationState( StringHelper.ExtractSubstring( page, "Registration State:<td><font color=\"darkblue\">", "<", "Line " + ( lineIndex + 1 ) + " Status" ) );
+			RegistrationState registrationState = GetRegistrationState( StringHelper.ExtractSubstring( page, "Registration State:<td><font color=\"darkblue\">", "<", "Line " + lineState.Name + " Status" ) );
 			if( registrationState != lineState.RegistrationState )
 				changes.Add( new LineStateChange( lineState, "RegistrationState", lineState.RegistrationState.ToString(), registrationState.ToString() ) );
 			lineState.RegistrationState = registrationState;
 
 			// Analyse both calls for the line. (We know this device only
 			// supports two calls per line.)
-			AnalyseCallState( page, lineState.CallStates[ 0 ], 0, lineState, lineIndex, changes );
-			AnalyseCallState( page, lineState.CallStates[ 1 ], 1, lineState, lineIndex, changes );
+			AnalyseCallState( page, lineState.CallStates[ 0 ], lineState, changes );
+			AnalyseCallState( page, lineState.CallStates[ 1 ], lineState, changes );
         }
         
-        protected virtual void AnalyseCallState( String page, CallState callState, int callIndex, LineState lineState, int lineIndex, IList<StateChange> changes ) {
-			CallActivity callActivity = GetCallActivity( StringHelper.ExtractSubstring( page, "Call " + ( callIndex + 1 ) + " Type:<td><font color=\"darkblue\">", "<", "Line " + ( lineIndex + 1 ) + " Status" ) );
+        protected virtual void AnalyseCallState( String page, CallState callState, LineState lineState, IList<StateChange> changes ) {
+			CallActivity callActivity = GetCallActivity( StringHelper.ExtractSubstring( page, "Call " + callState.Name + " Type:<td><font color=\"darkblue\">", "<", "Line " + lineState.Name + " Status" ) );
 			if( callActivity != callState.CallActivity )
 				changes.Add( new CallStateChange( callState, "callActivity", callState.CallActivity.ToString(), callActivity.ToString() ) );
 			callState.CallActivity = callActivity;
 			
-			String duration = StringHelper.ExtractSubstring( page, "Call " + ( callIndex + 1 ) + " Duration:<td><font color=\"darkblue\">", "<", "Line " + ( lineIndex + 1 ) + " Status" );
+			String duration = StringHelper.ExtractSubstring( page, "Call " + callState.Name + " Duration:<td><font color=\"darkblue\">", "<", "Line " + lineState.Name + " Status" );
 			if( duration != callState.Duration )
 				changes.Add( new CallStateChange( callState, "duration", callState.Duration, duration ) );
 			callState.Duration = duration;

@@ -13,6 +13,17 @@ namespace LothianProductions.VoIP.State {
     }
 
     public class CallState {
+
+		public CallState( String name ) {
+			mName = name;
+		}
+    
+		protected String mName;
+        public String Name {
+            get{ return mName; }
+            set{ mName = value; }
+        }
+    
         protected CallActivity mCallActivity;
         public CallActivity CallActivity {
             get{ return mCallActivity; }
