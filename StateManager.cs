@@ -77,9 +77,8 @@ namespace LothianProductions.VoIP {
 			}
 		}
 		
-		public IList<IDeviceStateMonitor> DeviceStateMonitors {
-			// FIXME this is very inefficient
-			get{ return new List<IDeviceStateMonitor>( mDeviceStateMonitors.Keys ); }
+		public ICollection<IDeviceStateMonitor> DeviceStateMonitors {
+			get{ return mDeviceStateMonitors.Keys; }
 		}
 
 		public void DeviceStateUpdated( IDeviceStateMonitor monitor, IList<StateChange> changes ) {

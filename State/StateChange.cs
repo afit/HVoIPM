@@ -5,7 +5,7 @@ using System.Text;
 namespace LothianProductions.VoIP.State {
 	public abstract class StateChange {
 		protected String mProperty;
-		String Property {
+		public String Property {
 			get{ return mProperty; }
 		}
 		

@@ -46,7 +46,8 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 					AnalyseLineState( page, 1, changes );
 				
 					// FIXME safer to use event here?	
-					StateManager.Instance().DeviceStateUpdated( this, changes );
+					if( changes.Count > 0 )
+						StateManager.Instance().DeviceStateUpdated( this, changes );
 				}			
 				
 				Thread.Sleep( 1000 );

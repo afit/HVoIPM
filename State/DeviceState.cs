@@ -14,6 +14,7 @@ namespace LothianProductions.VoIP.State {
             set{ mLineStates = value; }
         }
 
+		// FIXME remove this, it'll slow things down and is unused
 		public override string ToString() {
 			StringBuilder builder = new StringBuilder();
 			

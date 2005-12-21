@@ -33,7 +33,6 @@ namespace LothianProductions.VoIP.Forms {
 			this.LabelLinks = new System.Windows.Forms.LinkLabel();
 			this.ButtonDump = new System.Windows.Forms.Button();
 			this.ButtonQuit = new System.Windows.Forms.Button();
-			this.ButtonHide = new System.Windows.Forms.Button();
 			this.ButtonReload = new System.Windows.Forms.Button();
 			this.label3 = new System.Windows.Forms.Label();
 			this.checkBox1 = new System.Windows.Forms.CheckBox();
@@ -104,7 +103,6 @@ namespace LothianProductions.VoIP.Forms {
 			this.ButtonDump.TabIndex = 7;
 			this.ButtonDump.Text = "&Dump status";
 			this.ButtonDump.UseVisualStyleBackColor = true;
-			this.ButtonDump.Click += new System.EventHandler( this.ButtonDump_Click );
 			// 
 			// ButtonQuit
 			// 
@@ -115,16 +113,6 @@ namespace LothianProductions.VoIP.Forms {
 			this.ButtonQuit.Text = "&Quit";
 			this.ButtonQuit.UseVisualStyleBackColor = true;
 			this.ButtonQuit.Click += new System.EventHandler( this.ButtonQuit_Click );
-			// 
-			// ButtonHide
-			// 
-			this.ButtonHide.Location = new System.Drawing.Point( 188, 79 );
-			this.ButtonHide.Name = "ButtonHide";
-			this.ButtonHide.Size = new System.Drawing.Size( 89, 27 );
-			this.ButtonHide.TabIndex = 9;
-			this.ButtonHide.Text = "&Hide";
-			this.ButtonHide.UseVisualStyleBackColor = true;
-			this.ButtonHide.Click += new System.EventHandler( this.ButtonHide_Click );
 			// 
 			// ButtonReload
 			// 
@@ -201,7 +189,6 @@ namespace LothianProductions.VoIP.Forms {
 			this.Controls.Add( this.checkBox1 );
 			this.Controls.Add( this.label3 );
 			this.Controls.Add( this.ButtonReload );
-			this.Controls.Add( this.ButtonHide );
 			this.Controls.Add( this.ButtonQuit );
 			this.Controls.Add( this.ButtonDump );
 			this.Controls.Add( this.label1 );
@@ -232,7 +219,6 @@ namespace LothianProductions.VoIP.Forms {
 		private System.Windows.Forms.LinkLabel LabelLinks;
 		private System.Windows.Forms.Button ButtonDump;
 		private System.Windows.Forms.Button ButtonQuit;
-		private System.Windows.Forms.Button ButtonHide;
 		private System.Windows.Forms.Button ButtonReload;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.CheckBox checkBox1;
