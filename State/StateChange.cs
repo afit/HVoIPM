@@ -18,38 +18,47 @@ namespace LothianProductions.VoIP.State {
 		public String ChangedTo {
 			get{ return mChangedTo; }
 		}
-		
-		protected int mIndex;
-		public int Index {
-			get{ return mIndex; }
-		}
 	}
 	
 	public class DeviceStateChange : StateChange {
-		public DeviceStateChange( int index, String property, String changedFrom, String changedTo ) {
-			mIndex = index;
+		public DeviceStateChange( DeviceState deviceState, String property, String changedFrom, String changedTo ) {
+			mDeviceState = deviceState;
 			mProperty = property;
 			mChangedFrom = changedFrom;
 			mChangedTo = changedTo;
+		}
+		
+		protected DeviceState mDeviceState;
+		public DeviceState DeviceState {
+			get{ return mDeviceState; }
 		}
 	}
 
 	public class LineStateChange : StateChange {
-		public LineStateChange( int index, String property, String changedFrom, String changedTo ) {
-			mIndex = index;
+		public LineStateChange( LineState lineState, String property, String changedFrom, String changedTo ) {
+			mLineState = LineState;
 			mProperty = property;
 			mChangedFrom = changedFrom;
 			mChangedTo = changedTo;
+		}
+		
+		protected LineState mLineState;
+		public LineState LineState {
+			get{ return mLineState; }
 		}
 	}
 
 	public class CallStateChange : StateChange {
-		public CallStateChange( int index, String property, String changedFrom, String changedTo ) {
-			mIndex = index;
+		public CallStateChange( CallState callState, String property, String changedFrom, String changedTo ) {
+			mCallState = callState;
 			mProperty = property;
 			mChangedFrom = changedFrom;
 			mChangedTo = changedTo;
 		}
+		
+		protected CallState mCallState;
+		public CallState CallState {
+			get{ return mCallState; }
+		}
 	}
-
 }

@@ -9,6 +9,7 @@ using System.Windows.Forms;
 
 using LothianProductions.Util.Http;
 using LothianProductions.VoIP;
+using LothianProductions.VoIP.Behaviour;
 using LothianProductions.VoIP.Monitor;
 using LothianProductions.VoIP.State;
 
@@ -36,29 +37,58 @@ namespace LothianProductions.VoIP.Forms {
             this.Hide();
         }
 
-		public void StateManagerUpdated( IDeviceStateMonitor monitor, StateUpdateEventArgs e ) {
-			StringBuilder builder = new StringBuilder();
-			foreach( StateChange change in e.StateChanges )
-				builder.Append( change.Property + " changed from " + change.ChangedFrom + " to " + change.ChangedTo ).AppendLine();
-			
-			NotifyIcon.ShowBalloonTip( 1000, "State change", builder.Remove( builder.Length - 2, 2 ).ToString(), ToolTipIcon.Info );
-			
-			// FIXME need to show higher-level alert if lines or calls have been added or removed.
-			
-			//    // If the number of lines have changed, a significant configuration
-			//    // change has occured: lines or calls have been added. Note that this
-			//    // might have happened anyway, but the number of lines may remain the same
-			//    // so this is not foolproof.
-			//    if( splitDeviceState.Length != splitNewState.Length )
-			//        NotifyIcon.ShowBalloonTip( 5000, "Significant state change", newState, ToolTipIcon.Warning  );
+		protected StateChangeBehaviour LookupBehaviour( StateChange change ) {
+			return new StateChangeBehaviour();
+		}
 
-			TreeStates.Invoke( new MonitorPassingDelegate( UpdateTree ), new Object[] { e.StateChanges } );
+		public void StateManagerUpdated( IDeviceStateMonitor monitor, StateUpdateEventArgs e ) {
+		
+			// Iterate through state changes and deal with them as appropriate:
+			StringBuilder bubbleTextBuilder = new StringBuilder();
+			bool showApplication = false;
+			bool systemTrayWarning = false;
+			
+			foreach( StateChange change in e.StateChanges ) {
+				StateChangeBehaviour behaviour = LookupBehaviour( change );
+			
+				if( behaviour.ShowBubble ) {
+					if( bubbleTextBuilder.Length > 0 )
+						bubbleTextBuilder.AppendLine();
+			
+					// Substitute in values from pattern.			
+					bubbleTextBuilder.Append( String.Format( behaviour.BubbleText, new String[] { change.Property, change.ChangedFrom, change.ChangedTo } ) );
+				}
+				
+				if( behaviour.SystemTrayWarning )
+					systemTrayWarning = true;
+				
+				if( behaviour.ShowApplication )
+					showApplication = true;
+			}
+
+			if( showApplication )
+				this.Show();
+
+			// FIXME implement this: if( systemTrayWarning )
+			
+
+			if( bubbleTextBuilder.Length > 0 )
+				NotifyIcon.ShowBalloonTip(
+					1000,
+					monitor.Name + "'s state changed",
+					bubbleTextBuilder.ToString(),
+					ToolTipIcon.Info
+				);
+				
+			// FIXME need to support line and call addition or removal
+			
+			TreeStates.Invoke( new MonitorPassingDelegate( UpdateTree ), new Object[] { e.StateChanges } );			
 		}
 	
 		public delegate void MonitorPassingDelegate( IList<StateChange> changes );
 
 		private void UpdateTree( IList<StateChange> changes ) {
-		    // Repopulate checkboxes for error checking.
+		    // Redraw tree of devices being watched.
 		    // FIXME Maybe we should only repopulate for the device
 		    // that's being updated.
 		    TreeStates.Nodes.Clear();

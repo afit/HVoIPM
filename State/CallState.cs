@@ -25,11 +25,11 @@ namespace LothianProductions.VoIP.State {
             set{ mDuration = value; }
         }
         
-	    public override String ToString() {
-			StringBuilder builder = new StringBuilder();
-			builder.Append( " -- Call activity: " ).Append( CallActivity ).AppendLine();
-			builder.Append( " -- Call duration: " ).Append( Duration ).AppendLine();
-			return builder.ToString();
-		}
+		//public override String ToString() {
+		//    StringBuilder builder = new StringBuilder();
+		//    builder.Append( " -- Call activity: " ).Append( CallActivity ).AppendLine();
+		//    builder.Append( " -- Call duration: " ).Append( Duration ).AppendLine();
+		//    return builder.ToString();
+		//}
     }
 }

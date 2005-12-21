@@ -14,17 +14,17 @@ namespace LothianProductions.VoIP.State {
             set{ mLineStates = value; }
         }
 
-		// FIXME remove this, it'll slow things down and is unused
-		public override string ToString() {
-			StringBuilder builder = new StringBuilder();
+		//// FIXME remove this, it'll slow things down and is unused
+		//public override string ToString() {
+		//    StringBuilder builder = new StringBuilder();
 			
-			// FIXME: Not really threadsafe.
-			for( int i = 0; i < LineStates.Length; i++ ) {
-				builder.Append( "Line #" ).Append( i ).Append( ':' ).AppendLine();
-				builder.Append( LineStates[ i ].ToString() );
-			}
+		//    // FIXME: Not really threadsafe.
+		//    for( int i = 0; i < LineStates.Length; i++ ) {
+		//        builder.Append( "Line #" ).Append( i ).Append( ':' ).AppendLine();
+		//        builder.Append( LineStates[ i ].ToString() );
+		//    }
 			
-			return builder.ToString();
-		}
+		//    return builder.ToString();
+		//}
 	}
 }
