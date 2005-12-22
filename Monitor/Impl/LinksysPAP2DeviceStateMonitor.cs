@@ -91,7 +91,7 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 
 		public virtual CallActivity GetCallActivity( String activity ) {
 			if( activity == "" )
-				return CallActivity.Idle;
+				return CallActivity.IdleDisconnected;
 			else if( activity == "Inbound" )
 				return CallActivity.Inbound;
 			else if( activity == "Outbound" )

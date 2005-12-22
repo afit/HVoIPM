@@ -36,11 +36,16 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="Tapi2Lib, Version=1.0.2.5, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\Tapi2Lib.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Logger.cs" />
     <Compile Include="Monitor\DeviceNotRespondingException.cs" />
     <Compile Include="Monitor\DeviceStateMonitor.cs" />
+    <Compile Include="Monitor\Impl\TAPIDeviceStateMonitor.cs" />
     <Compile Include="State\CallState.cs" />
     <Compile Include="Monitor\IDeviceStateMonitor.cs" />
     <Compile Include="State\DeviceState.cs" />
@@ -90,6 +95,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="HVoIPM-64x.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="State\NodeTags\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

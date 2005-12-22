@@ -5,9 +5,13 @@ using System.Text;
 namespace LothianProductions.VoIP.State {
 
     public enum CallActivity {
-        Idle,
+        IdleDisconnected,
+        Dialling,
+        InboundRinging,
+        OutboundRinging,
         Outbound,
         Inbound,
+        Busy,
         Held,
         Other
     }
