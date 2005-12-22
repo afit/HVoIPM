@@ -32,6 +32,8 @@ namespace LothianProductions.VoIP {
 	/// </summary>
     public class StateManager {	
 		protected static readonly StateManager mInstance = new StateManager();
+
+        protected Dictionary<CallState, Call> mCalls = new Dictionary<CallState, Call>();
 		
 		public static StateManager Instance() {
 			return mInstance;
@@ -85,7 +87,31 @@ namespace LothianProductions.VoIP {
 		public void DeviceStateUpdated( IDeviceStateMonitor monitor, IList<StateChange> changes ) {
 			if( StateUpdate != null )
 				StateUpdate( monitor, new StateUpdateEventArgs( changes ) );
-				
+
+            foreach( StateChange change in changes ) {
+                if ( change.Property == "callActivity" ) {
+                    if ((change.ChangedFrom == "Idle") && (change.ChangedTo != "Idle")) {
+                        CallState cs = (CallState)change.Underlying;
+                        foreach (LineState line in monitor.GetDeviceState().LineStates) {
+                            if (Array.IndexOf(line.CallStates, cs) > 0) {
+                                Call call = new Call(monitor.GetDeviceState().Name, cs, change.ChangedTo, line.LastCalledNumber, DateTime.Now, new DateTime(), null);
+                                mCalls.Add(cs, call);
+                            }
+                        }
+                    } else if ((change.ChangedFrom != "Idle") && (change.ChangedTo == "Idle")) {
+                        CallState cs = (CallState)change.Underlying;
+                        foreach ( LineState line in monitor.GetDeviceState().LineStates ) {
+                            if ( Array.IndexOf( line.CallStates, cs ) > 0 ) {
+                                Call call = mCalls[ cs ];
+                                call.EndTime = DateTime.Now;
+                                call.Duration = cs.Duration;
+                                CallLogger.Instance().Log(call);
+                            }
+                        }
+                    }
+                }
+            }
+
 			// Clever logging stuff here.
 		}
 		

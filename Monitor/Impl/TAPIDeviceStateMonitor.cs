@@ -77,18 +77,21 @@ namespace LothianProductions.VoIP.Monitor.Impl
 
             m_CTapi = new CTapi(m_friendlyAppName, m_TapiVersion, m_AppHandle, CTapi.LineInitializeExOptions.LINEINITIALIZEEXOPTION_USEHIDDENWINDOW);
 
-            m_CTapi.AppNewCall += new CTapi.AppNewCallEventHandler(TapiMonitorAppNewCallEventHandler);
-            m_CTapi.CallStateEvent += new CTapi.CallStateEventHandler(TapiMonitorCallStateEventHandler);
-            m_CTapi.LineReplyEvent += new CTapi.LineReplyEventHandler(TapiMonitorLineReplyEventHandler);
-            m_CTapi.LineCallInfoEvent += new CTapi.LineCallInfoEventHandler(TapiMonitorLineCallInfoEventHandler);
-            m_CTapi.LineAddressStateEvent += new CTapi.LineAddressStateEventHandler(TapiMonitorLineAddressStateEventHandler);
-            m_CTapi.LineDevStateEvent += new CTapi.LineDevStateEventHandler(TapiMonitorLineDevStateEventHandler);
-            m_CTapi.LineCloseEvent += new CTapi.LineCloseEventHandler(TapiMonitorLineCloseEventHandler);
+            m_CTapi.AppNewCall += new CTapi.AppNewCallEventHandler(MyAppNewCallEventHandler);
+            m_CTapi.CallStateEvent += new CTapi.CallStateEventHandler(MyCallStateEventHandler);
+            m_CTapi.LineReplyEvent += new CTapi.LineReplyEventHandler(MyLineReplyEventHandler);
+            m_CTapi.LineCallInfoEvent += new CTapi.LineCallInfoEventHandler(MyLineCallInfoEventHandler);
+            m_CTapi.LineAddressStateEvent += new CTapi.LineAddressStateEventHandler(MyLineAddressStateEventHandler);
+            m_CTapi.LineDevStateEvent += new CTapi.LineDevStateEventHandler(MyLineDevStateEventHandler);
+            m_CTapi.LineCloseEvent += new CTapi.LineCloseEventHandler(MyLineCloseEventHandler);
 
             string sLineFilter;
             sLineFilter = "Nortel";
             m_CLine = m_CTapi.GetLineByFilter(sLineFilter, false,
                 CTapi.LineCallPrivilege.LINECALLPRIVILEGE_OWNER | CTapi.LineCallPrivilege.LINECALLPRIVILEGE_MONITOR);
+            while (true) {
+                Thread.Sleep(50);
+            }
         }
 
         protected virtual void AnalyseLineState(String page, LineState lineState, IList<StateChange> changes) {
@@ -100,27 +103,28 @@ namespace LothianProductions.VoIP.Monitor.Impl
 
         #region Event Handling
 
-        public void TapiMonitorAppNewCallEventHandler(Object sender, CTapi.AppNewCallEventArgs e) {
+        public void MyAppNewCallEventHandler(Object sender, CTapi.AppNewCallEventArgs e) {
             CCall call = e.call;
             m_ActiveCall = call;
             m_ActiveCall.GetCallInfo();
             mDeviceState.LineStates[0].CallStates[0].Activity = Activity.InboundRinging;
         }
 
-        public void TapiMonitorLineCallInfoEventHandler(Object sender, CTapi.LineCallInfoEventArgs e) {
+        public void MyLineCallInfoEventHandler(Object sender, CTapi.LineCallInfoEventArgs e) {
             if (m_ActiveCall != null) {
                 if (((uint)e.LineCallInfoState & (uint)CTapi.LineCallInfoState.LINECALLINFOSTATE_CALLERID) > 1) {
                     m_ActiveCall.GetCallInfo();
                     if (mDeviceState.LineStates[0].CallStates[0].Activity == Activity.InboundRinging) {
                         mDeviceState.LineStates[0].LastCallerNumber = m_ActiveCall.CallerID.ToString();
-                    } else if (mDeviceState.LineStates[0].CallStates[0].Activity == Activity.InboundRinging) {
-                        mDeviceState.LineStates[0].LastCalledNumber = m_ActiveCall.CalledID.ToString();
+                        IList<StateChange> changes = new List<StateChange>();
+                        changes.Add(new CallStateChange(mDeviceState.LineStates[0].CallStates[0], "lastCallerNumber", "", m_ActiveCall.CallerID.ToString()));
+                        StateManager.Instance().DeviceStateUpdated(this, changes);
                     }
                 }
             }
         }
 
-        public void TapiMonitorCallStateEventHandler(Object sender, CTapi.CallStateEventArgs e) {
+        public void MyCallStateEventHandler(Object sender, CTapi.CallStateEventArgs e) {
 
             switch (e.CallState) {
                 case CTapi.LineCallState.LINECALLSTATE_CONNECTED:
@@ -164,16 +168,16 @@ namespace LothianProductions.VoIP.Monitor.Impl
             }
         }
 
-        public void TapiMonitorLineReplyEventHandler(Object sender, CTapi.LineReplyEventArgs e) {
+        public void MyLineReplyEventHandler(Object sender, CTapi.LineReplyEventArgs e) {
         }
 
-        public void TapiMonitorLineAddressStateEventHandler(Object sender, CTapi.LineAddressStateEventArgs e) {
+        public void MyLineAddressStateEventHandler(Object sender, CTapi.LineAddressStateEventArgs e) {
         }
 
-        public void TapiMonitorLineDevStateEventHandler(Object sender, CTapi.LineDevStateEventArgs e) {
+        public void MyLineDevStateEventHandler(Object sender, CTapi.LineDevStateEventArgs e) {
         }
 
-        public void TapiMonitorLineCloseEventHandler(Object sender, CTapi.LineCloseEventArgs e) {
+        public void MyLineCloseEventHandler(Object sender, CTapi.LineCloseEventArgs e) {
             mDeviceState.LineStates[0].RegistrationState = RegistrationState.Offline;
         }
 

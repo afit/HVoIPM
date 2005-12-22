@@ -42,6 +42,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Call.cs" />
+    <Compile Include="CallLogger.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Monitor\DeviceNotRespondingException.cs" />
     <Compile Include="Monitor\DeviceStateMonitor.cs" />
