@@ -185,8 +185,8 @@ namespace LothianProductions.VoIP.Forms {
 		}
 
 		private void TreeStates_AfterSelect( object sender, TreeViewEventArgs e ) {
-			StateChangeBehaviour behaviour = LookupBehaviour( e.Node.Tag, e.Node.Name );
-			MessageBox.Show( e.Node.Text + ":" + behaviour );
+			//StateChangeBehaviour behaviour = LookupBehaviour( e.Node.Tag, e.Node.Name );
+			//MessageBox.Show( e.Node.Text + ":" + behaviour );
 		}
     }
 }

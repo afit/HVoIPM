@@ -171,7 +171,7 @@ namespace LothianProductions.VoIP.Forms {
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF( 6F, 16F );
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size( 475, 472 );
+			this.ClientSize = new System.Drawing.Size( 475, 70 );
 			this.Controls.Add( this.textBox1 );
 			this.Controls.Add( this.listBox1 );
 			this.Controls.Add( this.TreeStates );
