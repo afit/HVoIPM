@@ -92,7 +92,84 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 			if( duration != callState.Duration )
 				changes.Add( new CallStateChange( callState, "duration", callState.Duration, duration ) );
 			callState.Duration = duration;
+
+			CallType type = GetCallType( StringHelper.ExtractSubstring( page, "Call " + callState.Name + " Type:<td><font color=\"darkblue\">", "<", "Line " + lineState.Name + " Status" ) );
+			if( type != callState.Type )
+				changes.Add( new CallStateChange( callState, "type", callState.Type.ToString(), type.ToString() ) );
+			callState.Type = type;
+
+			Tone tone = GetTone( StringHelper.ExtractSubstring( page, "Call " + callState.Name + " Tone:<td><font color=\"darkblue\">", "<", "Line " + lineState.Name + " Status" ) );
+			if( tone != callState.Tone )
+				changes.Add( new CallStateChange( callState, "tone", callState.Tone.ToString(), tone.ToString() ) );
+			callState.Tone = tone;
+			
+			String encoder = StringHelper.ExtractSubstring( page, "Call " + callState.Name + " Encoder:<td><font color=\"darkblue\">", "<", "Line " + lineState.Name + " Status" );
+			if( encoder != callState.Encoder )
+				changes.Add( new CallStateChange( callState, "encoder", callState.Encoder, encoder ) );
+			callState.Encoder = encoder;
+			
+			String decoder = StringHelper.ExtractSubstring( page, "Call " + callState.Name + " Decoder:<td><font color=\"darkblue\">", "<", "Line " + lineState.Name + " Status" );
+			if( decoder != callState.Decoder )
+				changes.Add( new CallStateChange( callState, "decoder", callState.Decoder, decoder ) );
+			callState.Decoder = decoder;
+			
+			long bytesSent = ParseInt64( StringHelper.ExtractSubstring( page, "Call " + callState.Name + " BytesSent:<td><font color=\"darkblue\">", "<", "Line " + lineState.Name + " Status" ) );
+			if( bytesSent != callState.BytesSent )
+				changes.Add( new CallStateChange( callState, "bytesSent", callState.BytesSent, bytesSent ) );
+			callState.BytesSent = bytesSent;
+
+			long bytesReceived = ParseInt64( StringHelper.ExtractSubstring( page, "Call " + callState.Name + " BytesReceived:<td><font color=\"darkblue\">", "<", "Line " + lineState.Name + " Status" ) );
+			if( bytesReceived != callState.BytesReceived )
+				changes.Add( new CallStateChange( callState, "bytesReceived", callState.BytesReceived, bytesReceived ) );
+			callState.BytesReceived = bytesReceived;
+			
+			long packetLoss = ParseInt64( StringHelper.ExtractSubstring( page, "Call " + callState.Name + " PacketLoss:<td><font color=\"darkblue\">", "<", "Line " + lineState.Name + " Status" ) );
+			if( packetLoss != callState.PacketLoss )
+				changes.Add( new CallStateChange( callState, "packetLoss", callState.PacketLoss, packetLoss ) );
+			callState.PacketLoss = packetLoss;
+			
+			long packetError = ParseInt64( StringHelper.ExtractSubstring( page, "Call " + callState.Name + " PacketError:<td><font color=\"darkblue\">", "<", "Line " + lineState.Name + " Status" ) );
+			if( packetError != callState.PacketError )
+				changes.Add( new CallStateChange( callState, "packetError", callState.PacketError, packetError ) );
+			callState.PacketError = packetError;
+			
+			long jitter = ParseInt64( StringHelper.ExtractSubstring( page, "Call " + callState.Name + " Jitter:<td><font color=\"darkblue\">", "<", "Line " + lineState.Name + " Status" ).Replace( " ms", "") );
+			if( jitter != callState.Jitter )
+				changes.Add( new CallStateChange( callState, "jitter", callState.Jitter, jitter ) );
+			callState.Jitter = jitter;
+			
+			long decodeLatency = ParseInt64( StringHelper.ExtractSubstring( page, "Call " + callState.Name + " DecodeLatency:<td><font color=\"darkblue\">", "<", "Line " + lineState.Name + " Status" ).Replace( " ms", "") );
+			if( decodeLatency != callState.DecodeLatency )
+				changes.Add( new CallStateChange( callState, "decodeLatency", callState.DecodeLatency, decodeLatency ) );
+			callState.DecodeLatency = decodeLatency;
+			
+			long roundTripDelay = ParseInt64( StringHelper.ExtractSubstring( page, "Call " + callState.Name + " RoundTripDelay:<td><font color=\"darkblue\">", "<", "Line " + lineState.Name + " Status" ).Replace( " ms", "") );
+			if( roundTripDelay != callState.RoundTripDelay )
+				changes.Add( new CallStateChange( callState, "roundTripDelay", callState.RoundTripDelay, roundTripDelay ) );
+			callState.RoundTripDelay = roundTripDelay;
         }
+        
+        public static long ParseInt64( String parse ) {
+			long value = 0L;
+			
+			try {
+				value = Int64.Parse( parse );
+			} catch (FormatException) {
+				// Safe to do nothing.
+			}
+			
+			return value;
+        }
+
+		public virtual CallType GetCallType( String type ) {
+			//if( type == "" )
+				return CallType.IdleDisconnected;
+		}
+		
+		public virtual Tone GetTone( String tone ) {
+			//if( type == "" )
+				return Tone.None;
+		}
 
 		public virtual Activity GetActivity( String activity ) {
 			if( activity == "" )

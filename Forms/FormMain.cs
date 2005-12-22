@@ -132,6 +132,8 @@ namespace LothianProductions.VoIP.Forms {
 		public delegate void MonitorPassingDelegate( IList<StateChange> changes );
 
 		private void UpdateTree( IList<StateChange> changes ) {
+			// If the change has occurred on an object that doesn't exist in the tree
+			// then create it. Otherwise, update it.
 		    // Redraw tree of devices being watched.
 		    // FIXME Maybe we should only repopulate for the device
 		    // that's being updated.
@@ -158,6 +160,18 @@ namespace LothianProductions.VoIP.Forms {
 						callNode.Tag = deviceState.LineStates[ i ].CallStates[ j ];
 						callNode.Nodes.Add( "activity", "Activity = " + deviceState.LineStates[ i ].CallStates[ j ].Activity ).Tag = deviceState.LineStates[ i ].CallStates[ j ];
 						callNode.Nodes.Add( "duration", "Duration = " + deviceState.LineStates[ i ].CallStates[ j ].Duration ).Tag = deviceState.LineStates[ i ].CallStates[ j ];
+						
+						callNode.Nodes.Add( "type", "Type = " + deviceState.LineStates[ i ].CallStates[ j ].Duration ).Tag = deviceState.LineStates[ i ].CallStates[ j ];
+						callNode.Nodes.Add( "tone", "Tone = " + deviceState.LineStates[ i ].CallStates[ j ].Duration ).Tag = deviceState.LineStates[ i ].CallStates[ j ];
+						callNode.Nodes.Add( "encoder", "Encoder = " + deviceState.LineStates[ i ].CallStates[ j ].Duration ).Tag = deviceState.LineStates[ i ].CallStates[ j ];
+						callNode.Nodes.Add( "decoder", "Decoder = " + deviceState.LineStates[ i ].CallStates[ j ].Duration ).Tag = deviceState.LineStates[ i ].CallStates[ j ];
+						callNode.Nodes.Add( "bytesSent", "BytesSent = " + deviceState.LineStates[ i ].CallStates[ j ].Duration ).Tag = deviceState.LineStates[ i ].CallStates[ j ];
+						callNode.Nodes.Add( "bytesReceived", "BytesReceived = " + deviceState.LineStates[ i ].CallStates[ j ].Duration ).Tag = deviceState.LineStates[ i ].CallStates[ j ];
+						callNode.Nodes.Add( "packetLoss", "PacketLoss = " + deviceState.LineStates[ i ].CallStates[ j ].Duration ).Tag = deviceState.LineStates[ i ].CallStates[ j ];
+						callNode.Nodes.Add( "packetError", "PacketError = " + deviceState.LineStates[ i ].CallStates[ j ].Duration ).Tag = deviceState.LineStates[ i ].CallStates[ j ];
+						callNode.Nodes.Add( "jitter", "Jitter = " + deviceState.LineStates[ i ].CallStates[ j ].Duration ).Tag = deviceState.LineStates[ i ].CallStates[ j ];
+						callNode.Nodes.Add( "decodeLatency", "DecodeLatency = " + deviceState.LineStates[ i ].CallStates[ j ].Duration ).Tag = deviceState.LineStates[ i ].CallStates[ j ];
+						callNode.Nodes.Add( "roundTripDelay", "RoundTripDelay = " + deviceState.LineStates[ i ].CallStates[ j ].Duration ).Tag = deviceState.LineStates[ i ].CallStates[ j ];
 					}
 				}
 			}

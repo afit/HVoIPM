@@ -61,6 +61,13 @@ namespace LothianProductions.VoIP.State {
 	}
 
 	public class CallStateChange : StateChange {
+		public CallStateChange( CallState callState, String property, long changedFrom, long changedTo ) {
+			mCallState = callState;
+			mProperty = property;
+			mChangedFrom = changedFrom.ToString();
+			mChangedTo = changedTo.ToString();			
+		}
+	
 		public CallStateChange( CallState callState, String property, String changedFrom, String changedTo ) {
 			mCallState = callState;
 			mProperty = property;

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Reflection;
 
+using LothianProductions.Data;
 using LothianProductions.Util.Settings;
 using LothianProductions.VoIP.Monitor;
 using LothianProductions.VoIP.Monitor.Impl;
@@ -86,6 +87,57 @@ namespace LothianProductions.VoIP {
 				StateUpdate( monitor, new StateUpdateEventArgs( changes ) );
 				
 			// Clever logging stuff here.
+		}
+		
+		// Helper functions for linking states.
+		public IDeviceStateMonitor GetMonitor( DeviceState deviceState ) {
+			foreach( IDeviceStateMonitor monitor in DeviceStateMonitors )
+				if( monitor.GetDeviceState() == deviceState )
+					return monitor;
+			throw new DomainObjectNotFoundException( "Couldn't find a monitor owning the specified device." );
+		}
+
+		public IDeviceStateMonitor GetMonitor( LineState lineState ) {
+			foreach( IDeviceStateMonitor monitor in DeviceStateMonitors )
+				foreach( LineState line in monitor.GetDeviceState().LineStates )
+					if( line == lineState )
+						return monitor;
+			throw new DomainObjectNotFoundException( "Couldn't find a monitor owning the specified line." );
+		}
+
+		public IDeviceStateMonitor GetMonitor( CallState callState ) {
+			foreach( IDeviceStateMonitor monitor in DeviceStateMonitors )
+				foreach( LineState line in monitor.GetDeviceState().LineStates )
+					foreach( CallState call in line.CallStates )
+						if( call == callState )
+							return monitor;
+			throw new DomainObjectNotFoundException( "Couldn't find a monitor owning the specified call." );
+		}
+		
+		public DeviceState GetDeviceState( LineState lineState ) {
+			foreach( IDeviceStateMonitor monitor in DeviceStateMonitors )
+				foreach( LineState line in monitor.GetDeviceState().LineStates )
+					if( line == lineState )
+						return monitor.GetDeviceState();
+			throw new DomainObjectNotFoundException( "Couldn't find a device owning the specified line." );
+		}
+		
+		public DeviceState GetDeviceState( CallState callState ) {
+			foreach( IDeviceStateMonitor monitor in DeviceStateMonitors )
+				foreach( LineState line in monitor.GetDeviceState().LineStates )
+					foreach( CallState call in line.CallStates )
+						if( call == callState )
+							return monitor.GetDeviceState();
+			throw new DomainObjectNotFoundException( "Couldn't find a device owning the specified call." );
+		}
+		
+		public LineState GetLineState( CallState callState ) {
+			foreach( IDeviceStateMonitor monitor in DeviceStateMonitors )
+				foreach( LineState line in monitor.GetDeviceState().LineStates )
+					foreach( CallState call in line.CallStates )
+						if( call == callState )
+							return line;
+			throw new DomainObjectNotFoundException( "Couldn't find a line owning the specified call." );
 		}
     }
 }
