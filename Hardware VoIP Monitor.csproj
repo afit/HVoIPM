@@ -94,10 +94,17 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="HVoIPM-64x.bmp" />
+    <None Include="Resources\HVoIPM-64x.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="State\NodeTags\" />
+    <None Include="Resources\HVoIPM-flash.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\HVoIPM.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Tapi2Lib.dll" />
+    <Content Include="Tapi2Lib.pdb" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

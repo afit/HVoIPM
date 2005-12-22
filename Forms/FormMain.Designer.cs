@@ -28,17 +28,15 @@ namespace LothianProductions.VoIP.Forms {
 			this.NotifyIcon = new System.Windows.Forms.NotifyIcon( this.components );
 			this.NotifyIconContextMenuStrip = new System.Windows.Forms.ContextMenuStrip( this.components );
 			this.toolStripQuit = new System.Windows.Forms.ToolStripMenuItem();
-			this.pictureBox1 = new System.Windows.Forms.PictureBox();
 			this.label1 = new System.Windows.Forms.Label();
 			this.LabelLinks = new System.Windows.Forms.LinkLabel();
 			this.ButtonQuit = new System.Windows.Forms.Button();
 			this.ButtonReload = new System.Windows.Forms.Button();
 			this.label3 = new System.Windows.Forms.Label();
-			this.checkBox1 = new System.Windows.Forms.CheckBox();
-			this.checkBox2 = new System.Windows.Forms.CheckBox();
 			this.TreeStates = new System.Windows.Forms.TreeView();
-			this.listBox1 = new System.Windows.Forms.ListBox();
-			this.textBox1 = new System.Windows.Forms.TextBox();
+			this.TimerFlash = new System.Windows.Forms.Timer( this.components );
+			this.pictureBox1 = new System.Windows.Forms.PictureBox();
+			this.TextboxBehaviour = new System.Windows.Forms.TextBox();
 			this.NotifyIconContextMenuStrip.SuspendLayout();
 			( (System.ComponentModel.ISupportInitialize) ( this.pictureBox1 ) ).BeginInit();
 			this.SuspendLayout();
@@ -46,7 +44,7 @@ namespace LothianProductions.VoIP.Forms {
 			// NotifyIcon
 			// 
 			this.NotifyIcon.ContextMenuStrip = this.NotifyIconContextMenuStrip;
-			this.NotifyIcon.Icon = ( (System.Drawing.Icon) ( resources.GetObject( "NotifyIcon.Icon" ) ) );
+			this.NotifyIcon.Icon = global::LothianProductions.VoIP.Properties.Resources.HVoIPM;
 			this.NotifyIcon.Text = "Hardware VoIP Monitor";
 			this.NotifyIcon.Visible = true;
 			this.NotifyIcon.MouseClick += new System.Windows.Forms.MouseEventHandler( this.NotifyIcon_MouseClick );
@@ -64,15 +62,6 @@ namespace LothianProductions.VoIP.Forms {
 			this.toolStripQuit.Size = new System.Drawing.Size( 94, 22 );
 			this.toolStripQuit.Text = "&Quit";
 			this.toolStripQuit.Click += new System.EventHandler( this.toolStripQuit_Click );
-			// 
-			// pictureBox1
-			// 
-			this.pictureBox1.Image = global::LothianProductions.VoIP.Properties.Resources.HVoIPM_64x;
-			this.pictureBox1.Location = new System.Drawing.Point( 12, 12 );
-			this.pictureBox1.Name = "pictureBox1";
-			this.pictureBox1.Size = new System.Drawing.Size( 48, 48 );
-			this.pictureBox1.TabIndex = 1;
-			this.pictureBox1.TabStop = false;
 			// 
 			// label1
 			// 
@@ -96,7 +85,7 @@ namespace LothianProductions.VoIP.Forms {
 			// 
 			// ButtonQuit
 			// 
-			this.ButtonQuit.Location = new System.Drawing.Point( 283, 79 );
+			this.ButtonQuit.Location = new System.Drawing.Point( 479, 9 );
 			this.ButtonQuit.Name = "ButtonQuit";
 			this.ButtonQuit.Size = new System.Drawing.Size( 82, 27 );
 			this.ButtonQuit.TabIndex = 8;
@@ -106,9 +95,9 @@ namespace LothianProductions.VoIP.Forms {
 			// 
 			// ButtonReload
 			// 
-			this.ButtonReload.Location = new System.Drawing.Point( 104, 79 );
+			this.ButtonReload.Location = new System.Drawing.Point( 479, 42 );
 			this.ButtonReload.Name = "ButtonReload";
-			this.ButtonReload.Size = new System.Drawing.Size( 78, 27 );
+			this.ButtonReload.Size = new System.Drawing.Size( 82, 27 );
 			this.ButtonReload.TabIndex = 10;
 			this.ButtonReload.Text = "&Reload";
 			this.ButtonReload.UseVisualStyleBackColor = true;
@@ -117,66 +106,50 @@ namespace LothianProductions.VoIP.Forms {
 			// label3
 			// 
 			this.label3.AutoSize = true;
-			this.label3.Location = new System.Drawing.Point( 9, 120 );
+			this.label3.Location = new System.Drawing.Point( 9, 63 );
 			this.label3.Name = "label3";
 			this.label3.Size = new System.Drawing.Size( 132, 16 );
 			this.label3.TabIndex = 11;
 			this.label3.Text = "Full device monitor data:";
 			// 
-			// checkBox1
-			// 
-			this.checkBox1.AutoSize = true;
-			this.checkBox1.Location = new System.Drawing.Point( 312, 140 );
-			this.checkBox1.Name = "checkBox1";
-			this.checkBox1.Size = new System.Drawing.Size( 89, 20 );
-			this.checkBox1.TabIndex = 12;
-			this.checkBox1.Text = "Log changes";
-			this.checkBox1.UseVisualStyleBackColor = true;
-			// 
-			// checkBox2
-			// 
-			this.checkBox2.AutoSize = true;
-			this.checkBox2.Location = new System.Drawing.Point( 312, 166 );
-			this.checkBox2.Name = "checkBox2";
-			this.checkBox2.Size = new System.Drawing.Size( 81, 20 );
-			this.checkBox2.TabIndex = 13;
-			this.checkBox2.Text = "checkBox2";
-			this.checkBox2.UseVisualStyleBackColor = true;
-			// 
 			// TreeStates
 			// 
-			this.TreeStates.Location = new System.Drawing.Point( 12, 139 );
+			this.TreeStates.Location = new System.Drawing.Point( 12, 82 );
 			this.TreeStates.Name = "TreeStates";
-			this.TreeStates.Size = new System.Drawing.Size( 294, 321 );
+			this.TreeStates.Size = new System.Drawing.Size( 294, 317 );
 			this.TreeStates.TabIndex = 14;
 			this.TreeStates.AfterSelect += new System.Windows.Forms.TreeViewEventHandler( this.TreeStates_AfterSelect );
 			// 
-			// listBox1
+			// TimerFlash
 			// 
-			this.listBox1.FormattingEnabled = true;
-			this.listBox1.ItemHeight = 16;
-			this.listBox1.Location = new System.Drawing.Point( 315, 250 );
-			this.listBox1.Name = "listBox1";
-			this.listBox1.Size = new System.Drawing.Size( 147, 84 );
-			this.listBox1.TabIndex = 15;
+			this.TimerFlash.Interval = 1000;
+			this.TimerFlash.Tick += new System.EventHandler( this.TimerFlash_Tick );
 			// 
-			// textBox1
+			// pictureBox1
 			// 
-			this.textBox1.Location = new System.Drawing.Point( 318, 217 );
-			this.textBox1.Name = "textBox1";
-			this.textBox1.Size = new System.Drawing.Size( 143, 20 );
-			this.textBox1.TabIndex = 16;
+			this.pictureBox1.Image = ( (System.Drawing.Image) ( resources.GetObject( "pictureBox1.Image" ) ) );
+			this.pictureBox1.Location = new System.Drawing.Point( 12, 12 );
+			this.pictureBox1.Name = "pictureBox1";
+			this.pictureBox1.Size = new System.Drawing.Size( 48, 48 );
+			this.pictureBox1.TabIndex = 1;
+			this.pictureBox1.TabStop = false;
+			// 
+			// TextboxBehaviour
+			// 
+			this.TextboxBehaviour.Location = new System.Drawing.Point( 312, 82 );
+			this.TextboxBehaviour.Multiline = true;
+			this.TextboxBehaviour.Name = "TextboxBehaviour";
+			this.TextboxBehaviour.ReadOnly = true;
+			this.TextboxBehaviour.Size = new System.Drawing.Size( 249, 317 );
+			this.TextboxBehaviour.TabIndex = 15;
 			// 
 			// FormMain
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF( 6F, 16F );
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size( 475, 70 );
-			this.Controls.Add( this.textBox1 );
-			this.Controls.Add( this.listBox1 );
+			this.ClientSize = new System.Drawing.Size( 573, 411 );
+			this.Controls.Add( this.TextboxBehaviour );
 			this.Controls.Add( this.TreeStates );
-			this.Controls.Add( this.checkBox2 );
-			this.Controls.Add( this.checkBox1 );
 			this.Controls.Add( this.label3 );
 			this.Controls.Add( this.ButtonReload );
 			this.Controls.Add( this.ButtonQuit );
@@ -189,6 +162,7 @@ namespace LothianProductions.VoIP.Forms {
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "FormMain";
+			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Hardware VoIP Monitor";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler( this.FormMain_FormClosing );
 			this.NotifyIconContextMenuStrip.ResumeLayout( false );
@@ -209,11 +183,9 @@ namespace LothianProductions.VoIP.Forms {
 		private System.Windows.Forms.Button ButtonQuit;
 		private System.Windows.Forms.Button ButtonReload;
 		private System.Windows.Forms.Label label3;
-		private System.Windows.Forms.CheckBox checkBox1;
-		private System.Windows.Forms.CheckBox checkBox2;
 		private System.Windows.Forms.TreeView TreeStates;
-		private System.Windows.Forms.ListBox listBox1;
-		private System.Windows.Forms.TextBox textBox1;
+		private System.Windows.Forms.Timer TimerFlash;
+		private System.Windows.Forms.TextBox TextboxBehaviour;
     }
 }
 

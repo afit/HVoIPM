@@ -104,16 +104,16 @@ namespace LothianProductions.VoIP.Monitor.Impl
             CCall call = e.call;
             m_ActiveCall = call;
             m_ActiveCall.GetCallInfo();
-            mDeviceState.LineStates[0].CallStates[0].CallActivity = CallActivity.InboundRinging;
+            mDeviceState.LineStates[0].CallStates[0].Activity = Activity.InboundRinging;
         }
 
         public void TapiMonitorLineCallInfoEventHandler(Object sender, CTapi.LineCallInfoEventArgs e) {
             if (m_ActiveCall != null) {
                 if (((uint)e.LineCallInfoState & (uint)CTapi.LineCallInfoState.LINECALLINFOSTATE_CALLERID) > 1) {
                     m_ActiveCall.GetCallInfo();
-                    if (mDeviceState.LineStates[0].CallStates[0].CallActivity == CallActivity.InboundRinging) {
+                    if (mDeviceState.LineStates[0].CallStates[0].Activity == Activity.InboundRinging) {
                         mDeviceState.LineStates[0].LastCallerNumber = m_ActiveCall.CallerID.ToString();
-                    } else if (mDeviceState.LineStates[0].CallStates[0].CallActivity == CallActivity.InboundRinging) {
+                    } else if (mDeviceState.LineStates[0].CallStates[0].Activity == Activity.InboundRinging) {
                         mDeviceState.LineStates[0].LastCalledNumber = m_ActiveCall.CalledID.ToString();
                     }
                 }
@@ -124,40 +124,40 @@ namespace LothianProductions.VoIP.Monitor.Impl
 
             switch (e.CallState) {
                 case CTapi.LineCallState.LINECALLSTATE_CONNECTED:
-                    CallActivity activity = mDeviceState.LineStates[0].CallStates[0].CallActivity;
-                    if (activity == CallActivity.InboundRinging) {
-                        activity = CallActivity.Inbound;
-                    } else if ((activity == CallActivity.Dialling) || (activity == CallActivity.OutboundRinging)) {
-                        activity = CallActivity.Outbound;
+                    Activity activity = mDeviceState.LineStates[0].CallStates[0].Activity;
+                    if (activity == Activity.InboundRinging) {
+                        activity = Activity.Inbound;
+                    } else if ((activity == Activity.Dialling) || (activity == Activity.OutboundRinging)) {
+                        activity = Activity.Outbound;
                     }
                     mDeviceState.LineStates[0].CallStates[0].Duration = "0";
                     break;
                 case CTapi.LineCallState.LINECALLSTATE_DISCONNECTED:
-                    mDeviceState.LineStates[0].CallStates[0].CallActivity = CallActivity.IdleDisconnected;
+                    mDeviceState.LineStates[0].CallStates[0].Activity = Activity.IdleDisconnected;
                     break;
                 case CTapi.LineCallState.LINECALLSTATE_ONHOLD:
-                    mDeviceState.LineStates[0].CallStates[0].CallActivity = CallActivity.Held;
+                    mDeviceState.LineStates[0].CallStates[0].Activity = Activity.Held;
                     break;
                 case CTapi.LineCallState.LINECALLSTATE_IDLE:
-                    mDeviceState.LineStates[0].CallStates[0].CallActivity = CallActivity.IdleDisconnected;
+                    mDeviceState.LineStates[0].CallStates[0].Activity = Activity.IdleDisconnected;
                     break;
                 case CTapi.LineCallState.LINECALLSTATE_PROCEEDING:
                     break;
                 case CTapi.LineCallState.LINECALLSTATE_OFFERING:
                     break;
                 case CTapi.LineCallState.LINECALLSTATE_ACCEPTED:
-                    if (mDeviceState.LineStates[0].CallStates[0].CallActivity != CallActivity.InboundRinging) {
-                        mDeviceState.LineStates[0].CallStates[0].CallActivity = CallActivity.InboundRinging;
+                    if (mDeviceState.LineStates[0].CallStates[0].Activity != Activity.InboundRinging) {
+                        mDeviceState.LineStates[0].CallStates[0].Activity = Activity.InboundRinging;
                     }
                     break;
                 case CTapi.LineCallState.LINECALLSTATE_DIALING:
-                    mDeviceState.LineStates[0].CallStates[0].CallActivity = CallActivity.Dialling;
+                    mDeviceState.LineStates[0].CallStates[0].Activity = Activity.Dialling;
                     break;
                 case CTapi.LineCallState.LINECALLSTATE_RINGBACK:
-                    mDeviceState.LineStates[0].CallStates[0].CallActivity = CallActivity.OutboundRinging;
+                    mDeviceState.LineStates[0].CallStates[0].Activity = Activity.OutboundRinging;
                     break;
                 case CTapi.LineCallState.LINECALLSTATE_BUSY:
-                    mDeviceState.LineStates[0].CallStates[0].CallActivity = CallActivity.Busy;
+                    mDeviceState.LineStates[0].CallStates[0].Activity = Activity.Busy;
                     break;
                 case CTapi.LineCallState.LINECALLSTATE_SPECIALINFO:
                     break;

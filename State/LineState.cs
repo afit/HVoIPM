@@ -34,6 +34,12 @@ namespace LothianProductions.VoIP.State {
             set{ mLastCallerNumber = value; }
         }
 
+		protected bool mMessageWaiting;
+        public bool MessageWaiting {
+            get{ return mMessageWaiting; }
+            set{ mMessageWaiting = value; }
+        }
+
 		protected CallState[] mCallStates;
 		public CallState[] CallStates {
 			get{ return mCallStates; }

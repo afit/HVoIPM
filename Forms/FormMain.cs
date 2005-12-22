@@ -9,6 +9,7 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
 
+using LothianProductions.Util;
 using LothianProductions.Util.Http;
 using LothianProductions.Util.Settings;
 using LothianProductions.VoIP;
@@ -68,16 +69,17 @@ namespace LothianProductions.VoIP.Forms {
 				behaviour.Attributes[ "bubbleText" ].Value,
 				Boolean.Parse( behaviour.Attributes[ "systemTrayWarning" ].Value ),
 				Boolean.Parse( behaviour.Attributes[ "showApplication" ].Value ),
-				null //behaviour.Attributes[ "showCriteria" ].Value.Split( ',' )
+				( behaviour.Attributes[ "showCriteria" ] == null ? "" : behaviour.Attributes[ "showCriteria" ].Value ).Split( ',' ),
+				Boolean.Parse( behaviour.Attributes[ "log" ].Value )
 			);
 		}
 
+		protected IList<String> mWarnings = new List<String>();
 		public void StateManagerUpdated( IDeviceStateMonitor monitor, StateUpdateEventArgs e ) {
 			
 			// Iterate through state changes and deal with them as appropriate:
 			StringBuilder bubbleTextBuilder = new StringBuilder();
 			bool showApplication = false;
-			bool systemTrayWarning = false;
 			
 			foreach( StateChange change in e.StateChanges ) {
 				StateChangeBehaviour behaviour = LookupBehaviour( change.Underlying, change.Property );
@@ -91,16 +93,27 @@ namespace LothianProductions.VoIP.Forms {
 				}
 				
 				if( behaviour.SystemTrayWarning )
-					systemTrayWarning = true;
+					// Check to see if warning criteria is met.
+					if( Array.IndexOf( behaviour.WarningCriteria, change.ChangedTo ) > -1 ) {
+						// Activate warning state, if it isn't already:
+						if( ! mWarnings.Contains( change.Underlying.GetHashCode() + ":" + change.Underlying.GetType().Name + ":" + change.Property ) )
+							mWarnings.Add( change.Underlying.GetHashCode() + ":" + change.Underlying.GetType().Name + ":" + change.Property );
+					} else {
+						mWarnings.Remove( change.Underlying.GetHashCode() + ":" + change.Underlying.GetType().Name + ":" + change.Property );
+					}
 				
-				if( behaviour.ShowApplication )
+				if( behaviour.ShowApplication && Array.IndexOf( behaviour.WarningCriteria, change.ChangedTo ) > -1 )
 					showApplication = true;
 			}
 
 			if( showApplication )
 				this.Show();
 
-			// FIXME implement this: if( systemTrayWarning )
+			// Enable timer if there are warnings.
+			TimerFlash.Enabled = mWarnings.Count > 0;
+			
+			if( ! TimerFlash.Enabled )
+				NotifyIcon.Icon = global::LothianProductions.VoIP.Properties.Resources.HVoIPM;
 			
 
 			if( bubbleTextBuilder.Length > 0 )
@@ -138,11 +151,12 @@ namespace LothianProductions.VoIP.Forms {
 					lineNode.Nodes.Add( "lastCalledNumber", "Last called number = " + deviceState.LineStates[ i ].LastCalledNumber ).Tag = deviceState.LineStates[ i ];
 					lineNode.Nodes.Add( "lastCallerNumber", "Last caller number = " + deviceState.LineStates[ i ].LastCallerNumber ).Tag = deviceState.LineStates[ i ];
 					lineNode.Nodes.Add( "registrationState", "Registration state = " + deviceState.LineStates[ i ].RegistrationState ).Tag = deviceState.LineStates[ i ];
+					lineNode.Nodes.Add( "messageWaiting", "Message waiting = " + deviceState.LineStates[ i ].RegistrationState ).Tag = deviceState.LineStates[ i ];
 					
 					for( int j = 0; j < deviceState.LineStates[ i ].CallStates.Length; j++ ) {
 						TreeNode callNode = lineNode.Nodes.Add( "Call " + deviceState.LineStates[ i ].CallStates[ j ].Name );
 						callNode.Tag = deviceState.LineStates[ i ].CallStates[ j ];
-						callNode.Nodes.Add( "callActivity", "Call activity = " + deviceState.LineStates[ i ].CallStates[ j ].CallActivity ).Tag = deviceState.LineStates[ i ].CallStates[ j ];
+						callNode.Nodes.Add( "activity", "Activity = " + deviceState.LineStates[ i ].CallStates[ j ].Activity ).Tag = deviceState.LineStates[ i ].CallStates[ j ];
 						callNode.Nodes.Add( "duration", "Duration = " + deviceState.LineStates[ i ].CallStates[ j ].Duration ).Tag = deviceState.LineStates[ i ].CallStates[ j ];
 					}
 				}
@@ -187,6 +201,19 @@ namespace LothianProductions.VoIP.Forms {
 		private void TreeStates_AfterSelect( object sender, TreeViewEventArgs e ) {
 			//StateChangeBehaviour behaviour = LookupBehaviour( e.Node.Tag, e.Node.Name );
 			//MessageBox.Show( e.Node.Text + ":" + behaviour );
+		}
+
+		protected bool mFlashState = false;
+		private void TimerFlash_Tick( object sender, EventArgs e ) {
+			// FIXME why can't we compare icons or their handles?
+			// if( NotifyIcon.Icon.Handle == global::LothianProductions.VoIP.Properties.Resources.HVoIPM.Handle ) 
+			
+			if( mFlashState )
+				NotifyIcon.Icon = global::LothianProductions.VoIP.Properties.Resources.HVoIPM_flash;
+			else
+				NotifyIcon.Icon = global::LothianProductions.VoIP.Properties.Resources.HVoIPM;
+				
+			mFlashState = ! mFlashState;									
 		}
     }
 }

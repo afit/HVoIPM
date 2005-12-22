@@ -4,7 +4,7 @@ using System.Text;
 
 namespace LothianProductions.VoIP.State {
 
-    public enum CallActivity {
+    public enum Activity {
         IdleDisconnected,
         Dialling,
         InboundRinging,
@@ -14,6 +14,19 @@ namespace LothianProductions.VoIP.State {
         Busy,
         Held,
         Other
+    }
+
+    public enum CallType {
+        IdleDisconnected,
+        Outbound,
+        Inbound
+    }
+    
+    public enum Tone {
+		None,
+		Dialling,
+		Ringing,
+		Busy
     }
 
     public class CallState {
@@ -28,10 +41,22 @@ namespace LothianProductions.VoIP.State {
             set{ mName = value; }
         }
     
-        protected CallActivity mCallActivity;
-        public CallActivity CallActivity {
-            get{ return mCallActivity; }
-            set{ mCallActivity = value; }
+        protected Activity mActivity;
+        public Activity Activity {
+            get{ return mActivity; }
+            set{ mActivity = value; }
+        }
+
+        protected CallType mType;
+        public CallType Type {
+            get{ return mType; }
+            set{ mType = value; }
+        }
+
+        protected Tone mTone;
+        public Tone Tone {
+            get{ return mTone; }
+            set{ mTone = value; }
         }
 
         protected String mDuration;
@@ -39,5 +64,59 @@ namespace LothianProductions.VoIP.State {
             get{ return mDuration; }
             set{ mDuration = value; }
         }
+        
+        protected String mEncoder;
+		public String Encoder {
+            get{ return mEncoder; }
+            set{ mEncoder = value; }
+        }
+
+        protected String mDecoder;
+		public String Decoder {
+            get{ return mDecoder; }
+            set{ mDecoder = value; }
+        }
+
+		protected long mBytesSent;
+		public long BytesSent {
+            get{ return mBytesSent; }
+            set{ mBytesSent = value; }
+        }
+
+		protected long mBytesReceived;
+		public long BytesReceived {
+            get{ return mBytesReceived; }
+            set{ mBytesReceived = value; }
+        }
+
+        protected long mPacketLoss;
+		public long PacketLoss {
+            get{ return mPacketLoss; }
+            set{ mPacketLoss = value; }
+        }
+
+        protected long mPacketError;
+		public long PacketError {
+            get{ return mPacketError; }
+            set{ mPacketError = value; }
+        }
+        
+        protected long mJitter;
+		public long Jitter {
+            get{ return mJitter; }
+            set{ mJitter = value; }
+        }
+        
+        protected long mDecodeLatency;
+		public long DecodeLatency {
+            get{ return mDecodeLatency; }
+            set{ mDecodeLatency = value; }
+        }
+        
+        protected long mRoundTripDelay;
+		public long RoundTripDelay {
+            get{ return mRoundTripDelay; }
+            set{ mRoundTripDelay = value; }
+        }      
     }
 }

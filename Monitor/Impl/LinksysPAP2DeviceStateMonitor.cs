@@ -71,6 +71,11 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 				changes.Add( new LineStateChange( lineState, "registrationState", lineState.RegistrationState.ToString(), registrationState.ToString() ) );
 			lineState.RegistrationState = registrationState;
 
+			bool messageWaiting = StringHelper.ExtractSubstring( page, "Message Waiting:<td><font color=\"darkblue\">", "<", "Line " + lineState.Name + " Status" ) == "No";
+			if( messageWaiting != lineState.MessageWaiting )
+				changes.Add( new LineStateChange( lineState, "messageWaiting", lineState.MessageWaiting.ToString(), messageWaiting.ToString() ) );
+			lineState.MessageWaiting = messageWaiting;
+
 			// Analyse both calls for the line. (We know this device only
 			// supports two calls per line.)
 			AnalyseCallState( page, lineState.CallStates[ 0 ], lineState, changes );
@@ -78,10 +83,10 @@ namespace LothianProductions.VoIP.Monitor.Impl {
         }
         
         protected virtual void AnalyseCallState( String page, CallState callState, LineState lineState, IList<StateChange> changes ) {
-			CallActivity callActivity = GetCallActivity( StringHelper.ExtractSubstring( page, "Call " + callState.Name + " Type:<td><font color=\"darkblue\">", "<", "Line " + lineState.Name + " Status" ) );
-			if( callActivity != callState.CallActivity )
-				changes.Add( new CallStateChange( callState, "callActivity", callState.CallActivity.ToString(), callActivity.ToString() ) );
-			callState.CallActivity = callActivity;
+			Activity callActivity = GetActivity( StringHelper.ExtractSubstring( page, "Call " + callState.Name + " Type:<td><font color=\"darkblue\">", "<", "Line " + lineState.Name + " Status" ) );
+			if( callActivity != callState.Activity )
+				changes.Add( new CallStateChange( callState, "activity", callState.Activity.ToString(), callActivity.ToString() ) );
+			callState.Activity = callActivity;
 			
 			String duration = StringHelper.ExtractSubstring( page, "Call " + callState.Name + " Duration:<td><font color=\"darkblue\">", "<", "Line " + lineState.Name + " Status" );
 			if( duration != callState.Duration )
@@ -89,16 +94,16 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 			callState.Duration = duration;
         }
 
-		public virtual CallActivity GetCallActivity( String activity ) {
+		public virtual Activity GetActivity( String activity ) {
 			if( activity == "" )
-				return CallActivity.IdleDisconnected;
+				return Activity.IdleDisconnected;
 			else if( activity == "Inbound" )
-				return CallActivity.Inbound;
+				return Activity.Inbound;
 			else if( activity == "Outbound" )
-				return CallActivity.Outbound;
+				return Activity.Outbound;
 			else if( activity == "Held" )
-				return CallActivity.Held;
-			return CallActivity.Other;
+				return Activity.Held;
+			return Activity.Other;
 		}
         
         public virtual RegistrationState GetRegistrationState( String state ) {
