@@ -58,17 +58,17 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 
 			String lastCalledNumber = StringHelper.ExtractSubstring( page, "Last Called Number:<td><font color=\"darkblue\">", "<", "Line " + lineState.Name + " Status" );
 			if( lastCalledNumber != lineState.LastCalledNumber )
-				changes.Add( new LineStateChange( lineState, "LastCalledNumber", lineState.LastCalledNumber, lastCalledNumber ) );
+				changes.Add( new LineStateChange( lineState, "lastCalledNumber", lineState.LastCalledNumber, lastCalledNumber ) );
 			lineState.LastCalledNumber = lastCalledNumber;
 				
 			String lastCallerNumber = StringHelper.ExtractSubstring( page, "Last Caller Number:<td><font color=\"darkblue\">", "<", "Line " + lineState.Name + " Status" );
 			if( lastCallerNumber != lineState.LastCallerNumber )
-				changes.Add( new LineStateChange( lineState, "LastCallerNumber", lineState.LastCallerNumber, lastCallerNumber ) );
+				changes.Add( new LineStateChange( lineState, "lastCallerNumber", lineState.LastCallerNumber, lastCallerNumber ) );
 			lineState.LastCallerNumber = lastCallerNumber;
 
 			RegistrationState registrationState = GetRegistrationState( StringHelper.ExtractSubstring( page, "Registration State:<td><font color=\"darkblue\">", "<", "Line " + lineState.Name + " Status" ) );
 			if( registrationState != lineState.RegistrationState )
-				changes.Add( new LineStateChange( lineState, "RegistrationState", lineState.RegistrationState.ToString(), registrationState.ToString() ) );
+				changes.Add( new LineStateChange( lineState, "registrationState", lineState.RegistrationState.ToString(), registrationState.ToString() ) );
 			lineState.RegistrationState = registrationState;
 
 			// Analyse both calls for the line. (We know this device only

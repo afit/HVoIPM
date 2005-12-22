@@ -52,10 +52,10 @@ namespace LothianProductions.VoIP {
 					
 				mDeviceStateMonitors.Clear();
 
-				NameValueCollection config = (NameValueCollection) ConfigurationManager.GetSection( "deviceStateMonitors" );
+				NameValueCollection config = (NameValueCollection) ConfigurationManager.GetSection( "hvoipm/deviceStateMonitors" );
 
 				if( config == null )
-					throw new MissingAppSettingsException( "The section \"deviceStateMonitors\" was not present in the application configuration." );
+					throw new MissingAppSettingsException( "The section \"hvoipm/deviceStateMonitors\" was not present in the application configuration." );
 
 				foreach( String key in config.Keys ) {				
 					Type type = Type.GetType( config[ key ], true );

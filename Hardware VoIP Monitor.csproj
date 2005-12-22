@@ -80,7 +80,6 @@
     </Compile>
     <Compile Include="StateManager.cs" />
     <Compile Include="State\StateChange.cs" />
-    <Compile Include="State\NodeTags\INodeTag.cs" />
     <Compile Include="Behaviour\StateBehaviour.cs" />
   </ItemGroup>
   <ItemGroup>

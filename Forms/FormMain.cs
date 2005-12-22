@@ -1,13 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using System.Xml;
 
 using LothianProductions.Util.Http;
+using LothianProductions.Util.Settings;
 using LothianProductions.VoIP;
 using LothianProductions.VoIP.Behaviour;
 using LothianProductions.VoIP.Monitor;
@@ -45,9 +48,28 @@ namespace LothianProductions.VoIP.Forms {
 			Dictionary<String, StateChangeBehaviour> propertyBehaviours = mStateProperties[ state ];
 			
 			if( ! propertyBehaviours.ContainsKey( property ) )
-				propertyBehaviours.Add( property, new StateChangeBehaviour() );
+				propertyBehaviours.Add( property, GetBehaviourFromXml( state.GetType().Name, property ) );
 				
 			return propertyBehaviours[ property ];			
+		}
+		
+		protected StateChangeBehaviour GetBehaviourFromXml( String stateType, String property ) {
+			XmlNode node = (XmlNode) ConfigurationManager.GetSection( "hvoipm/behaviours" );
+			
+			if( node == null )
+				throw new ConfigurationErrorsException( "Could not find behaviours section in application configuration." );
+
+			XmlNode behaviour = node.SelectSingleNode( "behaviour[@stateType='" + stateType + "' and @property='" + property + "']" );
+			if( behaviour == null )
+				throw new ConfigurationErrorsException( "Could not find behaviour description for " + stateType + "." + property + "\" in application configuration." );
+
+			return new StateChangeBehaviour(
+				Boolean.Parse( behaviour.Attributes[ "showBubble" ].Value ),
+				behaviour.Attributes[ "bubbleText" ].Value,
+				Boolean.Parse( behaviour.Attributes[ "systemTrayWarning" ].Value ),
+				Boolean.Parse( behaviour.Attributes[ "showApplication" ].Value ),
+				null //behaviour.Attributes[ "showCriteria" ].Value.Split( ',' )
+			);
 		}
 
 		public void StateManagerUpdated( IDeviceStateMonitor monitor, StateUpdateEventArgs e ) {

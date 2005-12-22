@@ -45,19 +45,5 @@ namespace LothianProductions.VoIP.State {
             get{ return mRegistrationState; }
             set{ mRegistrationState = value; }
         }
-
-		//public override string ToString() {
-		//    StringBuilder builder = new StringBuilder();
-		//    builder.Append( " - Last called number: " ).Append( LastCalledNumber ).AppendLine();
-		//    builder.Append( " - Last caller number: " ).Append( LastCallerNumber ).AppendLine();
-		//    builder.Append( " - Registration state: " ).Append( RegistrationState ).AppendLine();
-
-		//    for( int i = 0; i < CallStates.Length; i++ ) {
-		//        builder.Append( " - Call #" ).Append( i ).Append( ':' ).AppendLine();
-		//        builder.Append( CallStates[ i ].ToString() );
-		//    }
-			
-		//    return builder.ToString();
-		//}
     }
 }
