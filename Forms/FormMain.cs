@@ -86,12 +86,16 @@ namespace LothianProductions.VoIP.Forms {
 				this.Show();
 
 			// Enable timer if there are warnings.
-			TimerFlash.Enabled = mWarnings.Count > 0;
+			if( mWarnings.Count > 0 )
+				TimerFlash.Start();
+			else if ( TimerFlash.Enabled )
+				TimerFlash.Stop();
+			
+			Console.WriteLine( TimerFlash.Enabled + "!" );
 			
 			if( ! TimerFlash.Enabled )
-				NotifyIcon.Icon = global::LothianProductions.VoIP.Properties.Resources.HVoIPM_48x;
+			    NotifyIcon.Icon = global::LothianProductions.VoIP.Properties.Resources.HVoIPM_48x;
 			
-
 			if( bubbleTextBuilder.Length > 0 )
 				NotifyIcon.ShowBalloonTip(
 					1000,
@@ -103,8 +107,8 @@ namespace LothianProductions.VoIP.Forms {
 			// FIXME need to support line and call addition or removal
 			
 			TreeStates.Invoke(
-				new MonitorPassingDelegate( UpdateTree ),
-				new Object[] { e.DeviceStateChanges, e.LineStateChanges, e.CallStateChanges }
+			    new MonitorPassingDelegate( UpdateTree ),
+			    new Object[] { e.DeviceStateChanges, e.LineStateChanges, e.CallStateChanges }
 			);
 		}
 	
@@ -226,6 +230,7 @@ namespace LothianProductions.VoIP.Forms {
 		private void TimerFlash_Tick( object sender, EventArgs e ) {
 			// FIXME why can't we compare icons or their handles?
 			// if( NotifyIcon.Icon.Handle == global::LothianProductions.VoIP.Properties.Resources.HVoIPM.Handle ) 
+			Console.WriteLine( "timer!");
 			
 			if( mFlashState )
 				NotifyIcon.Icon = global::LothianProductions.VoIP.Properties.Resources.HVoIPM_flash;

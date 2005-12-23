@@ -34,6 +34,7 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 			while( true ) {
 				// Lock to prevent recursion synchronicity problems
 				// caused by slow wgetting.
+					try {
 				lock (this) {
 					String page;
 					try {
@@ -49,14 +50,18 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 					IList<DeviceChange> deviceChanges = new List<DeviceChange>();
 					IList<LineChange> lineChanges = new List<LineChange>();
 					IList<CallChange> callChanges = new List<CallChange>();
+				
 					AnalyseLineState( page, mDeviceState.Lines[ 0 ], lineChanges, callChanges );	
 					AnalyseLineState( page, mDeviceState.Lines[ 1 ], lineChanges, callChanges );
+		
 				
 					// FIXME safer to use event here?	
 					if( deviceChanges.Count > 0 || lineChanges.Count > 0 || callChanges.Count > 0 )
 						StateManager.Instance().DeviceStateUpdated( this, deviceChanges, lineChanges, callChanges );
 				}			
-				
+							} catch (FormatException e ) {
+						Console.WriteLine( e.StackTrace );
+					}
 				Thread.Sleep( 1000 );
 			}
         }
@@ -160,7 +165,8 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 			long value = 0L;
 			
 			try {
-				value = Int64.Parse( parse );
+				if( parse != null && parse != "" )
+					value = Int64.Parse( parse );
 			} catch (FormatException) {
 				// Safe to do nothing.
 			}
