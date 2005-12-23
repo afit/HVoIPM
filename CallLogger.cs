@@ -44,7 +44,7 @@ namespace LothianProductions.VoIP
 				} else {
 					phone = line.LastCalledNumber;
 				}
-				strLine += "," + device.Name + "," + call.Name + "," + call.Type.ToString() +"," + phone + "," + starttime + "," + endtime + "," + call.Duration;
+				strLine += "," + device.Name + "," + call.Name + "," +  line.Name + "," + call.Type.ToString() +"," + phone + "," + starttime + "," + endtime + "," + call.Duration;
                 objLogFile.WriteLine(strLine);
                 objLogFile.Close();
             }

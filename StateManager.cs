@@ -74,12 +74,9 @@ namespace LothianProductions.VoIP {
 
 		public void DeviceStateUpdated(	IDeviceStateMonitor monitor, IList<DeviceChange> deviceChanges,
 										IList<LineChange> lineChanges, IList<CallChange> callChanges ) {
-			if( StateUpdate != null )
-				StateUpdate( monitor, new StateUpdateEventArgs( deviceChanges, lineChanges, callChanges ) );
-
 			// Clever logging stuff here.
-            foreach( CallChange change in callChanges ) {
-                if ( change.Property == "activity" ) {
+			foreach (CallChange change in callChanges) {
+				if (change.Property == "activity") {
                     if ( change.ChangedFrom == Activity.IdleDisconnected.ToString() && change.ChangedTo != Activity.IdleDisconnected.ToString() ) {
                         CallRecord call = new CallRecord( monitor.GetDeviceState(), GetLine( change.Call ), change.Call, DateTime.Now, new DateTime() );
 						
@@ -94,13 +91,25 @@ namespace LothianProductions.VoIP {
 						call.EndTime = DateTime.Now;
 						CallLogger.Instance().Log(call);
 						mCalls.Remove( change.Call );
-					} else if ( change.Call.Activity != Activity.IdleDisconnected ) {
-						CallRecord call = mCalls[change.Call];
-						call.Call = change.Call;
-						call.Line = GetLine(change.Call);
 					}
                 }
-            }
+
+				if (change.Call.Activity != Activity.IdleDisconnected) {
+					CallRecord call = mCalls[change.Call];
+					call.Call = change.Call;
+					call.Line = GetLine(change.Call);
+					mCalls[change.Call] = call;
+				}
+
+				bool log = false;
+				try {
+					log = LookupBehaviour(change.Call, change.Property).Log;
+				} catch (ConfigurationErrorsException ce) {
+				}
+				if (log)
+					Logger.Instance().Log("Call property " + change.Property + " has changed from " + change.ChangedFrom + " to " + change.ChangedTo);
+			}
+
 			foreach (DeviceChange change in deviceChanges) {
 				bool log = false;
 				try {
@@ -110,6 +119,7 @@ namespace LothianProductions.VoIP {
 				if ( log )
 					Logger.Instance().Log( "Device property " + change.Property + " has changed from " + change.ChangedFrom + " to " + change.ChangedTo );
 			}
+			
 			foreach (LineChange change in lineChanges) {
 				bool log = false;
 				try {
@@ -119,6 +129,10 @@ namespace LothianProductions.VoIP {
 				if (log)
 					Logger.Instance().Log("Line property " + change.Property + " has changed from " + change.ChangedFrom + " to " + change.ChangedTo);
 			}
+
+			if (StateUpdate != null)
+				StateUpdate(monitor, new StateUpdateEventArgs(deviceChanges, lineChanges, callChanges));
+
 		}
 		
 		public StateChangeBehaviour LookupBehaviour( Object state, String property ) {		

@@ -17,9 +17,9 @@ namespace LothianProductions.VoIP
         }
 
         public CallRecord( Device device, Line line, Call call, DateTime startTime, DateTime endTime ) {
-			mCall = call;
-			mLine = line;
-			mDevice = device;
+			mCall = (Call)call.Clone();
+			mLine = (Line)line.Clone();
+			mDevice = (Device)device.Clone();
 			mStartTime = startTime;
 			mEndTime = endTime;
 		}
@@ -29,7 +29,7 @@ namespace LothianProductions.VoIP
                 return mCall;
             }
             set {
-                mCall = value;
+                mCall = (Call)value.Clone();
             }
         }
 
@@ -38,7 +38,7 @@ namespace LothianProductions.VoIP
                 return mDevice;
             }
             set {
-                mDevice = value;
+                mDevice = (Device)value.Clone();
             }
         }
 
@@ -47,7 +47,7 @@ namespace LothianProductions.VoIP
                 return mLine;
             }
             set {
-                mLine = value;
+                mLine = (Line)value.Clone();
             }
         }
 
