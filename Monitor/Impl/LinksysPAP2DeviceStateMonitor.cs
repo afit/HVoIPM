@@ -199,7 +199,9 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 				return Tone.Call;
 			else if ( tone == "Ring Back" )
 				return Tone.Error;
-			throw new ArgumentOutOfRangeException( "Tone " + tone + " not found." );
+			else if (tone == "SIT 1")
+				return Tone.InvalidNumber;
+			throw new ArgumentOutOfRangeException("Tone " + tone + " not found.");
 		}
 
 		public virtual Activity GetActivity( String activity ) {

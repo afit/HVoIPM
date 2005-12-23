@@ -35,7 +35,8 @@ namespace LothianProductions.VoIP.State {
 		SecureCall,
 		Call,
 		Busy,
-		Error
+		Error,
+		InvalidNumber
     }
 
     public class Call : ICloneable {

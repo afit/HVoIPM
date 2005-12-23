@@ -44,6 +44,12 @@
   <ItemGroup>
     <Compile Include="CallRecord.cs" />
     <Compile Include="CallLogger.cs" />
+    <Compile Include="Forms\CallRecordViewer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\CallRecordViewer.Designer.cs">
+      <DependentUpon>CallRecordViewer.cs</DependentUpon>
+    </Compile>
     <Compile Include="Logger.cs" />
     <Compile Include="Monitor\DeviceNotRespondingException.cs" />
     <Compile Include="Monitor\DeviceStateMonitor.cs" />
@@ -62,6 +68,10 @@
     <Compile Include="State\Line.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Forms\CallRecordViewer.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>CallRecordViewer.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormMain.resx">
       <SubType>Designer</SubType>
       <DependentUpon>FormMain.cs</DependentUpon>

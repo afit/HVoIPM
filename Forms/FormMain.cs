@@ -239,5 +239,10 @@ namespace LothianProductions.VoIP.Forms {
 				
 			mFlashState = ! mFlashState;									
 		}
+
+		private void callLogToolStripMenuItem_Click(object sender, EventArgs e) {
+			CallRecordViewer frm = new CallRecordViewer();
+			frm.Show();
+		}
     }
 }
