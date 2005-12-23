@@ -131,7 +131,7 @@ namespace LothianProductions.VoIP.Monitor.Impl
                     Activity activity = mDeviceState.LineStates[0].CallStates[0].Activity;
                     if (activity == Activity.InboundRinging) {
                         activity = Activity.Inbound;
-                    } else if ((activity == Activity.Dialling) || (activity == Activity.OutboundRinging)) {
+                    } else if ((activity == Activity.Dialing) || (activity == Activity.OutboundRinging)) {
                         activity = Activity.Outbound;
                     }
                     mDeviceState.LineStates[0].CallStates[0].Duration = "0";
@@ -155,7 +155,7 @@ namespace LothianProductions.VoIP.Monitor.Impl
                     }
                     break;
                 case CTapi.LineCallState.LINECALLSTATE_DIALING:
-                    mDeviceState.LineStates[0].CallStates[0].Activity = Activity.Dialling;
+                    mDeviceState.LineStates[0].CallStates[0].Activity = Activity.Dialing;
                     break;
                 case CTapi.LineCallState.LINECALLSTATE_RINGBACK:
                     mDeviceState.LineStates[0].CallStates[0].Activity = Activity.OutboundRinging;

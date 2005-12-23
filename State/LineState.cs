@@ -7,7 +7,7 @@ namespace LothianProductions.VoIP.State {
     public enum RegistrationState {
         Offline,
         Online,
-        Other
+        Error
     }
 
     public class LineState {

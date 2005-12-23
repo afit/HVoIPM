@@ -85,7 +85,7 @@ namespace LothianProductions.VoIP.Monitor.Impl {
         }
         
         protected virtual void AnalyseCallState( String page, CallState callState, LineState lineState, IList<CallStateChange> callChanges ) {
-			Activity callActivity = GetActivity( StringHelper.ExtractSubstring( page, "Call " + callState.Name + " Type:<td><font color=\"darkblue\">", "<", "Line " + lineState.Name + " Status" ) );
+			Activity callActivity = GetActivity( StringHelper.ExtractSubstring( page, "Call " + callState.Name + " State:<td><font color=\"darkblue\">", "<", "Line " + lineState.Name + " Status" ) );
 			if( callActivity != callState.Activity )
 				callChanges.Add( new CallStateChange( callState, "activity", callState.Activity.ToString(), callActivity.ToString() ) );
 			callState.Activity = callActivity;
@@ -115,22 +115,22 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 				callChanges.Add( new CallStateChange( callState, "decoder", callState.Decoder, decoder ) );
 			callState.Decoder = decoder;
 			
-			long bytesSent = ParseInt64( StringHelper.ExtractSubstring( page, "Call " + callState.Name + " BytesSent:<td><font color=\"darkblue\">", "<", "Line " + lineState.Name + " Status" ) );
+			long bytesSent = ParseInt64( StringHelper.ExtractSubstring( page, "Call " + callState.Name + " Bytes Sent:<td><font color=\"darkblue\">", "<", "Line " + lineState.Name + " Status" ) );
 			if( bytesSent != callState.BytesSent )
 				callChanges.Add( new CallStateChange( callState, "bytesSent", callState.BytesSent, bytesSent ) );
 			callState.BytesSent = bytesSent;
 
-			long bytesReceived = ParseInt64( StringHelper.ExtractSubstring( page, "Call " + callState.Name + " BytesReceived:<td><font color=\"darkblue\">", "<", "Line " + lineState.Name + " Status" ) );
+			long bytesReceived = ParseInt64( StringHelper.ExtractSubstring( page, "Call " + callState.Name + " Bytes Recv:<td><font color=\"darkblue\">", "<", "Line " + lineState.Name + " Status" ) );
 			if( bytesReceived != callState.BytesReceived )
 				callChanges.Add( new CallStateChange( callState, "bytesReceived", callState.BytesReceived, bytesReceived ) );
 			callState.BytesReceived = bytesReceived;
 			
-			long packetLoss = ParseInt64( StringHelper.ExtractSubstring( page, "Call " + callState.Name + " PacketLoss:<td><font color=\"darkblue\">", "<", "Line " + lineState.Name + " Status" ) );
+			long packetLoss = ParseInt64( StringHelper.ExtractSubstring( page, "Call " + callState.Name + " Packets Lost:<td><font color=\"darkblue\">", "<", "Line " + lineState.Name + " Status" ) );
 			if( packetLoss != callState.PacketLoss )
 				callChanges.Add( new CallStateChange( callState, "packetLoss", callState.PacketLoss, packetLoss ) );
 			callState.PacketLoss = packetLoss;
 			
-			long packetError = ParseInt64( StringHelper.ExtractSubstring( page, "Call " + callState.Name + " PacketError:<td><font color=\"darkblue\">", "<", "Line " + lineState.Name + " Status" ) );
+			long packetError = ParseInt64( StringHelper.ExtractSubstring( page, "Call " + callState.Name + " Packet Error:<td><font color=\"darkblue\">", "<", "Line " + lineState.Name + " Status" ) );
 			if( packetError != callState.PacketError )
 				callChanges.Add( new CallStateChange( callState, "packetError", callState.PacketError, packetError ) );
 			callState.PacketError = packetError;
@@ -140,12 +140,12 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 				callChanges.Add( new CallStateChange( callState, "jitter", callState.Jitter, jitter ) );
 			callState.Jitter = jitter;
 			
-			long decodeLatency = ParseInt64( StringHelper.ExtractSubstring( page, "Call " + callState.Name + " DecodeLatency:<td><font color=\"darkblue\">", "<", "Line " + lineState.Name + " Status" ).Replace( " ms", "") );
+			long decodeLatency = ParseInt64( StringHelper.ExtractSubstring( page, "Call " + callState.Name + " Decode Latency:<td><font color=\"darkblue\">", "<", "Line " + lineState.Name + " Status" ).Replace( " ms", "") );
 			if( decodeLatency != callState.DecodeLatency )
 				callChanges.Add( new CallStateChange( callState, "decodeLatency", callState.DecodeLatency, decodeLatency ) );
 			callState.DecodeLatency = decodeLatency;
 			
-			long roundTripDelay = ParseInt64( StringHelper.ExtractSubstring( page, "Call " + callState.Name + " RoundTripDelay:<td><font color=\"darkblue\">", "<", "Line " + lineState.Name + " Status" ).Replace( " ms", "") );
+			long roundTripDelay = ParseInt64( StringHelper.ExtractSubstring( page, "Call " + callState.Name + " Round Trip Delay:<td><font color=\"darkblue\">", "<", "Line " + lineState.Name + " Status" ).Replace( " ms", "") );
 			if( roundTripDelay != callState.RoundTripDelay )
 				callChanges.Add( new CallStateChange( callState, "roundTripDelay", callState.RoundTripDelay, roundTripDelay ) );
 			callState.RoundTripDelay = roundTripDelay;
@@ -164,25 +164,41 @@ namespace LothianProductions.VoIP.Monitor.Impl {
         }
 
 		public virtual CallType GetCallType( String type ) {
-			//if( type == "" )
+			if( type == "Inbound" )
+				return CallType.Inbound;
+			else if( type == "Outbound" )
+				return CallType.Outbound;
+			else if( type == "" )
 				return CallType.IdleDisconnected;
+			return CallType.Error;
 		}
 		
 		public virtual Tone GetTone( String tone ) {
-			//if( type == "" )
+			if( tone == "None" )
 				return Tone.None;
+			else if( tone == "Dial" )
+				return Tone.Dial;
+			else if( tone == "Secure Call Indication" )
+				return Tone.SecureCall;
+			// FIXME does this work?
+			else if( tone == "Busy" )
+				return Tone.Busy;
+			// FIXME does this work?
+			else if( tone == "Call" )
+				return Tone.Call;
+			return Tone.Error;
 		}
 
 		public virtual Activity GetActivity( String activity ) {
-			if( activity == "" )
+			if( activity == "Idle" )
 				return Activity.IdleDisconnected;
-			else if( activity == "Inbound" )
-				return Activity.Inbound;
-			else if( activity == "Outbound" )
-				return Activity.Outbound;
-			else if( activity == "Held" )
-				return Activity.Held;
-			return Activity.Other;
+			else if( activity == "Connected" )
+				return Activity.Connected;
+			else if( activity == "Ringing" )
+				return Activity.Ringing;
+			else if( activity == "Dialing" )
+				return Activity.Dialing;
+			return Activity.Error;
 		}
         
         public virtual RegistrationState GetRegistrationState( String state ) {
@@ -190,7 +206,7 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 				return RegistrationState.Online;
 			else if( state == "Offline" )
 				return RegistrationState.Offline;
-			return RegistrationState.Other;
+			return RegistrationState.Error;
         }
     }
 }

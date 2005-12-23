@@ -6,27 +6,36 @@ namespace LothianProductions.VoIP.State {
 
     public enum Activity {
         IdleDisconnected,
-        Dialling,
+        Connected,
+        Dialing,
+        Ringing,
+        
+        // FIXME lose or reasses those below:
+        // I think they're all replaced now by combinations
+        // of properties. "Held" is possibly part of a new property.
         InboundRinging,
         OutboundRinging,
         Outbound,
         Inbound,
         Busy,
         Held,
-        Other
+        Error
     }
 
     public enum CallType {
         IdleDisconnected,
         Outbound,
-        Inbound
+        Inbound,
+        Error
     }
     
     public enum Tone {
 		None,
-		Dialling,
-		Ringing,
-		Busy
+		Dial,
+		SecureCall,
+		Call,
+		Busy,
+		Error
     }
 
     public class CallState {
