@@ -38,9 +38,9 @@ namespace LothianProductions.VoIP.State {
 		Error
     }
 
-    public class CallState {
+    public class Call {
 
-		public CallState( String name ) {
+		public Call( String name ) {
 			mName = name;
 		}
     

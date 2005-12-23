@@ -10,10 +10,10 @@ namespace LothianProductions.VoIP.State {
         Error
     }
 
-    public class LineState {
-		public LineState( String name, CallState[] callStates ) {
+    public class Line {
+		public Line( String name, Call[] calls ) {
 			mName = name;
-			CallStates = callStates;
+			Calls = calls;
 		}
     
 		protected String mName;
@@ -40,10 +40,10 @@ namespace LothianProductions.VoIP.State {
             set{ mMessageWaiting = value; }
         }
 
-		protected CallState[] mCallStates;
-		public CallState[] CallStates {
-			get{ return mCallStates; }
-			set{ mCallStates = value; }
+		protected Call[] mCalls;
+		public Call[] Calls {
+			get{ return mCalls; }
+			set{ mCalls = value; }
 		}
 
         protected RegistrationState mRegistrationState;

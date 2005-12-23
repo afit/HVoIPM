@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace LothianProductions.VoIP.State {
-	public class DeviceState {
-		public	DeviceState( String name, LineState[] lineStates ) {
+	public class Device {
+		public	Device( String name, Line[] lines ) {
 			mName = name;
-			mLineStates = lineStates;
+			mLines = lines;
 		}
 		
 		protected String mName;
@@ -15,10 +15,10 @@ namespace LothianProductions.VoIP.State {
             set{ mName = value; }
         }
 		
-	    protected LineState[] mLineStates;
-        public LineState[] LineStates {
-            get{ return mLineStates; }
-            set{ mLineStates = value; }
+	    protected Line[] mLines;
+        public Line[] Lines {
+            get{ return mLines; }
+            set{ mLines = value; }
         }
 	}
 }

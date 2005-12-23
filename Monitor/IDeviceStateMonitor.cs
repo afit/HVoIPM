@@ -7,7 +7,7 @@ using LothianProductions.VoIP.State;
 namespace LothianProductions.VoIP.Monitor {
 	public interface IDeviceStateMonitor {
 		void Run();
-		DeviceState GetDeviceState();
+		Device GetDeviceState();
 		
 		String Name {
 			get;

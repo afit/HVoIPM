@@ -7,7 +7,7 @@ using LothianProductions.VoIP.State;
 namespace LothianProductions.VoIP.Monitor {
 
 	public abstract class DeviceStateMonitor : IDeviceStateMonitor {
-		protected DeviceState mDeviceState;
+		protected Device mDeviceState;
 
 		protected String mName;
 		public String Name {
@@ -16,7 +16,7 @@ namespace LothianProductions.VoIP.Monitor {
 		
 		public abstract void Run();
 
-		public DeviceState GetDeviceState() {
+		public Device GetDeviceState() {
 			return mDeviceState;
 		}
 	}

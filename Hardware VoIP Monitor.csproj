@@ -42,15 +42,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Call.cs" />
+    <Compile Include="CallRecord.cs" />
     <Compile Include="CallLogger.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Monitor\DeviceNotRespondingException.cs" />
     <Compile Include="Monitor\DeviceStateMonitor.cs" />
     <Compile Include="Monitor\Impl\TAPIDeviceStateMonitor.cs" />
-    <Compile Include="State\CallState.cs" />
+    <Compile Include="State\Call.cs" />
     <Compile Include="Monitor\IDeviceStateMonitor.cs" />
-    <Compile Include="State\DeviceState.cs" />
+    <Compile Include="State\Device.cs" />
     <Compile Include="Forms\FormMain.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -58,7 +58,7 @@
       <DependentUpon>FormMain.cs</DependentUpon>
     </Compile>
     <Compile Include="Monitor\Impl\LinksysPAP2DeviceStateMonitor.cs" />
-    <Compile Include="State\LineState.cs" />
+    <Compile Include="State\Line.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Forms\FormMain.resx">
@@ -86,7 +86,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="StateManager.cs" />
-    <Compile Include="State\StateChange.cs" />
+    <Compile Include="State\Change.cs" />
     <Compile Include="Behaviour\StateBehaviour.cs" />
   </ItemGroup>
   <ItemGroup>

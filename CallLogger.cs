@@ -17,7 +17,7 @@ namespace LothianProductions.VoIP
             return mInstance;
         }
 
-        public void Log(Call call) {
+        public void Log(CallRecord call) {
             Log(call.Device, call.CallState.ToString(), call.Direction, call.Phone, call.StartTime, call.EndTime, call.Duration);
         }
 

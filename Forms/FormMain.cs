@@ -83,15 +83,15 @@ namespace LothianProductions.VoIP.Forms {
 			bool showApplication = false;
 			
 			// FIXME this is very inefficient
-			List<StateChange> changes = new List<StateChange>();
-			foreach( StateChange change in e.DeviceStateChanges )
+			List<Change> changes = new List<Change>();
+			foreach( Change change in e.DeviceStateChanges )
 				changes.Add( change );
-			foreach( StateChange change in e.LineStateChanges )
+			foreach( Change change in e.LineStateChanges )
 				changes.Add( change );
-			foreach( StateChange change in e.CallStateChanges )
+			foreach( Change change in e.CallStateChanges )
 				changes.Add( change );
 			
-			foreach( StateChange change in changes ) {
+			foreach( Change change in changes ) {
 				StateChangeBehaviour behaviour = LookupBehaviour( change.Underlying, change.Property );
 			
 				if( behaviour.ShowBubble ) {
@@ -142,72 +142,72 @@ namespace LothianProductions.VoIP.Forms {
 			);
 		}
 	
-		public delegate void MonitorPassingDelegate(	IList<DeviceStateChange> deviceChanges, IList<LineStateChange> lineChanges,
-														IList<CallStateChange> callChanges );
+		public delegate void MonitorPassingDelegate(	IList<DeviceChange> deviceChanges, IList<LineChange> lineChanges,
+														IList<CallChange> callChanges );
 
-		private void UpdateTree(	IList<DeviceStateChange> deviceChanges, IList<LineStateChange> lineChanges,
-									IList<CallStateChange> callChanges ) {
+		private void UpdateTree(	IList<DeviceChange> deviceChanges, IList<LineChange> lineChanges,
+									IList<CallChange> callChanges ) {
 			// If the change has occurred on an object that doesn't exist in the tree
 			// then create it. Otherwise, update it.
 			
 			// Ensure that each device is already in the tree:
-			foreach( DeviceStateChange change in deviceChanges ) {
+			foreach( DeviceChange change in deviceChanges ) {
 				bool found = false;
 				
 				foreach( TreeNode node in TreeStates.Nodes )
-					if( node.Tag == change.DeviceState ) {
+					if( node.Tag == change.Device ) {
 						found = true;
-						node.Text = change.DeviceState.Name;
+						node.Text = change.Device.Name;
 					}
 									
 				if( ! found ) {
-					AddMonitorToTree( StateManager.Instance().GetMonitor( change.DeviceState ) );
+					AddMonitorToTree( StateManager.Instance().GetMonitor( change.Device ) );
 					// FIXME inefficient
-					UpdateTree( deviceChanges, new List<LineStateChange>(), new List<CallStateChange>() );
+					UpdateTree( deviceChanges, new List<LineChange>(), new List<CallChange>() );
 				}
 			}
 			
-			foreach( LineStateChange change in lineChanges ) {
+			foreach( LineChange change in lineChanges ) {
 				bool found = false;
 				
 				foreach( TreeNode deviceNode in TreeStates.Nodes )
 					foreach( TreeNode node in deviceNode.Nodes )
-						if( node.Tag == change.LineState ) {
+						if( node.Tag == change.Line ) {
 							found = true;
 							
 							if( ! node.Nodes.ContainsKey( change.Property ) )
-								node.Nodes.Add( change.Property, change.Property + " = " + change.ChangedTo ).Tag = change.LineState;
+								node.Nodes.Add( change.Property, change.Property + " = " + change.ChangedTo ).Tag = change.Line;
 							else
 								node.Nodes[ change.Property ].Text = change.Property + " = " + change.ChangedTo;
 
 						}
 									
 				if( ! found ) {
-					AddMonitorToTree( StateManager.Instance().GetMonitor( change.LineState ) );
+					AddMonitorToTree( StateManager.Instance().GetMonitor( change.Line ) );
 					// FIXME inefficient
-					UpdateTree( new List<DeviceStateChange>(), lineChanges, new List<CallStateChange>() );
+					UpdateTree( new List<DeviceChange>(), lineChanges, new List<CallChange>() );
 				}
 			}
 			
-			foreach( CallStateChange change in callChanges ) {
+			foreach( CallChange change in callChanges ) {
 				bool found = false;
 				
 				foreach( TreeNode deviceNode in TreeStates.Nodes )
 					foreach( TreeNode lineNode in deviceNode.Nodes )
 							foreach( TreeNode node in lineNode.Nodes )
-							if( node.Tag == change.CallState ) {
+							if( node.Tag == change.Call ) {
 								found = true;
 								
 								if( ! node.Nodes.ContainsKey( change.Property ) )
-									node.Nodes.Add( change.Property, change.Property + " = " + change.ChangedTo ).Tag = change.CallState;
+									node.Nodes.Add( change.Property, change.Property + " = " + change.ChangedTo ).Tag = change.Call;
 								else
 									node.Nodes[ change.Property ].Text = change.Property + " = " + change.ChangedTo;
 							}
 									
 				if( ! found ) {
-					AddMonitorToTree( StateManager.Instance().GetMonitor( change.CallState ) );
+					AddMonitorToTree( StateManager.Instance().GetMonitor( change.Call ) );
 					// FIXME inefficient
-					UpdateTree( new List<DeviceStateChange>(), new List<LineStateChange>(), callChanges );
+					UpdateTree( new List<DeviceChange>(), new List<LineChange>(), callChanges );
 				}
 			}
 		}
@@ -215,17 +215,17 @@ namespace LothianProductions.VoIP.Forms {
 		protected void AddMonitorToTree( IDeviceStateMonitor monitor ) {
 		    // Use each node's key as a property name. Use each node's tag object as a state.
 		    // FIXME should we implement name-change support?
-			DeviceState deviceState = monitor.GetDeviceState();
+			Device deviceState = monitor.GetDeviceState();
 			
 			TreeNode deviceNode = TreeStates.Nodes.Add( "name", deviceState.Name );
 			deviceNode.Tag = deviceState;
 			
-			for( int i = 0; i < deviceState.LineStates.Length; i++ ) {
-				TreeNode lineNode = deviceNode.Nodes.Add( "name", deviceState.LineStates[ i ].Name );
-				lineNode.Tag = deviceState.LineStates[ i ];
+			for( int i = 0; i < deviceState.Lines.Length; i++ ) {
+				TreeNode lineNode = deviceNode.Nodes.Add( "name", deviceState.Lines[ i ].Name );
+				lineNode.Tag = deviceState.Lines[ i ];
 				
-				for( int j = 0; j < deviceState.LineStates[ i ].CallStates.Length; j++ )
-					lineNode.Nodes.Add( "name", deviceState.LineStates[ i ].CallStates[ j ].Name ).Tag = deviceState.LineStates[ i ].CallStates[ j ];
+				for( int j = 0; j < deviceState.Lines[ i ].Calls.Length; j++ )
+					lineNode.Nodes.Add( "name", deviceState.Lines[ i ].Calls[ j ].Name ).Tag = deviceState.Lines[ i ].Calls[ j ];
 			}
 
 		    deviceNode.ExpandAll();
@@ -258,7 +258,7 @@ namespace LothianProductions.VoIP.Forms {
 
 		private void TreeStates_AfterSelect( object sender, TreeViewEventArgs e ) {
 			StateChangeBehaviour behaviour = LookupBehaviour( e.Node.Tag, e.Node.Name );
-			MessageBox.Show( e.Node.Text + ":" + behaviour );
+			TextboxBehaviour.Text = e.Node.Text + "\n\n" + behaviour.ToString();
 		}
 
 		protected bool mFlashState = false;

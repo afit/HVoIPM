@@ -15,25 +15,25 @@ using LothianProductions.VoIP.State;
 namespace LothianProductions.VoIP {
 
 	public class StateUpdateEventArgs : EventArgs {
-		public StateUpdateEventArgs(	IList<DeviceStateChange> deviceChanges, IList<LineStateChange> lineChanges,
-										IList<CallStateChange> callChanges ) {
+		public StateUpdateEventArgs(	IList<DeviceChange> deviceChanges, IList<LineChange> lineChanges,
+										IList<CallChange> callChanges ) {
 			mDeviceStateChanges = deviceChanges;
 			mLineStateChanges = lineChanges;
 			mCallStateChanges = callChanges;
 		}
 
-		protected IList<DeviceStateChange> mDeviceStateChanges;
-		public IList<DeviceStateChange> DeviceStateChanges {
+		protected IList<DeviceChange> mDeviceStateChanges;
+		public IList<DeviceChange> DeviceStateChanges {
 			get{ return mDeviceStateChanges; }
 		}
 
-		protected IList<LineStateChange> mLineStateChanges;
-		public IList<LineStateChange> LineStateChanges {
+		protected IList<LineChange> mLineStateChanges;
+		public IList<LineChange> LineStateChanges {
 			get{ return mLineStateChanges; }
 		}
 
-		protected IList<CallStateChange> mCallStateChanges;
-		public IList<CallStateChange> CallStateChanges {
+		protected IList<CallChange> mCallStateChanges;
+		public IList<CallChange> CallStateChanges {
 			get{ return mCallStateChanges; }
 		}
 	}
@@ -46,14 +46,14 @@ namespace LothianProductions.VoIP {
     public class StateManager {	
 		protected static readonly StateManager mInstance = new StateManager();
 
-        protected Dictionary<CallState, Call> mCalls = new Dictionary<CallState, Call>();
+        protected Dictionary<Call, CallRecord> mCalls = new Dictionary<Call, CallRecord>();
 		
 		public static StateManager Instance() {
 			return mInstance;
 		}
 		
 		public event StateUpdateHandler StateUpdate;
-		protected Dictionary<IDeviceStateMonitor, Thread> mDeviceStateMonitors = new Dictionary<IDeviceStateMonitor,Thread>();
+		protected Dictionary<IDeviceStateMonitor, Thread> mDeviceStateMonitors = new Dictionary<IDeviceStateMonitor, Thread>();
     
 		protected StateManager() {
 			// Initialize device monitors, have to give each its own thread.
@@ -97,28 +97,28 @@ namespace LothianProductions.VoIP {
 			get{ return mDeviceStateMonitors.Keys; }
 		}
 
-		public void DeviceStateUpdated(	IDeviceStateMonitor monitor, IList<DeviceStateChange> deviceChanges,
-										IList<LineStateChange> lineChanges, IList<CallStateChange> callChanges ) {
+		public void DeviceStateUpdated(	IDeviceStateMonitor monitor, IList<DeviceChange> deviceChanges,
+										IList<LineChange> lineChanges, IList<CallChange> callChanges ) {
 			if( StateUpdate != null )
 				StateUpdate( monitor, new StateUpdateEventArgs( deviceChanges, lineChanges, callChanges ) );
 
 			// Clever logging stuff here.
-            foreach( CallStateChange change in callChanges ) {
+            foreach( CallChange change in callChanges ) {
                 if ( change.Property == "activity" ) {
                     if ( change.ChangedFrom == Activity.IdleDisconnected.ToString() && change.ChangedTo != Activity.IdleDisconnected.ToString() ) {
-                        Call call = new Call(
-							monitor.GetDeviceState().Name, change.CallState, change.ChangedTo,
-							GetLineState( change.CallState ).LastCalledNumber, DateTime.Now,
+                        CallRecord call = new CallRecord(
+							monitor.GetDeviceState().Name, change.Call, change.ChangedTo,
+							GetLine( change.Call ).LastCalledNumber, DateTime.Now,
 							new DateTime(), null
 						);
 						
 						// FIXME add sanity check in case somehow call is already there
-                        mCalls.Add( change.CallState, call );
+                        mCalls.Add( change.Call, call );
                     } else if ( change.ChangedFrom != Activity.IdleDisconnected.ToString() && change.ChangedTo == Activity.IdleDisconnected.ToString() ) {
 						//LineState lineState = GetLineState( change.CallState );
-                        Call call = mCalls[ change.CallState ];
+                        CallRecord call = mCalls[ change.Call ];
                         call.EndTime = DateTime.Now;
-                        call.Duration = change.CallState.Duration;
+                        call.Duration = change.Call.Duration;
                         CallLogger.Instance().Log( call );
                     }
                 }
@@ -126,51 +126,51 @@ namespace LothianProductions.VoIP {
 		}
 		
 		// Helper functions for linking states.
-		public IDeviceStateMonitor GetMonitor( DeviceState deviceState ) {
+		public IDeviceStateMonitor GetMonitor( Device deviceState ) {
 			foreach( IDeviceStateMonitor monitor in DeviceStateMonitors )
 				if( monitor.GetDeviceState() == deviceState )
 					return monitor;
 			throw new DomainObjectNotFoundException( "Couldn't find a monitor owning the specified device." );
 		}
 
-		public IDeviceStateMonitor GetMonitor( LineState lineState ) {
+		public IDeviceStateMonitor GetMonitor( Line lineState ) {
 			foreach( IDeviceStateMonitor monitor in DeviceStateMonitors )
-				foreach( LineState line in monitor.GetDeviceState().LineStates )
+				foreach( Line line in monitor.GetDeviceState().Lines )
 					if( line == lineState )
 						return monitor;
 			throw new DomainObjectNotFoundException( "Couldn't find a monitor owning the specified line." );
 		}
 
-		public IDeviceStateMonitor GetMonitor( CallState callState ) {
+		public IDeviceStateMonitor GetMonitor( Call callState ) {
 			foreach( IDeviceStateMonitor monitor in DeviceStateMonitors )
-				foreach( LineState line in monitor.GetDeviceState().LineStates )
-					foreach( CallState call in line.CallStates )
+				foreach( Line line in monitor.GetDeviceState().Lines )
+					foreach( Call call in line.Calls )
 						if( call == callState )
 							return monitor;
 			throw new DomainObjectNotFoundException( "Couldn't find a monitor owning the specified call." );
 		}
 		
-		public DeviceState GetDeviceState( LineState lineState ) {
+		public Device GetDevice( Line lineState ) {
 			foreach( IDeviceStateMonitor monitor in DeviceStateMonitors )
-				foreach( LineState line in monitor.GetDeviceState().LineStates )
+				foreach( Line line in monitor.GetDeviceState().Lines )
 					if( line == lineState )
 						return monitor.GetDeviceState();
 			throw new DomainObjectNotFoundException( "Couldn't find a device owning the specified line." );
 		}
 		
-		public DeviceState GetDeviceState( CallState callState ) {
+		public Device GetDevice( Call callState ) {
 			foreach( IDeviceStateMonitor monitor in DeviceStateMonitors )
-				foreach( LineState line in monitor.GetDeviceState().LineStates )
-					foreach( CallState call in line.CallStates )
+				foreach( Line line in monitor.GetDeviceState().Lines )
+					foreach( Call call in line.Calls )
 						if( call == callState )
 							return monitor.GetDeviceState();
 			throw new DomainObjectNotFoundException( "Couldn't find a device owning the specified call." );
 		}
 		
-		public LineState GetLineState( CallState callState ) {
+		public Line GetLine( Call callState ) {
 			foreach( IDeviceStateMonitor monitor in DeviceStateMonitors )
-				foreach( LineState line in monitor.GetDeviceState().LineStates )
-					foreach( CallState call in line.CallStates )
+				foreach( Line line in monitor.GetDeviceState().Lines )
+					foreach( Call call in line.Calls )
 						if( call == callState )
 							return line;
 			throw new DomainObjectNotFoundException( "Couldn't find a line owning the specified call." );
