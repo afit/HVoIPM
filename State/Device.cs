@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace LothianProductions.VoIP.State {
-	public class Device {
-		public	Device( String name, Line[] lines ) {
+	public class Device : ICloneable {
+		public Device( String name, Line[] lines ) {
 			mName = name;
 			mLines = lines;
+		}
+		
+		public Object Clone() {
+			return new Device( mName, (Line[]) mLines.Clone() );
 		}
 		
 		protected String mName;

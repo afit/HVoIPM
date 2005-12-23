@@ -38,10 +38,35 @@ namespace LothianProductions.VoIP.State {
 		Error
     }
 
-    public class Call {
-
+    public class Call : ICloneable {
 		public Call( String name ) {
 			mName = name;
+		}
+		
+		public Call(	String name, Activity activity, CallType type, Tone tone,
+						String duration, String encoder, String decoder, long bytesSent,
+						long bytesReceived, long packetLoss, long packetError, long jitter,
+						long decodeLatency, long roundTripDelay ) {
+			mName = name;
+			mActivity = activity;
+			mType = type;
+			mTone = tone;
+			mDuration = duration;
+			mEncoder = encoder;
+			mDecoder = decoder;
+			mBytesSent = bytesSent;
+			mBytesReceived = bytesReceived;
+			mPacketLoss = packetLoss;
+			mPacketError = packetError;
+			mJitter = jitter;
+			mDecodeLatency = decodeLatency;
+			mRoundTripDelay = roundTripDelay;
+		}
+		
+		public Object Clone() {
+			return new Call(  mName, mActivity, mType, mTone, mDuration, mEncoder, mDuration,
+								mBytesSent, mBytesReceived, mPacketLoss, mPacketError, mJitter,
+								mDecodeLatency, mRoundTripDelay );
 		}
     
 		protected String mName;

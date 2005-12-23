@@ -10,10 +10,24 @@ namespace LothianProductions.VoIP.State {
         Error
     }
 
-    public class Line {
+    public class Line : ICloneable {
 		public Line( String name, Call[] calls ) {
 			mName = name;
-			Calls = calls;
+			mCalls = calls;
+		}
+
+		public Line(	String name, String lastCalledNumber, String lastCallerNumber, bool messageWaiting,
+						Call[] calls, RegistrationState registrationState ) {
+			mName = name;
+			mLastCalledNumber = lastCalledNumber;
+			mLastCallerNumber = lastCallerNumber;
+			mMessageWaiting = messageWaiting;
+			mCalls = calls;
+			mRegistrationState = registrationState;
+		}
+		
+		public Object Clone() {
+			return new Line( mName, mLastCalledNumber, mLastCallerNumber, mMessageWaiting, (Call[]) mCalls.Clone(), mRegistrationState );
 		}
     
 		protected String mName;
