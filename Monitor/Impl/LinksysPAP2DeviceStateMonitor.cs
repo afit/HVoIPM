@@ -170,7 +170,7 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 				return CallType.Outbound;
 			else if( type == "" )
 				return CallType.IdleDisconnected;
-			return CallType.Error;
+			throw new ArgumentOutOfRangeException( "Type " + type + " not found." );
 		}
 		
 		public virtual Tone GetTone( String tone ) {
@@ -186,7 +186,7 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 			// FIXME does this work?
 			else if( tone == "Call" )
 				return Tone.Call;
-			return Tone.Error;
+			throw new ArgumentOutOfRangeException( "Tone " + tone + " not found." );
 		}
 
 		public virtual Activity GetActivity( String activity ) {
@@ -198,7 +198,9 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 				return Activity.Ringing;
 			else if( activity == "Dialing" )
 				return Activity.Dialing;
-			return Activity.Error;
+			else if( activity == "Invalid" )
+				return Activity.Error;
+			throw new ArgumentOutOfRangeException( "Activity " + activity + " not found." );
 		}
         
         public virtual RegistrationState GetRegistrationState( String state ) {
@@ -206,7 +208,7 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 				return RegistrationState.Online;
 			else if( state == "Offline" )
 				return RegistrationState.Offline;
-			return RegistrationState.Error;
+			throw new ArgumentOutOfRangeException( "State " + state + " not found." );
         }
     }
 }

@@ -25,7 +25,7 @@ namespace LothianProductions.VoIP
             lock (this) {
                 string strFile = "";
                 try {
-                    strFile = System.Configuration.ConfigurationManager.AppSettings["logFile"];
+                    strFile = System.Configuration.ConfigurationManager.AppSettings["callLogFile"];
                 } catch (System.Configuration.SettingsPropertyNotFoundException) {
                     strFile = System.Environment.CurrentDirectory + "\\calls.log";
                 }

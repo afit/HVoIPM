@@ -102,29 +102,27 @@ namespace LothianProductions.VoIP {
 			if( StateUpdate != null )
 				StateUpdate( monitor, new StateUpdateEventArgs( deviceChanges, lineChanges, callChanges ) );
 
+			// Clever logging stuff here.
             foreach( CallStateChange change in callChanges ) {
-                if ( change.Property == "callActivity" ) {
-                    if ((change.ChangedFrom == "Idle") && (change.ChangedTo != "Idle")) {
-                        foreach (LineState line in monitor.GetDeviceState().LineStates) {
-                            if (Array.IndexOf(line.CallStates, change.CallState) > 0) {
-                                Call call = new Call(monitor.GetDeviceState().Name, change.CallState, change.ChangedTo, line.LastCalledNumber, DateTime.Now, new DateTime(), null);
-                                mCalls.Add(change.CallState, call);
-                            }
-                        }
-                    } else if ((change.ChangedFrom != "Idle") && (change.ChangedTo == "Idle")) {
-                        foreach ( LineState line in monitor.GetDeviceState().LineStates ) {
-                            if ( Array.IndexOf( line.CallStates, change.CallState ) > 0 ) {
-                                Call call = mCalls[ change.CallState ];
-                                call.EndTime = DateTime.Now;
-                                call.Duration = change.CallState.Duration;
-                                CallLogger.Instance().Log(call);
-                            }
-                        }
+                if ( change.Property == "activity" ) {
+                    if ( change.ChangedFrom == Activity.IdleDisconnected.ToString() && change.ChangedTo != Activity.IdleDisconnected.ToString() ) {
+                        Call call = new Call(
+							monitor.GetDeviceState().Name, change.CallState, change.ChangedTo,
+							GetLineState( change.CallState ).LastCalledNumber, DateTime.Now,
+							new DateTime(), null
+						);
+						
+						// FIXME add sanity check in case somehow call is already there
+                        mCalls.Add( change.CallState, call );
+                    } else if ( change.ChangedFrom != Activity.IdleDisconnected.ToString() && change.ChangedTo == Activity.IdleDisconnected.ToString() ) {
+						//LineState lineState = GetLineState( change.CallState );
+                        Call call = mCalls[ change.CallState ];
+                        call.EndTime = DateTime.Now;
+                        call.Duration = change.CallState.Duration;
+                        CallLogger.Instance().Log( call );
                     }
                 }
             }
-
-			// Clever logging stuff here.
 		}
 		
 		// Helper functions for linking states.
