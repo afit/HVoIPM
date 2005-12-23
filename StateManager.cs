@@ -102,10 +102,22 @@ namespace LothianProductions.VoIP {
                 }
             }
 			foreach (DeviceChange change in deviceChanges) {
-				Logger.Instance().Log( "Device property " + change.Property + " has changed from " + change.ChangedFrom + " to " + change.ChangedTo );
+				bool log = false;
+				try {
+					log = LookupBehaviour(change.Device, change.Property).Log;
+				} catch (ConfigurationErrorsException ce) {
+				}
+				if ( log )
+					Logger.Instance().Log( "Device property " + change.Property + " has changed from " + change.ChangedFrom + " to " + change.ChangedTo );
 			}
 			foreach (LineChange change in lineChanges) {
-				Logger.Instance().Log( "Line property " + change.Property + " has changed from " + change.ChangedFrom + " to " + change.ChangedTo );
+				bool log = false;
+				try {
+					log = LookupBehaviour(change.Line, change.Property).Log;
+				} catch (ConfigurationErrorsException ce) {
+				}
+				if (log)
+					Logger.Instance().Log("Line property " + change.Property + " has changed from " + change.ChangedFrom + " to " + change.ChangedTo);
 			}
 		}
 		
