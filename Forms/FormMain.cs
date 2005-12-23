@@ -66,15 +66,17 @@ namespace LothianProductions.VoIP.Forms {
 					bubbleTextBuilder.Append( String.Format( behaviour.BubbleText, new String[] { change.Property, change.ChangedFrom, change.ChangedTo } ) );
 				}
 				
-				if( behaviour.SystemTrayWarning )
+				if( behaviour.SystemTrayWarning ) {
 					// Check to see if warning criteria is met.
-					if( Array.IndexOf( behaviour.WarningCriteria, change.ChangedTo ) > -1 ) {
+					int f = Array.IndexOf( behaviour.WarningCriteria, change.ChangedTo );
+					if( f > -1 ) {
 						// Activate warning state, if it isn't already:
 						if( ! mWarnings.Contains( change.Underlying.GetHashCode() + ":" + change.Underlying.GetType().Name + ":" + change.Property ) )
 							mWarnings.Add( change.Underlying.GetHashCode() + ":" + change.Underlying.GetType().Name + ":" + change.Property );
 					} else {
 						mWarnings.Remove( change.Underlying.GetHashCode() + ":" + change.Underlying.GetType().Name + ":" + change.Property );
 					}
+				}
 				
 				if( behaviour.ShowApplication && Array.IndexOf( behaviour.WarningCriteria, change.ChangedTo ) > -1 )
 					showApplication = true;
@@ -166,7 +168,6 @@ namespace LothianProductions.VoIP.Forms {
 									node.Nodes.Add( change.Property, String.Format( StateManager.Instance().LookupBehaviour( change.Call, change.Property ).BubbleText, new String[] { change.Property, change.ChangedFrom, change.ChangedTo } ) ).Tag = change.Call;
 								else
 									node.Nodes[ change.Property ].Text = String.Format( StateManager.Instance().LookupBehaviour( change.Call, change.Property ).BubbleText, new String[] { change.Property, change.ChangedFrom, change.ChangedTo } );
-									//node.Nodes[ change.Property ].Text = StateManager.Instance().LookupBehaviour( change.Call, change.Property ).BubbleText + " = " + change.ChangedTo;
 							}
 									
 				if( ! found ) {
@@ -220,11 +221,6 @@ namespace LothianProductions.VoIP.Forms {
 					ShowInTaskbar = true;
 			}
 		}
-
-		//private void TreeStates_AfterSelect( object sender, TreeViewEventArgs e ) {
-		//    StateChangeBehaviour behaviour = StateManager.Instance().LookupBehaviour( e.Node.Tag, e.Node.Name );
-		//    TextboxBehaviour.Text = e.Node.Text + "\n\n" + behaviour.ToString();
-		//}
 
 		protected bool mFlashState = false;
 		private void TimerFlash_Tick( object sender, EventArgs e ) {

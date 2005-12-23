@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Xml;
 
 using LothianProductions.Data;
+using LothianProductions.Util;
 using LothianProductions.Util.Settings;
 using LothianProductions.VoIP.Behaviour;
 using LothianProductions.VoIP.Monitor;
@@ -144,8 +145,10 @@ namespace LothianProductions.VoIP {
 			
 			if( ! propertyBehaviours.ContainsKey( property ) )
 				propertyBehaviours.Add( property, GetBehaviourFromXml( state.GetType().Name, property ) );
-				
-			return propertyBehaviours[ property ];			
+			
+			//Console.WriteLine( state.GetType().Name + ":" + property + ":" + StringHelper.ToString( propertyBehaviours[ property ].WarningCriteria ) );
+			
+			return propertyBehaviours[ property ];	
 		}
 		
 		protected StateChangeBehaviour GetBehaviourFromXml( String stateType, String property ) {
@@ -163,7 +166,7 @@ namespace LothianProductions.VoIP {
 				behaviour.Attributes[ "bubbleText" ].Value,
 				Boolean.Parse( behaviour.Attributes[ "systemTrayWarning" ].Value ),
 				Boolean.Parse( behaviour.Attributes[ "showApplication" ].Value ),
-				( behaviour.Attributes[ "showCriteria" ] == null ? "" : behaviour.Attributes[ "showCriteria" ].Value ).Split( ',' ),
+				( behaviour.Attributes[ "warningCriteria" ] == null ? "" : behaviour.Attributes[ "warningCriteria" ].Value ).Split( ',' ),
 				Boolean.Parse( behaviour.Attributes[ "log" ].Value )
 			);
 		}
