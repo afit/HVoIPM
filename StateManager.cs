@@ -78,7 +78,7 @@ namespace LothianProductions.VoIP {
 			// Clever logging stuff here.
 			foreach (CallChange change in callChanges) {
 				if (change.Property == "activity") {
-                    if ( change.ChangedFrom == Activity.IdleDisconnected.ToString() && change.ChangedTo != Activity.IdleDisconnected.ToString() ) {
+                    if ( change.ChangedFrom != Activity.Connected.ToString() && change.ChangedTo == Activity.Connected.ToString() ) {
                         CallRecord call = new CallRecord( monitor.GetDeviceState(), GetLine( change.Call ), change.Call, DateTime.Now, new DateTime() );
 						
 						// FIXME add sanity check in case somehow call is already there
@@ -87,7 +87,7 @@ namespace LothianProductions.VoIP {
 							Logger.Instance().Log("Call #" + change.Call.Name + " had to be removed from the call list - did the previous call fail?");
 						}
                         mCalls.Add( change.Call, call );
-					} else if ( change.ChangedFrom != Activity.IdleDisconnected.ToString() && change.ChangedTo == Activity.IdleDisconnected.ToString() ) {
+					} else if ( change.ChangedFrom == Activity.Connected.ToString() && change.ChangedTo != Activity.Connected.ToString() ) {
 						CallRecord call = mCalls[change.Call];
 						call.EndTime = DateTime.Now;
 						CallLogger.Instance().Log(call);
@@ -96,10 +96,12 @@ namespace LothianProductions.VoIP {
                 }
 
 				if (change.Call.Activity != Activity.IdleDisconnected) {
+					if ( mCalls.ContainsKey( change.Call ) ) {
 					CallRecord call = mCalls[change.Call];
 					call.Call = change.Call;
 					call.Line = GetLine(change.Call);
 					mCalls[change.Call] = call;
+					}
 				}
 
 				bool log = false;
