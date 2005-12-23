@@ -37,7 +37,11 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 				lock (this) {
 					String page;
 					try {
-						page = HttpHelper.HttpGet( new Uri( ConfigurationManager.AppSettings[ GetType().Name + ":Hostname" ] ), "", "", "", 1000 );
+						page = HttpHelper.HttpGet(
+							new Uri( ConfigurationManager.AppSettings[ GetType().Name + ":Hostname" ] ),
+							"", "", "",
+							Int32.Parse( ConfigurationManager.AppSettings[ GetType().Name + ":Timeout" ] )
+						);
 					} catch (WebException e) {
 						throw new DeviceNotRespondingException( "The device is not responding to status requests", e );
 					}
