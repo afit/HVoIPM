@@ -15,13 +15,26 @@ using LothianProductions.VoIP.State;
 namespace LothianProductions.VoIP {
 
 	public class StateUpdateEventArgs : EventArgs {
-		public StateUpdateEventArgs( IList<StateChange> changes ) {
-			mStateChanges = changes;
+		public StateUpdateEventArgs(	IList<DeviceStateChange> deviceChanges, IList<LineStateChange> lineChanges,
+										IList<CallStateChange> callChanges ) {
+			mDeviceStateChanges = deviceChanges;
+			mLineStateChanges = lineChanges;
+			mCallStateChanges = callChanges;
 		}
 
-		protected IList<StateChange> mStateChanges;
-		public IList<StateChange> StateChanges {
-			get{ return mStateChanges; }
+		protected IList<DeviceStateChange> mDeviceStateChanges;
+		public IList<DeviceStateChange> DeviceStateChanges {
+			get{ return mDeviceStateChanges; }
+		}
+
+		protected IList<LineStateChange> mLineStateChanges;
+		public IList<LineStateChange> LineStateChanges {
+			get{ return mLineStateChanges; }
+		}
+
+		protected IList<CallStateChange> mCallStateChanges;
+		public IList<CallStateChange> CallStateChanges {
+			get{ return mCallStateChanges; }
 		}
 	}
 	
@@ -84,9 +97,10 @@ namespace LothianProductions.VoIP {
 			get{ return mDeviceStateMonitors.Keys; }
 		}
 
-		public void DeviceStateUpdated( IDeviceStateMonitor monitor, IList<StateChange> changes ) {
+		public void DeviceStateUpdated(	IDeviceStateMonitor monitor, IList<DeviceStateChange> deviceChanges,
+										IList<LineStateChange> lineChanges, IList<CallStateChange> callChanges ) {
 			if( StateUpdate != null )
-				StateUpdate( monitor, new StateUpdateEventArgs( changes ) );
+				StateUpdate( monitor, new StateUpdateEventArgs( deviceChanges, lineChanges, callChanges ) );
 
             foreach( StateChange change in changes ) {
                 if ( change.Property == "callActivity" ) {

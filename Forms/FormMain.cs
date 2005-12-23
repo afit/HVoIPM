@@ -81,7 +81,16 @@ namespace LothianProductions.VoIP.Forms {
 			StringBuilder bubbleTextBuilder = new StringBuilder();
 			bool showApplication = false;
 			
-			foreach( StateChange change in e.StateChanges ) {
+			// FIXME this is very inefficient
+			List<StateChange> changes = new List<StateChange>();
+			foreach( StateChange change in e.DeviceStateChanges )
+				changes.Add( change );
+			foreach( StateChange change in e.LineStateChanges )
+				changes.Add( change );
+			foreach( StateChange change in e.CallStateChanges )
+				changes.Add( change );
+			
+			foreach( StateChange change in changes ) {
 				StateChangeBehaviour behaviour = LookupBehaviour( change.Underlying, change.Property );
 			
 				if( behaviour.ShowBubble ) {
@@ -126,57 +135,100 @@ namespace LothianProductions.VoIP.Forms {
 				
 			// FIXME need to support line and call addition or removal
 			
-			TreeStates.Invoke( new MonitorPassingDelegate( UpdateTree ), new Object[] { e.StateChanges } );			
+			TreeStates.Invoke(
+				new MonitorPassingDelegate( UpdateTree ),
+				new Object[] { e.DeviceStateChanges, e.LineStateChanges, e.CallStateChanges }
+			);
 		}
 	
-		public delegate void MonitorPassingDelegate( IList<StateChange> changes );
+		public delegate void MonitorPassingDelegate(	IList<DeviceStateChange> deviceChanges, IList<LineStateChange> lineChanges,
+														IList<CallStateChange> callChanges );
 
-		private void UpdateTree( IList<StateChange> changes ) {
+		private void UpdateTree(	IList<DeviceStateChange> deviceChanges, IList<LineStateChange> lineChanges,
+									IList<CallStateChange> callChanges ) {
 			// If the change has occurred on an object that doesn't exist in the tree
 			// then create it. Otherwise, update it.
-		    // Redraw tree of devices being watched.
-		    // FIXME Maybe we should only repopulate for the device
-		    // that's being updated.
-		    TreeStates.Nodes.Clear();
-		    
-		    // Use each node's key as a property name. Use each node's tag object as a state.
-
-			foreach( IDeviceStateMonitor monitor in StateManager.Instance().DeviceStateMonitors ) {
-				DeviceState deviceState = monitor.GetDeviceState();
+			
+			// Ensure that each device is already in the tree:
+			foreach( DeviceStateChange change in deviceChanges ) {
+				bool found = false;
 				
-				TreeNode deviceNode = TreeStates.Nodes.Add( "", deviceState.Name + " (" + monitor.GetType().Name + " " + monitor.Name + ")" );
-				deviceNode.Tag = deviceState;
-				
-				for( int i = 0; i < deviceState.LineStates.Length; i++ ) {
-					TreeNode lineNode = deviceNode.Nodes.Add( "", "Line " + deviceState.LineStates[ i ].Name );
-					lineNode.Tag = deviceState.LineStates[ i ];
-					lineNode.Nodes.Add( "lastCalledNumber", "Last called number = " + deviceState.LineStates[ i ].LastCalledNumber ).Tag = deviceState.LineStates[ i ];
-					lineNode.Nodes.Add( "lastCallerNumber", "Last caller number = " + deviceState.LineStates[ i ].LastCallerNumber ).Tag = deviceState.LineStates[ i ];
-					lineNode.Nodes.Add( "registrationState", "Registration state = " + deviceState.LineStates[ i ].RegistrationState ).Tag = deviceState.LineStates[ i ];
-					lineNode.Nodes.Add( "messageWaiting", "Message waiting = " + deviceState.LineStates[ i ].RegistrationState ).Tag = deviceState.LineStates[ i ];
-					
-					for( int j = 0; j < deviceState.LineStates[ i ].CallStates.Length; j++ ) {
-						TreeNode callNode = lineNode.Nodes.Add( "Call " + deviceState.LineStates[ i ].CallStates[ j ].Name );
-						callNode.Tag = deviceState.LineStates[ i ].CallStates[ j ];
-						callNode.Nodes.Add( "activity", "Activity = " + deviceState.LineStates[ i ].CallStates[ j ].Activity ).Tag = deviceState.LineStates[ i ].CallStates[ j ];
-						callNode.Nodes.Add( "duration", "Duration = " + deviceState.LineStates[ i ].CallStates[ j ].Duration ).Tag = deviceState.LineStates[ i ].CallStates[ j ];
-						
-						callNode.Nodes.Add( "type", "Type = " + deviceState.LineStates[ i ].CallStates[ j ].Duration ).Tag = deviceState.LineStates[ i ].CallStates[ j ];
-						callNode.Nodes.Add( "tone", "Tone = " + deviceState.LineStates[ i ].CallStates[ j ].Duration ).Tag = deviceState.LineStates[ i ].CallStates[ j ];
-						callNode.Nodes.Add( "encoder", "Encoder = " + deviceState.LineStates[ i ].CallStates[ j ].Duration ).Tag = deviceState.LineStates[ i ].CallStates[ j ];
-						callNode.Nodes.Add( "decoder", "Decoder = " + deviceState.LineStates[ i ].CallStates[ j ].Duration ).Tag = deviceState.LineStates[ i ].CallStates[ j ];
-						callNode.Nodes.Add( "bytesSent", "BytesSent = " + deviceState.LineStates[ i ].CallStates[ j ].Duration ).Tag = deviceState.LineStates[ i ].CallStates[ j ];
-						callNode.Nodes.Add( "bytesReceived", "BytesReceived = " + deviceState.LineStates[ i ].CallStates[ j ].Duration ).Tag = deviceState.LineStates[ i ].CallStates[ j ];
-						callNode.Nodes.Add( "packetLoss", "PacketLoss = " + deviceState.LineStates[ i ].CallStates[ j ].Duration ).Tag = deviceState.LineStates[ i ].CallStates[ j ];
-						callNode.Nodes.Add( "packetError", "PacketError = " + deviceState.LineStates[ i ].CallStates[ j ].Duration ).Tag = deviceState.LineStates[ i ].CallStates[ j ];
-						callNode.Nodes.Add( "jitter", "Jitter = " + deviceState.LineStates[ i ].CallStates[ j ].Duration ).Tag = deviceState.LineStates[ i ].CallStates[ j ];
-						callNode.Nodes.Add( "decodeLatency", "DecodeLatency = " + deviceState.LineStates[ i ].CallStates[ j ].Duration ).Tag = deviceState.LineStates[ i ].CallStates[ j ];
-						callNode.Nodes.Add( "roundTripDelay", "RoundTripDelay = " + deviceState.LineStates[ i ].CallStates[ j ].Duration ).Tag = deviceState.LineStates[ i ].CallStates[ j ];
+				foreach( TreeNode node in TreeStates.Nodes )
+					if( node.Tag == change.DeviceState ) {
+						found = true;
+						node.Text = change.DeviceState.Name;
 					}
+									
+				if( ! found ) {
+					AddMonitorToTree( StateManager.Instance().GetMonitor( change.DeviceState ) );
+					// FIXME inefficient
+					UpdateTree( deviceChanges, new List<LineStateChange>(), new List<CallStateChange>() );
 				}
 			}
+			
+			foreach( LineStateChange change in lineChanges ) {
+				bool found = false;
+				
+				foreach( TreeNode deviceNode in TreeStates.Nodes )
+					foreach( TreeNode node in deviceNode.Nodes )
+						if( node.Tag == change.LineState ) {
+							found = true;
+							node.Text = "Line " + change.LineState.Name;
+							
+							if( ! node.Nodes.ContainsKey( change.Property ) )
+								node.Nodes.Add( change.Property, change.Property + " = " + change.ChangedTo ).Tag = change.LineState;
+							else
+								node.Nodes[ change.Property ].Text = change.Property + " = " + change.ChangedTo;
 
-		    TreeStates.ExpandAll();
+						}
+									
+				if( ! found ) {
+					AddMonitorToTree( StateManager.Instance().GetMonitor( change.LineState ) );
+					// FIXME inefficient
+					UpdateTree( new List<DeviceStateChange>(), lineChanges, new List<CallStateChange>() );
+				}
+			}
+			
+			foreach( CallStateChange change in callChanges ) {
+				bool found = false;
+				
+				foreach( TreeNode deviceNode in TreeStates.Nodes )
+					foreach( TreeNode lineNode in deviceNode.Nodes )
+							foreach( TreeNode node in lineNode.Nodes )
+							if( node.Tag == change.CallState ) {
+								found = true;
+								node.Text = "Call " + change.CallState.Name;
+								
+								if( ! node.Nodes.ContainsKey( change.Property ) )
+									node.Nodes.Add( change.Property, change.Property + " = " + change.ChangedTo ).Tag = change.CallState;
+								else
+									node.Nodes[ change.Property ].Text = change.Property + " = " + change.ChangedTo;
+							}
+									
+				if( ! found ) {
+					AddMonitorToTree( StateManager.Instance().GetMonitor( change.CallState ) );
+					// FIXME inefficient
+					UpdateTree( new List<DeviceStateChange>(), new List<LineStateChange>(), callChanges );
+				}
+			}
+		}
+		
+		protected void AddMonitorToTree( IDeviceStateMonitor monitor ) {
+		    // Use each node's key as a property name. Use each node's tag object as a state.
+			DeviceState deviceState = monitor.GetDeviceState();
+			
+			TreeNode deviceNode = TreeStates.Nodes.Add( "", deviceState.Name );
+			deviceNode.Tag = deviceState;
+			
+			for( int i = 0; i < deviceState.LineStates.Length; i++ ) {
+				TreeNode lineNode = deviceNode.Nodes.Add( "", "" );
+				lineNode.Tag = deviceState.LineStates[ i ];
+				
+				for( int j = 0; j < deviceState.LineStates[ i ].CallStates.Length; j++ )
+					lineNode.Nodes.Add( "", "" ).Tag = deviceState.LineStates[ i ].CallStates[ j ];
+			}
+
+		    deviceNode.ExpandAll();
 		}
 
 		private void toolStripQuit_Click( object sender, EventArgs e ) {
