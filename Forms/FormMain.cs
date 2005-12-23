@@ -42,6 +42,7 @@ namespace LothianProductions.VoIP.Forms {
         }
 
 		protected StateChangeBehaviour LookupBehaviour( Object state, String property ) {		
+			// FIXME this should probably be broken out of the form
 			// Behaviour not set yet.
 			if( ! mStateProperties.ContainsKey( state ) )
 				mStateProperties.Add( state, new Dictionary<String, StateChangeBehaviour>() );
@@ -173,7 +174,6 @@ namespace LothianProductions.VoIP.Forms {
 					foreach( TreeNode node in deviceNode.Nodes )
 						if( node.Tag == change.LineState ) {
 							found = true;
-							node.Text = "Line " + change.LineState.Name;
 							
 							if( ! node.Nodes.ContainsKey( change.Property ) )
 								node.Nodes.Add( change.Property, change.Property + " = " + change.ChangedTo ).Tag = change.LineState;
@@ -197,7 +197,6 @@ namespace LothianProductions.VoIP.Forms {
 							foreach( TreeNode node in lineNode.Nodes )
 							if( node.Tag == change.CallState ) {
 								found = true;
-								node.Text = "Call " + change.CallState.Name;
 								
 								if( ! node.Nodes.ContainsKey( change.Property ) )
 									node.Nodes.Add( change.Property, change.Property + " = " + change.ChangedTo ).Tag = change.CallState;
@@ -215,17 +214,18 @@ namespace LothianProductions.VoIP.Forms {
 		
 		protected void AddMonitorToTree( IDeviceStateMonitor monitor ) {
 		    // Use each node's key as a property name. Use each node's tag object as a state.
+		    // FIXME should we implement name-change support?
 			DeviceState deviceState = monitor.GetDeviceState();
 			
-			TreeNode deviceNode = TreeStates.Nodes.Add( "", deviceState.Name );
+			TreeNode deviceNode = TreeStates.Nodes.Add( "name", deviceState.Name );
 			deviceNode.Tag = deviceState;
 			
 			for( int i = 0; i < deviceState.LineStates.Length; i++ ) {
-				TreeNode lineNode = deviceNode.Nodes.Add( "", "" );
+				TreeNode lineNode = deviceNode.Nodes.Add( "name", deviceState.LineStates[ i ].Name );
 				lineNode.Tag = deviceState.LineStates[ i ];
 				
 				for( int j = 0; j < deviceState.LineStates[ i ].CallStates.Length; j++ )
-					lineNode.Nodes.Add( "", "" ).Tag = deviceState.LineStates[ i ].CallStates[ j ];
+					lineNode.Nodes.Add( "name", deviceState.LineStates[ i ].CallStates[ j ].Name ).Tag = deviceState.LineStates[ i ].CallStates[ j ];
 			}
 
 		    deviceNode.ExpandAll();
@@ -236,14 +236,6 @@ namespace LothianProductions.VoIP.Forms {
             NotifyIcon.Visible = false;
 			this.Hide();
 			Environment.Exit( 1 );
-		}
-
-		private void ButtonQuit_Click( object sender, EventArgs e ) {
-			toolStripQuit_Click( sender, e );
-		}
-		
-		private void ButtonReload_Click( object sender, EventArgs e ) {
-			StateManager.Instance().ReloadDeviceStateMonitors();
 		}
 
 		private void NotifyIcon_MouseClick( object sender, MouseEventArgs e ) {
@@ -265,8 +257,8 @@ namespace LothianProductions.VoIP.Forms {
 		}
 
 		private void TreeStates_AfterSelect( object sender, TreeViewEventArgs e ) {
-			//StateChangeBehaviour behaviour = LookupBehaviour( e.Node.Tag, e.Node.Name );
-			//MessageBox.Show( e.Node.Text + ":" + behaviour );
+			StateChangeBehaviour behaviour = LookupBehaviour( e.Node.Tag, e.Node.Name );
+			MessageBox.Show( e.Node.Text + ":" + behaviour );
 		}
 
 		protected bool mFlashState = false;

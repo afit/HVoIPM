@@ -30,8 +30,6 @@ namespace LothianProductions.VoIP.Forms {
 			this.toolStripQuit = new System.Windows.Forms.ToolStripMenuItem();
 			this.label1 = new System.Windows.Forms.Label();
 			this.LabelLinks = new System.Windows.Forms.LinkLabel();
-			this.ButtonQuit = new System.Windows.Forms.Button();
-			this.ButtonReload = new System.Windows.Forms.Button();
 			this.label3 = new System.Windows.Forms.Label();
 			this.TreeStates = new System.Windows.Forms.TreeView();
 			this.TimerFlash = new System.Windows.Forms.Timer( this.components );
@@ -83,26 +81,6 @@ namespace LothianProductions.VoIP.Forms {
 			this.LabelLinks.TabIndex = 5;
 			this.LabelLinks.Text = "© Lothian Productions 2005, all rights reserved. About HVoIPM.";
 			// 
-			// ButtonQuit
-			// 
-			this.ButtonQuit.Location = new System.Drawing.Point( 479, 9 );
-			this.ButtonQuit.Name = "ButtonQuit";
-			this.ButtonQuit.Size = new System.Drawing.Size( 82, 27 );
-			this.ButtonQuit.TabIndex = 8;
-			this.ButtonQuit.Text = "&Quit";
-			this.ButtonQuit.UseVisualStyleBackColor = true;
-			this.ButtonQuit.Click += new System.EventHandler( this.ButtonQuit_Click );
-			// 
-			// ButtonReload
-			// 
-			this.ButtonReload.Location = new System.Drawing.Point( 479, 42 );
-			this.ButtonReload.Name = "ButtonReload";
-			this.ButtonReload.Size = new System.Drawing.Size( 82, 27 );
-			this.ButtonReload.TabIndex = 10;
-			this.ButtonReload.Text = "&Reload";
-			this.ButtonReload.UseVisualStyleBackColor = true;
-			this.ButtonReload.Click += new System.EventHandler( this.ButtonReload_Click );
-			// 
 			// label3
 			// 
 			this.label3.AutoSize = true;
@@ -151,8 +129,6 @@ namespace LothianProductions.VoIP.Forms {
 			this.Controls.Add( this.TextboxBehaviour );
 			this.Controls.Add( this.TreeStates );
 			this.Controls.Add( this.label3 );
-			this.Controls.Add( this.ButtonReload );
-			this.Controls.Add( this.ButtonQuit );
 			this.Controls.Add( this.label1 );
 			this.Controls.Add( this.pictureBox1 );
 			this.Controls.Add( this.LabelLinks );
@@ -180,8 +156,6 @@ namespace LothianProductions.VoIP.Forms {
 		private System.Windows.Forms.PictureBox pictureBox1;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.LinkLabel LabelLinks;
-		private System.Windows.Forms.Button ButtonQuit;
-		private System.Windows.Forms.Button ButtonReload;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.TreeView TreeStates;
 		private System.Windows.Forms.Timer TimerFlash;
