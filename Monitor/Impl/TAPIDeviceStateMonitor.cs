@@ -118,7 +118,7 @@ namespace LothianProductions.VoIP.Monitor.Impl
                         mDeviceState.LineStates[0].LastCallerNumber = m_ActiveCall.CallerID.ToString();
                         IList<StateChange> changes = new List<StateChange>();
                         changes.Add(new CallStateChange(mDeviceState.LineStates[0].CallStates[0], "lastCallerNumber", "", m_ActiveCall.CallerID.ToString()));
-                        StateManager.Instance().DeviceStateUpdated(this, changes);
+                        // FIXME uncomment this StateManager.Instance().DeviceStateUpdated(this, changes);
                     }
                 }
             }

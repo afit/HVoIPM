@@ -102,23 +102,21 @@ namespace LothianProductions.VoIP {
 			if( StateUpdate != null )
 				StateUpdate( monitor, new StateUpdateEventArgs( deviceChanges, lineChanges, callChanges ) );
 
-            foreach( StateChange change in changes ) {
+            foreach( CallStateChange change in callChanges ) {
                 if ( change.Property == "callActivity" ) {
                     if ((change.ChangedFrom == "Idle") && (change.ChangedTo != "Idle")) {
-                        CallState cs = (CallState)change.Underlying;
                         foreach (LineState line in monitor.GetDeviceState().LineStates) {
-                            if (Array.IndexOf(line.CallStates, cs) > 0) {
-                                Call call = new Call(monitor.GetDeviceState().Name, cs, change.ChangedTo, line.LastCalledNumber, DateTime.Now, new DateTime(), null);
-                                mCalls.Add(cs, call);
+                            if (Array.IndexOf(line.CallStates, change.CallState) > 0) {
+                                Call call = new Call(monitor.GetDeviceState().Name, change.CallState, change.ChangedTo, line.LastCalledNumber, DateTime.Now, new DateTime(), null);
+                                mCalls.Add(change.CallState, call);
                             }
                         }
                     } else if ((change.ChangedFrom != "Idle") && (change.ChangedTo == "Idle")) {
-                        CallState cs = (CallState)change.Underlying;
                         foreach ( LineState line in monitor.GetDeviceState().LineStates ) {
-                            if ( Array.IndexOf( line.CallStates, cs ) > 0 ) {
-                                Call call = mCalls[ cs ];
+                            if ( Array.IndexOf( line.CallStates, change.CallState ) > 0 ) {
+                                Call call = mCalls[ change.CallState ];
                                 call.EndTime = DateTime.Now;
-                                call.Duration = cs.Duration;
+                                call.Duration = change.CallState.Duration;
                                 CallLogger.Instance().Log(call);
                             }
                         }
