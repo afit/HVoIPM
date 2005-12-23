@@ -140,9 +140,9 @@ namespace LothianProductions.VoIP.Forms {
 							found = true;
 							
 							if( ! node.Nodes.ContainsKey( change.Property ) )
-								node.Nodes.Add( change.Property, change.Property + " = " + change.ChangedTo ).Tag = change.Line;
+								node.Nodes.Add( change.Property, String.Format( StateManager.Instance().LookupBehaviour( change.Line, change.Property ).BubbleText, new String[] { change.Property, change.ChangedFrom, change.ChangedTo } ) ).Tag = change.Line;
 							else
-								node.Nodes[ change.Property ].Text = change.Property + " = " + change.ChangedTo;
+								node.Nodes[ change.Property ].Text = String.Format( StateManager.Instance().LookupBehaviour( change.Line, change.Property ).BubbleText, new String[] { change.Property, change.ChangedFrom, change.ChangedTo } );
 
 						}
 									
@@ -163,9 +163,10 @@ namespace LothianProductions.VoIP.Forms {
 								found = true;
 								
 								if( ! node.Nodes.ContainsKey( change.Property ) )
-									node.Nodes.Add( change.Property, change.Property + " = " + change.ChangedTo ).Tag = change.Call;
+									node.Nodes.Add( change.Property, String.Format( StateManager.Instance().LookupBehaviour( change.Call, change.Property ).BubbleText, new String[] { change.Property, change.ChangedFrom, change.ChangedTo } ) ).Tag = change.Call;
 								else
-									node.Nodes[ change.Property ].Text = change.Property + " = " + change.ChangedTo;
+									node.Nodes[ change.Property ].Text = String.Format( StateManager.Instance().LookupBehaviour( change.Call, change.Property ).BubbleText, new String[] { change.Property, change.ChangedFrom, change.ChangedTo } );
+									//node.Nodes[ change.Property ].Text = StateManager.Instance().LookupBehaviour( change.Call, change.Property ).BubbleText + " = " + change.ChangedTo;
 							}
 									
 				if( ! found ) {
@@ -220,10 +221,10 @@ namespace LothianProductions.VoIP.Forms {
 			}
 		}
 
-		private void TreeStates_AfterSelect( object sender, TreeViewEventArgs e ) {
-			StateChangeBehaviour behaviour = StateManager.Instance().LookupBehaviour( e.Node.Tag, e.Node.Name );
-			TextboxBehaviour.Text = e.Node.Text + "\n\n" + behaviour.ToString();
-		}
+		//private void TreeStates_AfterSelect( object sender, TreeViewEventArgs e ) {
+		//    StateChangeBehaviour behaviour = StateManager.Instance().LookupBehaviour( e.Node.Tag, e.Node.Name );
+		//    TextboxBehaviour.Text = e.Node.Text + "\n\n" + behaviour.ToString();
+		//}
 
 		protected bool mFlashState = false;
 		private void TimerFlash_Tick( object sender, EventArgs e ) {

@@ -24,6 +24,7 @@ namespace LothianProductions.VoIP.Forms {
         /// </summary>
         private void InitializeComponent() {
 			this.components = new System.ComponentModel.Container();
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager( typeof( FormMain ) );
 			this.NotifyIcon = new System.Windows.Forms.NotifyIcon( this.components );
 			this.NotifyIconContextMenuStrip = new System.Windows.Forms.ContextMenuStrip( this.components );
 			this.toolStripQuit = new System.Windows.Forms.ToolStripMenuItem();
@@ -33,7 +34,6 @@ namespace LothianProductions.VoIP.Forms {
 			this.TreeStates = new System.Windows.Forms.TreeView();
 			this.TimerFlash = new System.Windows.Forms.Timer( this.components );
 			this.pictureBox1 = new System.Windows.Forms.PictureBox();
-			this.TextboxBehaviour = new System.Windows.Forms.TextBox();
 			this.NotifyIconContextMenuStrip.SuspendLayout();
 			( (System.ComponentModel.ISupportInitialize) ( this.pictureBox1 ) ).BeginInit();
 			this.SuspendLayout();
@@ -93,9 +93,8 @@ namespace LothianProductions.VoIP.Forms {
 			// 
 			this.TreeStates.Location = new System.Drawing.Point( 12, 82 );
 			this.TreeStates.Name = "TreeStates";
-			this.TreeStates.Size = new System.Drawing.Size( 294, 317 );
+			this.TreeStates.Size = new System.Drawing.Size( 381, 317 );
 			this.TreeStates.TabIndex = 14;
-			this.TreeStates.AfterSelect += new System.Windows.Forms.TreeViewEventHandler( this.TreeStates_AfterSelect );
 			// 
 			// TimerFlash
 			// 
@@ -111,21 +110,11 @@ namespace LothianProductions.VoIP.Forms {
 			this.pictureBox1.TabIndex = 1;
 			this.pictureBox1.TabStop = false;
 			// 
-			// TextboxBehaviour
-			// 
-			this.TextboxBehaviour.Location = new System.Drawing.Point( 312, 82 );
-			this.TextboxBehaviour.Multiline = true;
-			this.TextboxBehaviour.Name = "TextboxBehaviour";
-			this.TextboxBehaviour.ReadOnly = true;
-			this.TextboxBehaviour.Size = new System.Drawing.Size( 249, 317 );
-			this.TextboxBehaviour.TabIndex = 15;
-			// 
 			// FormMain
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF( 6F, 16F );
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size( 573, 411 );
-			this.Controls.Add( this.TextboxBehaviour );
+			this.ClientSize = new System.Drawing.Size( 420, 411 );
 			this.Controls.Add( this.TreeStates );
 			this.Controls.Add( this.label3 );
 			this.Controls.Add( this.label1 );
@@ -133,6 +122,7 @@ namespace LothianProductions.VoIP.Forms {
 			this.Controls.Add( this.LabelLinks );
 			this.Font = new System.Drawing.Font( "Trebuchet MS", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ( (byte) ( 0 ) ) );
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+			this.Icon = ( (System.Drawing.Icon) ( resources.GetObject( "$this.Icon" ) ) );
 			this.Margin = new System.Windows.Forms.Padding( 3, 4, 3, 4 );
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
@@ -158,7 +148,6 @@ namespace LothianProductions.VoIP.Forms {
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.TreeView TreeStates;
 		private System.Windows.Forms.Timer TimerFlash;
-		private System.Windows.Forms.TextBox TextboxBehaviour;
     }
 }
 

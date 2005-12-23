@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using LothianProductions.Util;
+
 namespace LothianProductions.VoIP.State {
 	public abstract class Change {
 		protected String mProperty;
@@ -11,12 +13,12 @@ namespace LothianProductions.VoIP.State {
 		
 		protected String mChangedFrom;
 		public String ChangedFrom {
-			get{ return mChangedFrom; }
+			get{ return StringHelper.NoNull( mChangedFrom ); }
 		}
 		
 		protected String mChangedTo;
 		public String ChangedTo {
-			get{ return mChangedTo; }
+			get{ return StringHelper.NoNull( mChangedTo ); }
 		}
 		
 		public abstract Object Underlying {

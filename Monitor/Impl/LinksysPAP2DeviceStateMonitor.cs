@@ -58,12 +58,12 @@ namespace LothianProductions.VoIP.Monitor.Impl {
         
         protected virtual void AnalyseLineState( String page, Line lineState, IList<LineChange> lineChanges, IList<CallChange> callChanges ) {
 
-			String lastCalledNumber = StringHelper.ExtractSubstring( page, "Last Called Number:<td><font color=\"darkblue\">", "<", lineState.Name + " Status" );
+			String lastCalledNumber = StringHelper.EmptyToNull( StringHelper.ExtractSubstring( page, "Last Called Number:<td><font color=\"darkblue\">", "<", lineState.Name + " Status" ) );
 			if( lastCalledNumber != lineState.LastCalledNumber )
 				lineChanges.Add( new LineChange( lineState, "lastCalledNumber", lineState.LastCalledNumber, lastCalledNumber ) );
 			lineState.LastCalledNumber = lastCalledNumber;
 				
-			String lastCallerNumber = StringHelper.ExtractSubstring( page, "Last Caller Number:<td><font color=\"darkblue\">", "<", lineState.Name + " Status" );
+			String lastCallerNumber = StringHelper.EmptyToNull( StringHelper.ExtractSubstring( page, "Last Caller Number:<td><font color=\"darkblue\">", "<", lineState.Name + " Status" ) );
 			if( lastCallerNumber != lineState.LastCallerNumber )
 				lineChanges.Add( new LineChange( lineState, "lastCallerNumber", lineState.LastCallerNumber, lastCallerNumber ) );
 			lineState.LastCallerNumber = lastCallerNumber;
@@ -90,7 +90,7 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 				callChanges.Add( new CallChange( callState, "activity", callState.Activity.ToString(), callActivity.ToString() ) );
 			callState.Activity = callActivity;
 			
-			String duration = StringHelper.ExtractSubstring( page, callState.Name + " Duration:<td><font color=\"darkblue\">", "<", lineState.Name + " Status" );
+			String duration = StringHelper.EmptyToNull( StringHelper.ExtractSubstring( page, callState.Name + " Duration:<td><font color=\"darkblue\">", "<", lineState.Name + " Status" ) );
 			if( duration != callState.Duration )
 				callChanges.Add( new CallChange( callState, "duration", callState.Duration, duration ) );
 			callState.Duration = duration;
@@ -105,12 +105,12 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 				callChanges.Add( new CallChange( callState, "tone", callState.Tone.ToString(), tone.ToString() ) );
 			callState.Tone = tone;
 			
-			String encoder = StringHelper.ExtractSubstring( page, callState.Name + " Encoder:<td><font color=\"darkblue\">", "<", lineState.Name + " Status" );
+			String encoder = StringHelper.EmptyToNull( StringHelper.ExtractSubstring( page, callState.Name + " Encoder:<td><font color=\"darkblue\">", "<", lineState.Name + " Status" ) );
 			if( encoder != callState.Encoder )
 				callChanges.Add( new CallChange( callState, "encoder", callState.Encoder, encoder ) );
 			callState.Encoder = encoder;
 			
-			String decoder = StringHelper.ExtractSubstring( page, callState.Name + " Decoder:<td><font color=\"darkblue\">", "<", lineState.Name + " Status" );
+			String decoder = StringHelper.EmptyToNull( StringHelper.ExtractSubstring( page, callState.Name + " Decoder:<td><font color=\"darkblue\">", "<", lineState.Name + " Status" ) );
 			if( decoder != callState.Decoder )
 				callChanges.Add( new CallChange( callState, "decoder", callState.Decoder, decoder ) );
 			callState.Decoder = decoder;
@@ -186,6 +186,8 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 			// FIXME does this work?
 			else if( tone == "Call" )
 				return Tone.Call;
+			else if ( tone == "Ring Back" )
+				return Tone.Error;
 			throw new ArgumentOutOfRangeException( "Tone " + tone + " not found." );
 		}
 
