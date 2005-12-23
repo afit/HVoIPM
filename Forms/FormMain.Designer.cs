@@ -24,7 +24,6 @@ namespace LothianProductions.VoIP.Forms {
         /// </summary>
         private void InitializeComponent() {
 			this.components = new System.ComponentModel.Container();
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager( typeof( FormMain ) );
 			this.NotifyIcon = new System.Windows.Forms.NotifyIcon( this.components );
 			this.NotifyIconContextMenuStrip = new System.Windows.Forms.ContextMenuStrip( this.components );
 			this.toolStripQuit = new System.Windows.Forms.ToolStripMenuItem();
@@ -42,7 +41,7 @@ namespace LothianProductions.VoIP.Forms {
 			// NotifyIcon
 			// 
 			this.NotifyIcon.ContextMenuStrip = this.NotifyIconContextMenuStrip;
-			this.NotifyIcon.Icon = global::LothianProductions.VoIP.Properties.Resources.HVoIPM;
+			this.NotifyIcon.Icon = global::LothianProductions.VoIP.Properties.Resources.HVoIPM_48x;
 			this.NotifyIcon.Text = "Hardware VoIP Monitor";
 			this.NotifyIcon.Visible = true;
 			this.NotifyIcon.MouseClick += new System.Windows.Forms.MouseEventHandler( this.NotifyIcon_MouseClick );
@@ -105,7 +104,7 @@ namespace LothianProductions.VoIP.Forms {
 			// 
 			// pictureBox1
 			// 
-			this.pictureBox1.Image = ( (System.Drawing.Image) ( resources.GetObject( "pictureBox1.Image" ) ) );
+			this.pictureBox1.Image = global::LothianProductions.VoIP.Properties.Resources.HVoIPM_48x1;
 			this.pictureBox1.Location = new System.Drawing.Point( 12, 12 );
 			this.pictureBox1.Name = "pictureBox1";
 			this.pictureBox1.Size = new System.Drawing.Size( 48, 48 );

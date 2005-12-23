@@ -106,6 +106,9 @@
     <None Include="Resources\HVoIPM.ico" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\HVoIPM-48x.ico" />
+    <None Include="Resources\HVoIPM-48x.gif" />
+    <None Include="Resources\HVoIPM-48x.bmp" />
     <Content Include="Tapi2Lib.dll" />
     <Content Include="Tapi2Lib.pdb" />
   </ItemGroup>

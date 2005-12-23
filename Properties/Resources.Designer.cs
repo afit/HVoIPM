@@ -60,16 +60,16 @@ namespace LothianProductions.VoIP.Properties {
             }
         }
         
-        internal static System.Drawing.Icon HVoIPM {
+        internal static System.Drawing.Icon HVoIPM_48x {
             get {
-                object obj = ResourceManager.GetObject("HVoIPM", resourceCulture);
+                object obj = ResourceManager.GetObject("HVoIPM_48x", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap HVoIPM_64x {
+        internal static System.Drawing.Bitmap HVoIPM_48x1 {
             get {
-                object obj = ResourceManager.GetObject("HVoIPM_64x", resourceCulture);
+                object obj = ResourceManager.GetObject("HVoIPM_48x1", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

@@ -87,7 +87,7 @@ namespace LothianProductions.VoIP.Forms {
 			TimerFlash.Enabled = mWarnings.Count > 0;
 			
 			if( ! TimerFlash.Enabled )
-				NotifyIcon.Icon = global::LothianProductions.VoIP.Properties.Resources.HVoIPM;
+				NotifyIcon.Icon = global::LothianProductions.VoIP.Properties.Resources.HVoIPM_48x;
 			
 
 			if( bubbleTextBuilder.Length > 0 )
@@ -233,7 +233,7 @@ namespace LothianProductions.VoIP.Forms {
 			if( mFlashState )
 				NotifyIcon.Icon = global::LothianProductions.VoIP.Properties.Resources.HVoIPM_flash;
 			else
-				NotifyIcon.Icon = global::LothianProductions.VoIP.Properties.Resources.HVoIPM;
+				NotifyIcon.Icon = global::LothianProductions.VoIP.Properties.Resources.HVoIPM_48x;
 				
 			mFlashState = ! mFlashState;									
 		}
