@@ -4,6 +4,8 @@ using System.Web;
 using System.Xml;
 using System.Diagnostics;
 
+using LothianProductions.VoIP.State;
+
 namespace LothianProductions.VoIP
 {
     /// <summary>
@@ -18,10 +20,10 @@ namespace LothianProductions.VoIP
         }
 
         public void Log(CallRecord call) {
-            Log(call.Device, call.CallState.ToString(), call.Direction, call.Phone, call.StartTime, call.EndTime, call.Duration);
+            Log(call.Device, call.Line, call.Call, call.StartTime, call.EndTime );
         }
 
-        public void Log(string device, string callid, string direction, string phone, DateTime starttime, DateTime endtime, string length ) {
+        public void Log( Device device, Line line, Call call, DateTime starttime, DateTime endtime ) {
             lock (this) {
                 string strFile = "";
                 try {
@@ -36,7 +38,13 @@ namespace LothianProductions.VoIP
                 }
                 StreamWriter objLogFile = File.AppendText(strFile);
                 string strLine = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss.ffffff");
-                strLine += "," + device + "," + callid + "," + direction + "," + phone + "," + starttime + "," + endtime + "," + length;
+				string phone = "unknown";
+				if (call.Type == CallType.Inbound) {
+					phone = line.LastCallerNumber;
+				} else {
+					phone = line.LastCalledNumber;
+				}
+				strLine += "," + device.Name + "," + call.Name + "," + call.Type.ToString() +"," + phone + "," + starttime + "," + endtime + "," + call.Duration;
                 objLogFile.WriteLine(strLine);
                 objLogFile.Close();
             }

@@ -36,7 +36,7 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 				lock (this) {
 					String page;
 					try {
-						page = HttpHelper.HttpGet( new Uri( "http://phone" ), "", "", "", 1000 );
+						page = HttpHelper.HttpGet( new Uri( "http://phone" ), "", "", "", 5000 );
 					} catch (WebException e) {
 						throw new DeviceNotRespondingException( "The device is not responding to status requests", e );
 					}
@@ -200,7 +200,11 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 				return Activity.Dialing;
 			else if( activity == "Invalid" )
 				return Activity.Error;
-			throw new ArgumentOutOfRangeException( "Activity " + activity + " not found." );
+			else if (activity == "Calling")
+				return Activity.Ringing;
+			else if (activity == "Proceeding")
+				return Activity.Ringing;
+			throw new ArgumentOutOfRangeException("Activity " + activity + " not found.");
 		}
         
         public virtual RegistrationState GetRegistrationState( String state ) {

@@ -106,23 +106,32 @@ namespace LothianProductions.VoIP {
             foreach( CallChange change in callChanges ) {
                 if ( change.Property == "activity" ) {
                     if ( change.ChangedFrom == Activity.IdleDisconnected.ToString() && change.ChangedTo != Activity.IdleDisconnected.ToString() ) {
-                        CallRecord call = new CallRecord(
-							monitor.GetDeviceState().Name, change.Call, change.ChangedTo,
-							GetLine( change.Call ).LastCalledNumber, DateTime.Now,
-							new DateTime(), null
-						);
+                        CallRecord call = new CallRecord( monitor.GetDeviceState(), GetLine( change.Call ), change.Call, DateTime.Now, new DateTime() );
 						
 						// FIXME add sanity check in case somehow call is already there
+						if ( mCalls.ContainsKey( change.Call ) ) {
+							mCalls.Remove( change.Call );
+							Logger.Instance().Log("Call #" + change.Call.Name + " had to be removed from the call list - did the previous call fail?");
+						}
                         mCalls.Add( change.Call, call );
-                    } else if ( change.ChangedFrom != Activity.IdleDisconnected.ToString() && change.ChangedTo == Activity.IdleDisconnected.ToString() ) {
-						//LineState lineState = GetLineState( change.CallState );
-                        CallRecord call = mCalls[ change.Call ];
-                        call.EndTime = DateTime.Now;
-                        call.Duration = change.Call.Duration;
-                        CallLogger.Instance().Log( call );
-                    }
+					} else if ( change.ChangedFrom != Activity.IdleDisconnected.ToString() && change.ChangedTo == Activity.IdleDisconnected.ToString() ) {
+						CallRecord call = mCalls[change.Call];
+						call.EndTime = DateTime.Now;
+						CallLogger.Instance().Log(call);
+						mCalls.Remove( change.Call );
+					} else if ( change.Call.Activity != Activity.IdleDisconnected ) {
+						CallRecord call = mCalls[change.Call];
+						call.Call = change.Call;
+						call.Line = GetLine(change.Call);
+					}
                 }
             }
+			foreach (DeviceChange change in deviceChanges) {
+				Logger.Instance().Log( "Device property " + change.Property + " has changed from " + change.ChangedFrom + " to " + change.ChangedTo );
+			}
+			foreach (LineChange change in lineChanges) {
+				Logger.Instance().Log( "Line property " + change.Property + " has changed from " + change.ChangedFrom + " to " + change.ChangedTo );
+			}
 		}
 		
 		// Helper functions for linking states.

@@ -7,37 +7,33 @@ namespace LothianProductions.VoIP
 {
     public class CallRecord
     {
-        protected Call mCallState;
-        protected string mDevice;
-        protected string mPhone;
-        protected string mDirection;
-        protected DateTime mStartTime;
-        protected DateTime mEndTime;
-        protected string mDuration;
+        protected Call mCall;
+		protected Line mLine;
+		protected Device mDevice;
+		protected DateTime mStartTime;
+		protected DateTime mEndTime;
 
         public CallRecord() {
         }
 
-        public CallRecord( string device, Call cs, string direction, string phone, DateTime startTime, DateTime endTime, string duration ) {
-            mCallState = cs;
-            mDevice = device;
-            mDirection = direction;
-            mPhone = phone;
-            mStartTime = startTime;
-            mEndTime = endTime;
-            mDuration = duration;
-        }
+        public CallRecord( Device device, Line line, Call call, DateTime startTime, DateTime endTime ) {
+			mCall = call;
+			mLine = line;
+			mDevice = device;
+			mStartTime = startTime;
+			mEndTime = endTime;
+		}
 
-        public Call CallState {
+        public Call Call {
             get {
-                return mCallState;
+                return mCall;
             }
             set {
-                mCallState = value;
+                mCall = value;
             }
         }
 
-        public string Device {
+        public Device Device {
             get {
                 return mDevice;
             }
@@ -46,49 +42,31 @@ namespace LothianProductions.VoIP
             }
         }
 
-        public string Direction {
+        public Line Line {
             get {
-                return mDirection;
+                return mLine;
             }
             set {
-                mDirection = value;
+                mLine = value;
             }
         }
 
-        public string Phone {
-            get {
-                return mPhone;
-            }
-            set {
-                mPhone = value;
-            }
-        }
+		public DateTime StartTime {
+			get {
+				return mStartTime;
+			}
+			set {
+				mStartTime = value;
+			}
+		}
 
-        public DateTime StartTime {
-            get {
-                return mStartTime;
-            }
-            set {
-                mStartTime = value;
-            }
-        }
-
-        public DateTime EndTime {
-            get {
-                return mEndTime;
-            }
-            set {
-                mEndTime = value;
-            }
-        }
-
-        public string Duration {
-            get {
-                return mDuration;
-            }
-            set {
-                mDuration = value;
-            }
-        }
-    }
+		public DateTime EndTime {
+			get {
+				return mEndTime;
+			}
+			set {
+				mEndTime = value;
+			}
+		}
+	}
 }
