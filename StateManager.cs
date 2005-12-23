@@ -5,48 +5,23 @@ using System.Configuration;
 using System.Text;
 using System.Threading;
 using System.Reflection;
+using System.Xml;
 
 using LothianProductions.Data;
 using LothianProductions.Util.Settings;
+using LothianProductions.VoIP.Behaviour;
 using LothianProductions.VoIP.Monitor;
 using LothianProductions.VoIP.Monitor.Impl;
 using LothianProductions.VoIP.State;
 
 namespace LothianProductions.VoIP {
-
-	public class StateUpdateEventArgs : EventArgs {
-		public StateUpdateEventArgs(	IList<DeviceChange> deviceChanges, IList<LineChange> lineChanges,
-										IList<CallChange> callChanges ) {
-			mDeviceStateChanges = deviceChanges;
-			mLineStateChanges = lineChanges;
-			mCallStateChanges = callChanges;
-		}
-
-		protected IList<DeviceChange> mDeviceStateChanges;
-		public IList<DeviceChange> DeviceStateChanges {
-			get{ return mDeviceStateChanges; }
-		}
-
-		protected IList<LineChange> mLineStateChanges;
-		public IList<LineChange> LineStateChanges {
-			get{ return mLineStateChanges; }
-		}
-
-		protected IList<CallChange> mCallStateChanges;
-		public IList<CallChange> CallStateChanges {
-			get{ return mCallStateChanges; }
-		}
-	}
-	
 	public delegate void StateUpdateHandler( IDeviceStateMonitor monitor, StateUpdateEventArgs e );
 
-	/// <summary>
-	/// Doesn't handle multiple or custom device monitors yet.
-	/// </summary>
     public class StateManager {	
 		protected static readonly StateManager mInstance = new StateManager();
 
         protected Dictionary<Call, CallRecord> mCalls = new Dictionary<Call, CallRecord>();
+        protected Dictionary<Object, Dictionary<String, StateChangeBehaviour>> mStateProperties = new Dictionary<Object, Dictionary<String, StateChangeBehaviour>>();
 		
 		public static StateManager Instance() {
 			return mInstance;
@@ -132,6 +107,39 @@ namespace LothianProductions.VoIP {
 			foreach (LineChange change in lineChanges) {
 				Logger.Instance().Log( "Line property " + change.Property + " has changed from " + change.ChangedFrom + " to " + change.ChangedTo );
 			}
+		}
+		
+		public StateChangeBehaviour LookupBehaviour( Object state, String property ) {		
+			// Behaviour not set yet.
+			if( ! mStateProperties.ContainsKey( state ) )
+				mStateProperties.Add( state, new Dictionary<String, StateChangeBehaviour>() );
+			
+			Dictionary<String, StateChangeBehaviour> propertyBehaviours = mStateProperties[ state ];
+			
+			if( ! propertyBehaviours.ContainsKey( property ) )
+				propertyBehaviours.Add( property, GetBehaviourFromXml( state.GetType().Name, property ) );
+				
+			return propertyBehaviours[ property ];			
+		}
+		
+		protected StateChangeBehaviour GetBehaviourFromXml( String stateType, String property ) {
+			XmlNode node = (XmlNode) ConfigurationManager.GetSection( "hvoipm/behaviours" );
+			
+			if( node == null )
+				throw new ConfigurationErrorsException( "Could not find behaviours section in application configuration." );
+
+			XmlNode behaviour = node.SelectSingleNode( "behaviour[@stateType='" + stateType + "' and @property='" + property + "']" );
+			if( behaviour == null )
+				throw new ConfigurationErrorsException( "Could not find behaviour description for " + stateType + "." + property + "\" in application configuration." );
+
+			return new StateChangeBehaviour(
+				Boolean.Parse( behaviour.Attributes[ "showBubble" ].Value ),
+				behaviour.Attributes[ "bubbleText" ].Value,
+				Boolean.Parse( behaviour.Attributes[ "systemTrayWarning" ].Value ),
+				Boolean.Parse( behaviour.Attributes[ "showApplication" ].Value ),
+				( behaviour.Attributes[ "showCriteria" ] == null ? "" : behaviour.Attributes[ "showCriteria" ].Value ).Split( ',' ),
+				Boolean.Parse( behaviour.Attributes[ "log" ].Value )
+			);
 		}
 		
 		// Helper functions for linking states.

@@ -19,8 +19,6 @@ using LothianProductions.VoIP.State;
 
 namespace LothianProductions.VoIP.Forms {
     public partial class FormMain : Form {
-		Dictionary<Object, Dictionary<String, StateChangeBehaviour>> mStateProperties = new Dictionary<Object, Dictionary<String, StateChangeBehaviour>>();
-				
         public FormMain() {
             InitializeComponent();
             // FIXME implement proper thread-handling, if the textbox is to remain
@@ -41,40 +39,6 @@ namespace LothianProductions.VoIP.Forms {
             this.Hide();
         }
 
-		protected StateChangeBehaviour LookupBehaviour( Object state, String property ) {		
-			// FIXME this should probably be broken out of the form
-			// Behaviour not set yet.
-			if( ! mStateProperties.ContainsKey( state ) )
-				mStateProperties.Add( state, new Dictionary<String, StateChangeBehaviour>() );
-			
-			Dictionary<String, StateChangeBehaviour> propertyBehaviours = mStateProperties[ state ];
-			
-			if( ! propertyBehaviours.ContainsKey( property ) )
-				propertyBehaviours.Add( property, GetBehaviourFromXml( state.GetType().Name, property ) );
-				
-			return propertyBehaviours[ property ];			
-		}
-		
-		protected StateChangeBehaviour GetBehaviourFromXml( String stateType, String property ) {
-			XmlNode node = (XmlNode) ConfigurationManager.GetSection( "hvoipm/behaviours" );
-			
-			if( node == null )
-				throw new ConfigurationErrorsException( "Could not find behaviours section in application configuration." );
-
-			XmlNode behaviour = node.SelectSingleNode( "behaviour[@stateType='" + stateType + "' and @property='" + property + "']" );
-			if( behaviour == null )
-				throw new ConfigurationErrorsException( "Could not find behaviour description for " + stateType + "." + property + "\" in application configuration." );
-
-			return new StateChangeBehaviour(
-				Boolean.Parse( behaviour.Attributes[ "showBubble" ].Value ),
-				behaviour.Attributes[ "bubbleText" ].Value,
-				Boolean.Parse( behaviour.Attributes[ "systemTrayWarning" ].Value ),
-				Boolean.Parse( behaviour.Attributes[ "showApplication" ].Value ),
-				( behaviour.Attributes[ "showCriteria" ] == null ? "" : behaviour.Attributes[ "showCriteria" ].Value ).Split( ',' ),
-				Boolean.Parse( behaviour.Attributes[ "log" ].Value )
-			);
-		}
-
 		protected IList<String> mWarnings = new List<String>();
 		public void StateManagerUpdated( IDeviceStateMonitor monitor, StateUpdateEventArgs e ) {
 			
@@ -92,7 +56,7 @@ namespace LothianProductions.VoIP.Forms {
 				changes.Add( change );
 			
 			foreach( Change change in changes ) {
-				StateChangeBehaviour behaviour = LookupBehaviour( change.Underlying, change.Property );
+				StateChangeBehaviour behaviour = StateManager.Instance().LookupBehaviour( change.Underlying, change.Property );
 			
 				if( behaviour.ShowBubble ) {
 					if( bubbleTextBuilder.Length > 0 )
@@ -257,7 +221,7 @@ namespace LothianProductions.VoIP.Forms {
 		}
 
 		private void TreeStates_AfterSelect( object sender, TreeViewEventArgs e ) {
-			StateChangeBehaviour behaviour = LookupBehaviour( e.Node.Tag, e.Node.Name );
+			StateChangeBehaviour behaviour = StateManager.Instance().LookupBehaviour( e.Node.Tag, e.Node.Name );
 			TextboxBehaviour.Text = e.Node.Text + "\n\n" + behaviour.ToString();
 		}
 

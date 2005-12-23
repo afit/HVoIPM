@@ -48,6 +48,7 @@
     <Compile Include="Monitor\DeviceNotRespondingException.cs" />
     <Compile Include="Monitor\DeviceStateMonitor.cs" />
     <Compile Include="Monitor\Impl\TAPIDeviceStateMonitor.cs" />
+    <Compile Include="StateUpdateEventArgs.cs" />
     <Compile Include="State\Call.cs" />
     <Compile Include="Monitor\IDeviceStateMonitor.cs" />
     <Compile Include="State\Device.cs" />
