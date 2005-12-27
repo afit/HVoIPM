@@ -10,16 +10,21 @@ namespace LothianProductions.VoIP.State {
         Dialing,
         Ringing,
         
-        // FIXME lose or reasses those below:
-        // I think they're all replaced now by combinations
-        // of properties. "Held" is possibly part of a new property.
-        InboundRinging,
-        OutboundRinging,
-        Outbound,
-        Inbound,
-        Busy,
-        Held,
-        Error
+        // FIXME remove these obsoleted calls
+        [Obsolete("Use combinations of CallTypes, Activities and Tones for this.")]
+		InboundRinging,
+		[Obsolete("Use combinations of CallTypes, Activities and Tones for this.")]
+		OutboundRinging,
+		[Obsolete("Use combinations of CallTypes, Activities and Tones for this.")]
+		Outbound,
+		[Obsolete("Use combinations of CallTypes, Activities and Tones for this.")]
+		Inbound,
+		[Obsolete("Use combinations of CallTypes, Activities and Tones for this.")]
+		Busy,
+		[Obsolete("Use combinations of CallTypes, Activities and Tones for this.")]
+		Held,
+		
+		Error
     }
 
     public enum CallType {
