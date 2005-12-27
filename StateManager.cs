@@ -107,8 +107,9 @@ namespace LothianProductions.VoIP {
 				bool log = false;
 				try {
 					log = LookupBehaviour(change.Call, change.Property).Log;
-				} catch (ConfigurationErrorsException ce) {
+				} catch (ConfigurationErrorsException) {
 				}
+				
 				if (log)
 					Logger.Instance().Log("Call property " + change.Property + " has changed from " + change.ChangedFrom + " to " + change.ChangedTo);
 			}
@@ -117,7 +118,7 @@ namespace LothianProductions.VoIP {
 				bool log = false;
 				try {
 					log = LookupBehaviour(change.Device, change.Property).Log;
-				} catch (ConfigurationErrorsException ce) {
+				} catch (ConfigurationErrorsException) {
 				}
 				if ( log )
 					Logger.Instance().Log( "Device property " + change.Property + " has changed from " + change.ChangedFrom + " to " + change.ChangedTo );
@@ -127,7 +128,7 @@ namespace LothianProductions.VoIP {
 				bool log = false;
 				try {
 					log = LookupBehaviour(change.Line, change.Property).Log;
-				} catch (ConfigurationErrorsException ce) {
+				} catch (ConfigurationErrorsException) {
 				}
 				if (log)
 					Logger.Instance().Log("Line property " + change.Property + " has changed from " + change.ChangedFrom + " to " + change.ChangedTo);
