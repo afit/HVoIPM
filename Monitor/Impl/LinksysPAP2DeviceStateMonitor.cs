@@ -16,6 +16,10 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 	/// Implementation of DeviceMonitor for the Linksys PAP2
 	/// VoIP adapter device. As there's no neat way to get into
 	/// the thing, this implementation works just by HTML scraping.
+	/// 
+	/// This implementation is really just a template, and it's not
+	/// at all efficient. There's a heck of a lot of String creation
+	/// & disposal that's highly unecessary.
 	/// </summary>
     public class LinksysPAP2DeviceStateMonitor : DeviceStateMonitor {
 
@@ -34,7 +38,6 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 			while( true ) {
 				// Lock to prevent recursion synchronicity problems
 				// caused by slow wgetting.
-					try {
 				lock (this) {
 					String page;
 					try {
@@ -53,15 +56,12 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 				
 					AnalyseLineState( page, mDeviceState.Lines[ 0 ], lineChanges, callChanges );	
 					AnalyseLineState( page, mDeviceState.Lines[ 1 ], lineChanges, callChanges );
-		
 				
 					// FIXME safer to use event here?	
 					if( deviceChanges.Count > 0 || lineChanges.Count > 0 || callChanges.Count > 0 )
 						StateManager.Instance().DeviceStateUpdated( this, deviceChanges, lineChanges, callChanges );
 				}			
-							} catch (FormatException e ) {
-						Console.WriteLine( e.StackTrace );
-					}
+				
 				Thread.Sleep( 1000 );
 			}
         }
