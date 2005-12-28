@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Text;
 using System.Threading;
@@ -40,7 +41,7 @@ namespace LothianProductions.VoIP.Forms {
         }
 
 		protected IList<String> mWarnings = new List<String>();
-		public void StateManagerUpdated( IDeviceStateMonitor monitor, StateUpdateEventArgs e ) {
+		public void StateManagerUpdated( IDeviceMonitor monitor, StateUpdateEventArgs e ) {
 			
 			// Iterate through state changes and deal with them as appropriate:
 			StringBuilder bubbleTextBuilder = new StringBuilder();
@@ -182,7 +183,7 @@ namespace LothianProductions.VoIP.Forms {
 			}
 		}
 		
-		protected void AddMonitorToTree( IDeviceStateMonitor monitor ) {
+		protected void AddMonitorToTree( IDeviceMonitor monitor ) {
 		    // Use each node's key as a property name. Use each node's tag object as a state.
 		    // FIXME should we implement name-change support?
 			Device deviceState = monitor.GetDeviceState();
@@ -243,6 +244,10 @@ namespace LothianProductions.VoIP.Forms {
 		private void callLogToolStripMenuItem_Click(object sender, EventArgs e) {
 			CallRecordViewer frm = new CallRecordViewer();
 			frm.Show();
+		}
+
+		private void LabelLinks_LinkClicked( object sender, LinkLabelLinkClickedEventArgs e ) {
+			Process.Start( e.Link.LinkData as String );
 		}
     }
 }

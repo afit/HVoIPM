@@ -5,7 +5,7 @@ using System.Text;
 using LothianProductions.VoIP.State;
 
 namespace LothianProductions.VoIP.Monitor {
-	public interface IDeviceStateMonitor {
+	public interface IDeviceMonitor {
 		void Run();
 		Device GetDeviceState();
 		

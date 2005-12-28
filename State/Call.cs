@@ -11,17 +11,7 @@ namespace LothianProductions.VoIP.State {
         Ringing,
         
         // FIXME remove these obsoleted calls
-        [Obsolete("Use combinations of CallTypes, Activities and Tones for this.")]
-		InboundRinging,
-		[Obsolete("Use combinations of CallTypes, Activities and Tones for this.")]
-		OutboundRinging,
-		[Obsolete("Use combinations of CallTypes, Activities and Tones for this.")]
-		Outbound,
-		[Obsolete("Use combinations of CallTypes, Activities and Tones for this.")]
-		Inbound,
-		[Obsolete("Use combinations of CallTypes, Activities and Tones for this.")]
-		Busy,
-		[Obsolete("Use combinations of CallTypes, Activities and Tones for this.")]
+		[Obsolete("This needs to be implemented in a separate property.")]
 		Held,
 		
 		Error

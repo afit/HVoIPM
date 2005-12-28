@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 
 using LothianProductions.VoIP.Monitor;
 using LothianProductions.VoIP.State;
 
 namespace LothianProductions.VoIP.Monitor {
 
-	public abstract class DeviceStateMonitor : IDeviceStateMonitor {
+	public abstract class DeviceMonitor : IDeviceMonitor {
 		public const String PROPERTY_LASTCALLEDNUMBER = "lastCalledNumber";
 		public const String PROPERTY_LASTCALLERNUMBER = "lastCallerNumber";
 		public const String PROPERTY_REGISTRATIONSTATE = "registrationState";
@@ -36,6 +37,10 @@ namespace LothianProductions.VoIP.Monitor {
 
 		public Device GetDeviceState() {
 			return mDeviceState;
+		}
+		
+		public String GetConfigurationValue( String key ) {
+			return ConfigurationManager.AppSettings[ GetType().Name + ":" + key ];
 		}
 	}
 }

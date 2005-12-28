@@ -21,9 +21,9 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 	/// at all efficient. There's a heck of a lot of String creation
 	/// & disposal that's highly unecessary.
 	/// </summary>
-    public class LinksysPAP2DeviceStateMonitor : DeviceStateMonitor {
+    public class LinksysPAP2DeviceMonitor : DeviceMonitor {
 
-		public LinksysPAP2DeviceStateMonitor( String name ) {
+		public LinksysPAP2DeviceMonitor( String name ) {
 			mName = name;
 			
 			// We know there will be two lines for the device, each with
@@ -35,6 +35,8 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 		}
 	    
         public override void Run() {
+			int sleepTime = Int32.Parse( GetConfigurationValue( "PollInterval" ) );
+			
 			while( true ) {
 				// Lock to prevent recursion synchronicity problems
 				// caused by slow wgetting.
@@ -42,9 +44,11 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 					String page;
 					try {
 						page = HttpHelper.HttpGet(
-							new Uri( ConfigurationManager.AppSettings[ GetType().Name + ":Hostname" ] ),
-							"", "", "",
-							Int32.Parse( ConfigurationManager.AppSettings[ GetType().Name + ":Timeout" ] )
+							new Uri( GetConfigurationValue( "Hostname" ) ),
+							"HVoIPM / LinksysPAP2DeviceStateMonitor",
+							GetConfigurationValue( "Username" ),
+							GetConfigurationValue( "Password" ),
+							Int32.Parse( GetConfigurationValue( "RequestTimeout" ) )
 						);
 					} catch (WebException e) {
 						throw new DeviceNotRespondingException( "The device is not responding to status requests", e );
@@ -62,7 +66,7 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 						StateManager.Instance().DeviceStateUpdated( this, deviceChanges, lineChanges, callChanges );
 				}			
 				
-				Thread.Sleep( 1000 );
+				Thread.Sleep( sleepTime );
 			}
         }
         

@@ -19,7 +19,7 @@ namespace LothianProductions.VoIP.Monitor.Impl
     /// VoIP adapter device. As there's no neat way to get into
     /// the thing, this implementation works just by HTML scraping.
     /// </summary>
-    public class TAPIDeviceStateMonitor : DeviceStateMonitor
+    public class TAPIDeviceMonitor : DeviceMonitor
     {
         private const uint MAXASYNCCALLS = (uint)10;			// TAPI2_ADDITIONS
 
@@ -58,7 +58,7 @@ namespace LothianProductions.VoIP.Monitor.Impl
         private IList<LineChange> lineChanges = new List<LineChange>();
 
         
-        public TAPIDeviceStateMonitor(String name) {
+        public TAPIDeviceMonitor(String name) {
             mName = name;
 
             // We know there will one line for the device, which may have up to 10 calls. For now we will just support a single call.
@@ -95,7 +95,7 @@ namespace LothianProductions.VoIP.Monitor.Impl
             IList<CallChange> callChanges = new List<CallChange>();
 
             string sLineFilter;
-            sLineFilter = System.Configuration.ConfigurationManager.AppSettings[GetType().Name + ":Provider"];
+            sLineFilter = GetConfigurationValue( "Provider" );
             m_CLine = m_CTapi.GetLineByFilter(sLineFilter, false,
                 CTapi.LineCallPrivilege.LINECALLPRIVILEGE_OWNER | CTapi.LineCallPrivilege.LINECALLPRIVILEGE_MONITOR);
             if (m_CLine == null) {
@@ -104,13 +104,6 @@ namespace LothianProductions.VoIP.Monitor.Impl
             while (true) {
                 Thread.Sleep(0);
             }
-        }
-
-        protected virtual void AnalyseLineState(String page, Line lineState, IList<Change> changes) {
-
-        }
-
-        protected virtual void AnalyseCallState(String page, Call callState, Line lineState, IList<Change> changes) {
         }
 
         #region Event Handling
@@ -176,6 +169,7 @@ namespace LothianProductions.VoIP.Monitor.Impl
                     oldActivity = mDeviceState.Lines[0].Calls[0].Activity;
                     mDeviceState.Lines[0].Calls[0].Activity = Activity.IdleDisconnected;
                     mDeviceState.Lines[0].Calls[0].Tone = Tone.None;
+                    oldTone = mDeviceState.Lines[0].Calls[0].Tone;
                     tone = mDeviceState.Lines[0].Calls[0].Tone;
                     callChanges.Add(new CallChange(mDeviceState.Lines[0].Calls[0], PROPERTY_ACTIVITY, oldActivity.ToString(), "IdleDisconnected"));
                     if (tone != oldTone)

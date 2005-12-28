@@ -16,7 +16,7 @@ using LothianProductions.VoIP.Monitor.Impl;
 using LothianProductions.VoIP.State;
 
 namespace LothianProductions.VoIP {
-	public delegate void StateUpdateHandler( IDeviceStateMonitor monitor, StateUpdateEventArgs e );
+	public delegate void StateUpdateHandler( IDeviceMonitor monitor, StateUpdateEventArgs e );
 
     public class StateManager {	
 		protected static readonly StateManager mInstance = new StateManager();
@@ -29,7 +29,7 @@ namespace LothianProductions.VoIP {
 		}
 		
 		public event StateUpdateHandler StateUpdate;
-		protected Dictionary<IDeviceStateMonitor, Thread> mDeviceStateMonitors = new Dictionary<IDeviceStateMonitor, Thread>();
+		protected Dictionary<IDeviceMonitor, Thread> mDeviceStateMonitors = new Dictionary<IDeviceMonitor, Thread>();
     
 		protected StateManager() {
 			// Initialize device monitors, have to give each its own thread.
@@ -39,7 +39,7 @@ namespace LothianProductions.VoIP {
 		public void ReloadDeviceStateMonitors() {
 			lock (mDeviceStateMonitors) {
 				// Stop currently running threads.
-				foreach( IDeviceStateMonitor monitor in mDeviceStateMonitors.Keys )
+				foreach( IDeviceMonitor monitor in mDeviceStateMonitors.Keys )
 					mDeviceStateMonitors[ monitor ].Abort();
 					
 				mDeviceStateMonitors.Clear();
@@ -52,7 +52,7 @@ namespace LothianProductions.VoIP {
 				foreach( String key in config.Keys ) {				
 					Type type = Type.GetType( config[ key ], true );
 
-					IDeviceStateMonitor monitor = (IDeviceStateMonitor) type.InvokeMember(
+					IDeviceMonitor monitor = (IDeviceMonitor) type.InvokeMember(
 						"",
 						BindingFlags.CreateInstance | BindingFlags.Public | BindingFlags.Instance,
 						null,
@@ -69,11 +69,11 @@ namespace LothianProductions.VoIP {
 			}
 		}
 		
-		public ICollection<IDeviceStateMonitor> DeviceStateMonitors {
+		public ICollection<IDeviceMonitor> DeviceStateMonitors {
 			get{ return mDeviceStateMonitors.Keys; }
 		}
 
-		public void DeviceStateUpdated(	IDeviceStateMonitor monitor, IList<DeviceChange> deviceChanges,
+		public void DeviceStateUpdated(	IDeviceMonitor monitor, IList<DeviceChange> deviceChanges,
 										IList<LineChange> lineChanges, IList<CallChange> callChanges ) {
 			// Clever logging stuff here.
 			foreach (CallChange change in callChanges) {
@@ -175,23 +175,23 @@ namespace LothianProductions.VoIP {
 		}
 		
 		// Helper functions for linking states.
-		public IDeviceStateMonitor GetMonitor( Device deviceState ) {
-			foreach( IDeviceStateMonitor monitor in DeviceStateMonitors )
+		public IDeviceMonitor GetMonitor( Device deviceState ) {
+			foreach( IDeviceMonitor monitor in DeviceStateMonitors )
 				if( monitor.GetDeviceState() == deviceState )
 					return monitor;
 			throw new DomainObjectNotFoundException( "Couldn't find a monitor owning the specified device." );
 		}
 
-		public IDeviceStateMonitor GetMonitor( Line lineState ) {
-			foreach( IDeviceStateMonitor monitor in DeviceStateMonitors )
+		public IDeviceMonitor GetMonitor( Line lineState ) {
+			foreach( IDeviceMonitor monitor in DeviceStateMonitors )
 				foreach( Line line in monitor.GetDeviceState().Lines )
 					if( line == lineState )
 						return monitor;
 			throw new DomainObjectNotFoundException( "Couldn't find a monitor owning the specified line." );
 		}
 
-		public IDeviceStateMonitor GetMonitor( Call callState ) {
-			foreach( IDeviceStateMonitor monitor in DeviceStateMonitors )
+		public IDeviceMonitor GetMonitor( Call callState ) {
+			foreach( IDeviceMonitor monitor in DeviceStateMonitors )
 				foreach( Line line in monitor.GetDeviceState().Lines )
 					foreach( Call call in line.Calls )
 						if( call == callState )
@@ -200,7 +200,7 @@ namespace LothianProductions.VoIP {
 		}
 		
 		public Device GetDevice( Line lineState ) {
-			foreach( IDeviceStateMonitor monitor in DeviceStateMonitors )
+			foreach( IDeviceMonitor monitor in DeviceStateMonitors )
 				foreach( Line line in monitor.GetDeviceState().Lines )
 					if( line == lineState )
 						return monitor.GetDeviceState();
@@ -208,7 +208,7 @@ namespace LothianProductions.VoIP {
 		}
 		
 		public Device GetDevice( Call callState ) {
-			foreach( IDeviceStateMonitor monitor in DeviceStateMonitors )
+			foreach( IDeviceMonitor monitor in DeviceStateMonitors )
 				foreach( Line line in monitor.GetDeviceState().Lines )
 					foreach( Call call in line.Calls )
 						if( call == callState )
@@ -217,7 +217,7 @@ namespace LothianProductions.VoIP {
 		}
 		
 		public Line GetLine( Call callState ) {
-			foreach( IDeviceStateMonitor monitor in DeviceStateMonitors )
+			foreach( IDeviceMonitor monitor in DeviceStateMonitors )
 				foreach( Line line in monitor.GetDeviceState().Lines )
 					foreach( Call call in line.Calls )
 						if( call == callState )
