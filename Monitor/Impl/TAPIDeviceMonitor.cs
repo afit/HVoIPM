@@ -53,10 +53,6 @@ namespace LothianProductions.VoIP.Monitor.Impl
         private CCall m_ActiveCall;
         private CLine m_CLine;
 
-        private IList<DeviceChange> deviceChanges = new List<DeviceChange>();
-        private IList<CallChange> callChanges = new List<CallChange>();
-        private IList<LineChange> lineChanges = new List<LineChange>();
-
         
         public TAPIDeviceMonitor(String name) {
             mName = name;
@@ -90,52 +86,42 @@ namespace LothianProductions.VoIP.Monitor.Impl
             m_CTapi.LineDevStateEvent += new CTapi.LineDevStateEventHandler(this.MyLineDevStateEventHandler);
             m_CTapi.LineCloseEvent += new CTapi.LineCloseEventHandler(this.MyLineCloseEventHandler);
 
-            IList<DeviceChange> deviceChanges = new List<DeviceChange>();
-            IList<LineChange> lineChanges = new List<LineChange>();
-            IList<CallChange> callChanges = new List<CallChange>();
-
             string sLineFilter;
             sLineFilter = GetConfigurationValue( "Provider" );
+            if (sLineFilter == null)
+                throw new DeviceNotRespondingException("Unable to identify TAPI provider - check config file?", new ApplicationException());
             m_CLine = m_CTapi.GetLineByFilter(sLineFilter, false,
                 CTapi.LineCallPrivilege.LINECALLPRIVILEGE_OWNER | CTapi.LineCallPrivilege.LINECALLPRIVILEGE_MONITOR);
             if (m_CLine == null) {
                 throw new DeviceNotRespondingException("Unable to identify TAPI line for provider #" + sLineFilter, new ApplicationException());
             }
             while (true) {
-                Thread.Sleep(0);
+                Thread.Sleep(500);
             }
         }
 
         #region Event Handling
 
         public void MyAppNewCallEventHandler(Object sender, CTapi.AppNewCallEventArgs e) {
-            clearLists();
-            CCall call = e.call;
-            m_ActiveCall = call;
-            m_ActiveCall.GetCallInfo();
-            mDeviceState.Lines[0].Calls[0].Type = CallType.Inbound;
-            mDeviceState.Lines[0].Calls[0].Activity = Activity.Ringing;
-            callChanges.Add(new CallChange(mDeviceState.Lines[0].Calls[0], PROPERTY_ACTIVITY, "Idle", "Ringing" ));
-            StateManager.Instance().DeviceStateUpdated(this, deviceChanges, lineChanges, callChanges);
-			if( deviceChanges.Count > 0 || lineChanges.Count > 0 || callChanges.Count > 0 )
-				StateManager.Instance().DeviceStateUpdated( this, deviceChanges, lineChanges, callChanges );
-        }
-
-        protected void clearLists() {
-            deviceChanges.Clear();
-            lineChanges.Clear();
-            callChanges.Clear();
+            mDeviceState.Lines[0].Calls[0].Name = "Call #" + e.call.CallID.ToString();
+            m_ActiveCall = e.call;
         }
 
         public void MyLineCallInfoEventHandler(Object sender, CTapi.LineCallInfoEventArgs e) {
-            clearLists();
-            if (m_ActiveCall != null) {
+            IList<DeviceChange> deviceChanges = new List<DeviceChange>();
+            IList<LineChange> lineChanges = new List<LineChange>();
+            IList<CallChange> callChanges = new List<CallChange>();
+            if (m_ActiveCall != null ) {
                 if (((uint)e.LineCallInfoState & (uint)CTapi.LineCallInfoState.LINECALLINFOSTATE_CALLERID) > 1) {
                     m_ActiveCall.GetCallInfo();
-                    if (mDeviceState.Lines[0].Calls[0].Activity == Activity.Ringing && mDeviceState.Lines[0].Calls[0].Type == CallType.Inbound ) {
-                        mDeviceState.Lines[0].LastCallerNumber = m_ActiveCall.CallerID.ToString();
-                        lineChanges.Add(new LineChange(mDeviceState.Lines[0], PROPERTY_LASTCALLERNUMBER, "", m_ActiveCall.CallerID.ToString()));
-                        StateManager.Instance().DeviceStateUpdated(this, deviceChanges, lineChanges, callChanges);
+                    if (mDeviceState.Lines[0].Calls[0].Type == CallType.Inbound ) {
+                        string oldCallerId = mDeviceState.Lines[0].LastCallerNumber;
+                        string newCallerId = m_ActiveCall.CallerID.ToString();
+                        if (oldCallerId != newCallerId) {
+                            lineChanges.Add(new LineChange(mDeviceState.Lines[0], PROPERTY_LASTCALLERNUMBER, oldCallerId, newCallerId));
+                            StateManager.Instance().DeviceStateUpdated(this, deviceChanges, lineChanges, callChanges);
+                        }
+                        mDeviceState.Lines[0].LastCallerNumber = newCallerId;
                     }
                 }
             }
@@ -145,7 +131,9 @@ namespace LothianProductions.VoIP.Monitor.Impl
 
         public void MyCallStateEventHandler(Object sender, CTapi.CallStateEventArgs e) {
 
-            clearLists();
+            IList<DeviceChange> deviceChanges = new List<DeviceChange>();
+            IList<LineChange> lineChanges = new List<LineChange>();
+            IList<CallChange> callChanges = new List<CallChange>();
             Activity activity;
             Activity oldActivity;
             Tone tone;
@@ -157,6 +145,7 @@ namespace LothianProductions.VoIP.Monitor.Impl
                     oldTone = mDeviceState.Lines[0].Calls[0].Tone;
                     if (activity == Activity.Ringing || activity == Activity.Dialing) {
                         activity = Activity.Connected;
+                        mDeviceState.Lines[0].Calls[0].Activity = activity;
                         mDeviceState.Lines[0].Calls[0].Tone = Tone.Call;
                         tone = mDeviceState.Lines[0].Calls[0].Tone;
                         if ( tone != oldTone ) 
@@ -191,8 +180,22 @@ namespace LothianProductions.VoIP.Monitor.Impl
                         callChanges.Add(new CallChange(mDeviceState.Lines[0].Calls[0], PROPERTY_TONE, oldTone.ToString(), tone.ToString()));
                     break;
                 case CTapi.LineCallState.LINECALLSTATE_PROCEEDING:
+                    CCall call = e.call;
+                    oldActivity = mDeviceState.Lines[0].Calls[0].Activity;
+                    mDeviceState.Lines[0].Calls[0].Activity = Activity.Dialing;
+                    mDeviceState.Lines[0].Calls[0].Tone = Tone.Dial;
+                    mDeviceState.Lines[0].Calls[0].Type = CallType.Outbound;
+                    mDeviceState.Lines[0].LastCalledNumber = call.CalledID.ToString();
+                    callChanges.Add(new CallChange(mDeviceState.Lines[0].Calls[0], PROPERTY_ACTIVITY, "IdleDisconnected", "Dialing"));
+                    callChanges.Add(new CallChange(mDeviceState.Lines[0].Calls[0], PROPERTY_TYPE, "IdleDisconnected", "Outbound"));
+                    lineChanges.Add(new LineChange(mDeviceState.Lines[0], PROPERTY_LASTCALLEDNUMBER, "", call.CalledID.ToString() ));
                     break;
                 case CTapi.LineCallState.LINECALLSTATE_OFFERING:
+                    mDeviceState.Lines[0].Calls[0].Activity = Activity.Ringing;
+                    mDeviceState.Lines[0].Calls[0].Tone = Tone.None;
+                    mDeviceState.Lines[0].Calls[0].Type = CallType.Inbound;
+                    callChanges.Add(new CallChange(mDeviceState.Lines[0].Calls[0], PROPERTY_ACTIVITY, "IdleDisconnected", "Ringing"));
+                    callChanges.Add(new CallChange(mDeviceState.Lines[0].Calls[0], PROPERTY_TYPE, "IdleDisconnected", "Inbound"));
                     break;
                 case CTapi.LineCallState.LINECALLSTATE_ACCEPTED:
                     if (mDeviceState.Lines[0].Calls[0].Activity != Activity.Ringing) {
@@ -240,6 +243,9 @@ namespace LothianProductions.VoIP.Monitor.Impl
         }
 
         public void MyLineCloseEventHandler(Object sender, CTapi.LineCloseEventArgs e) {
+            IList<DeviceChange> deviceChanges = new List<DeviceChange>();
+            IList<LineChange> lineChanges = new List<LineChange>();
+            IList<CallChange> callChanges = new List<CallChange>();
             mDeviceState.Lines[0].RegistrationState = RegistrationState.Offline;
             lineChanges.Add(new LineChange(mDeviceState.Lines[0], PROPERTY_REGISTRATIONSTATE, "Online", "Offline"));
             if (deviceChanges.Count > 0 || lineChanges.Count > 0 || callChanges.Count > 0)
