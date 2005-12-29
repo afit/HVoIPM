@@ -8,6 +8,7 @@ using LothianProductions.VoIP.State;
 namespace LothianProductions.VoIP.Monitor {
 
 	public abstract class DeviceMonitor : IDeviceMonitor {
+		public const String PROPERTY_NAME = "name";
 		public const String PROPERTY_LASTCALLEDNUMBER = "lastCalledNumber";
 		public const String PROPERTY_LASTCALLERNUMBER = "lastCallerNumber";
 		public const String PROPERTY_REGISTRATIONSTATE = "registrationState";
