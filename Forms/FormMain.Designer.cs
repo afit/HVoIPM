@@ -27,7 +27,9 @@ namespace LothianProductions.VoIP.Forms {
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager( typeof( FormMain ) );
 			this.NotifyIcon = new System.Windows.Forms.NotifyIcon( this.components );
 			this.NotifyIconContextMenuStrip = new System.Windows.Forms.ContextMenuStrip( this.components );
-			this.callLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripShowMain = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripCallLog = new System.Windows.Forms.ToolStripMenuItem();
+			this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
 			this.toolStripQuit = new System.Windows.Forms.ToolStripMenuItem();
 			this.label1 = new System.Windows.Forms.Label();
 			this.LabelLinks = new System.Windows.Forms.LinkLabel();
@@ -49,23 +51,33 @@ namespace LothianProductions.VoIP.Forms {
 			// 
 			// NotifyIconContextMenuStrip
 			// 
-			this.NotifyIconContextMenuStrip.Items.AddRange( new System.Windows.Forms.ToolStripItem[] {
-            this.callLogToolStripMenuItem,
-            this.toolStripQuit} );
 			this.NotifyIconContextMenuStrip.Name = "NotifyIconContextMenuStrip";
-			this.NotifyIconContextMenuStrip.Size = new System.Drawing.Size( 112, 48 );
+			this.NotifyIconContextMenuStrip.Size = new System.Drawing.Size( 181, 98 );
 			// 
-			// callLogToolStripMenuItem
+			// toolStripShowMain
 			// 
-			this.callLogToolStripMenuItem.Name = "callLogToolStripMenuItem";
-			this.callLogToolStripMenuItem.Size = new System.Drawing.Size( 111, 22 );
-			this.callLogToolStripMenuItem.Text = "&Call Log";
-			this.callLogToolStripMenuItem.Click += new System.EventHandler( this.callLogToolStripMenuItem_Click );
+			this.toolStripShowMain.Font = new System.Drawing.Font( "Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ( (byte) ( 0 ) ) );
+			this.toolStripShowMain.Name = "toolStripShowMain";
+			this.toolStripShowMain.Size = new System.Drawing.Size( 180, 22 );
+			this.toolStripShowMain.Text = "&Show main window";
+			this.toolStripShowMain.Click += new System.EventHandler( this.toolStripShowMain_Click );
+			// 
+			// toolStripCallLog
+			// 
+			this.toolStripCallLog.Name = "toolStripCallLog";
+			this.toolStripCallLog.Size = new System.Drawing.Size( 180, 22 );
+			this.toolStripCallLog.Text = "&Call log";
+			this.toolStripCallLog.Click += new System.EventHandler( this.toolStripCallLog_Click );
+			// 
+			// toolStripSeparator1
+			// 
+			this.toolStripSeparator1.Name = "toolStripSeparator1";
+			this.toolStripSeparator1.Size = new System.Drawing.Size( 177, 6 );
 			// 
 			// toolStripQuit
 			// 
 			this.toolStripQuit.Name = "toolStripQuit";
-			this.toolStripQuit.Size = new System.Drawing.Size( 111, 22 );
+			this.toolStripQuit.Size = new System.Drawing.Size( 180, 22 );
 			this.toolStripQuit.Text = "&Quit";
 			this.toolStripQuit.Click += new System.EventHandler( this.toolStripQuit_Click );
 			// 
@@ -158,7 +170,9 @@ namespace LothianProductions.VoIP.Forms {
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.TreeView TreeStates;
 		private System.Windows.Forms.Timer TimerFlash;
-		private System.Windows.Forms.ToolStripMenuItem callLogToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem toolStripCallLog;
+		private System.Windows.Forms.ToolStripMenuItem toolStripShowMain;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
     }
 }
 
