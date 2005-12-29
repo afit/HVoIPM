@@ -51,7 +51,7 @@ namespace LothianProductions.VoIP.Forms
                     gridCalls.DataSource = dt;
                     stream.Close();
                     fs.Close();
-                } catch (FileNotFoundException fe) {
+                } catch (FileNotFoundException) {
                     MessageBox.Show("The call log is empty, so we cannot show your call history. Please click OK to close this form.", "HVoIPM Call Record Viewer", MessageBoxButtons.OK);
                     this.Close();
                 }
