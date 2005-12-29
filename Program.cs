@@ -29,7 +29,8 @@ namespace LothianProductions.VoIP {
             Application.Run();
         }
 
-		private static void MonitorFailureHandler(Object sender, UnhandledExceptionEventArgs e) {    
+		private static void MonitorFailureHandler(Object sender, UnhandledExceptionEventArgs e) { 
+			//Clipboard.SetText( e.ExceptionObject.ToString() );   
 			if( e.ExceptionObject != null )
 				MessageBox.Show(
 					"A fatal, unhandled error has occurred within HVoIPM, and the application must close." +
