@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 using LothianProductions.Util;
+using LothianProductions.VoIP.Monitor;
 
 namespace LothianProductions.VoIP.State {
 	public abstract class Change {
@@ -24,5 +25,7 @@ namespace LothianProductions.VoIP.State {
 		public abstract Object Underlying {
 			get;
 		}
+		
+		public abstract IDeviceMonitor GetDeviceMonitor();
 	}
 }

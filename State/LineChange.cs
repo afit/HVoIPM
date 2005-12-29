@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using LothianProductions.VoIP.Monitor;
+
 namespace LothianProductions.VoIP.State {
 	public class LineChange : Change {
 		public LineChange( Line line, String property, String changedFrom, String changedTo ) {
@@ -18,6 +20,10 @@ namespace LothianProductions.VoIP.State {
 		
 		public override Object Underlying {
 			get{ return mLine; }
+		}
+		
+		public override IDeviceMonitor GetDeviceMonitor() {
+			return StateManager.Instance().GetMonitor( mLine );
 		}
 	}
 }
