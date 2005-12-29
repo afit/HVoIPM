@@ -36,6 +36,13 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 	    
         public override void Run() {
 			int sleepTime = Int32.Parse( GetConfigurationValue( "PollInterval" ) );
+			String hostname = GetConfigurationValue( "Hostname" );
+			
+			WebClient webClient = new WebClient();
+			webClient.Headers.Add( "User-Agent", "HVoIPM / LinksysPAP2DeviceStateMonitor" );
+			
+			if( GetConfigurationValue( "Username" ) != "" || GetConfigurationValue( "Password" ) != "" )
+				webClient.Credentials = new NetworkCredential( GetConfigurationValue( "Username" ), GetConfigurationValue( "Password" ) );
 			
 			while( true ) {
 				// Lock to prevent recursion synchronicity problems
@@ -43,15 +50,13 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 				lock (this) {
 					String page;
 					try {
-						page = HttpHelper.HttpGet(
-							new Uri( GetConfigurationValue( "Hostname" ) ),
-							"HVoIPM / LinksysPAP2DeviceStateMonitor",
-							GetConfigurationValue( "Username" ),
-							GetConfigurationValue( "Password" ),
-							Int32.Parse( GetConfigurationValue( "RequestTimeout" ) )
-						);
+						page = new UTF8Encoding().GetString( webClient.DownloadData( hostname ) );
 					} catch (WebException e) {
-						throw new DeviceNotRespondingException( "The device is not responding to status requests", e );
+					    if( e.Status == WebExceptionStatus.ProtocolError )
+							if( ( (HttpWebResponse) e.Response ).StatusCode == HttpStatusCode.Unauthorized )
+					            throw new UnauthorizedException( "You are not authorized to request \"" + hostname + "\".", e );
+					            
+					    throw new DeviceNotRespondingException( "The device is not responding to status requests:", e );
 					}
 					
 					IList<DeviceChange> deviceChanges = new List<DeviceChange>();
@@ -61,7 +66,6 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 					AnalyseLineState( page, mDeviceState.Lines[ 0 ], lineChanges, callChanges );	
 					AnalyseLineState( page, mDeviceState.Lines[ 1 ], lineChanges, callChanges );
 				
-					// FIXME safer to use event here?	
 					if( deviceChanges.Count > 0 || lineChanges.Count > 0 || callChanges.Count > 0 )
 						StateManager.Instance().DeviceStateUpdated( this, deviceChanges, lineChanges, callChanges );
 				}			
@@ -205,6 +209,11 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 				return Tone.Error;
 			else if (tone == "SIT 1")
 				return Tone.InvalidNumber;
+			// FIXME what is "Reorder", I've seen the PAP2 throw it
+			else if (tone == "Reorder")
+				return Tone.Error;
+			else if (tone == "Off Hook Warning")
+				return Tone.Error;
 			throw new ArgumentOutOfRangeException("Tone " + tone + " not found.");
 		}
 
