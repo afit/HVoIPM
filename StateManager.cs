@@ -65,7 +65,8 @@ namespace LothianProductions.VoIP {
 					mDeviceStateMonitors.Add( monitor, thread );
 					thread.Start();
                 }
-                Logger.Instance().Log("Loaded " + mDeviceStateMonitors.Count + " device state monitor(s)");
+                
+                Logger.Instance().Log( "Loaded " + mDeviceStateMonitors.Count + " device state monitor(s)" );
 			}
 		}
 		
@@ -75,10 +76,23 @@ namespace LothianProductions.VoIP {
 
 		public void DeviceStateUpdated(	IDeviceMonitor monitor, IList<DeviceChange> deviceChanges,
 										IList<LineChange> lineChanges, IList<CallChange> callChanges ) {
-			// Clever logging stuff here.
-			foreach (CallChange change in callChanges) {
-				if (change.Property == "activity") {
-                    if ( change.ChangedFrom != Activity.Connected.ToString() && change.ChangedTo == Activity.Connected.ToString() ) {
+			// FIXME this is very inefficient
+			List<Change> changes = new List<Change>();
+			foreach( Change change in deviceChanges )
+				changes.Add( change );
+			foreach( Change change in lineChanges )
+				changes.Add( change );
+			foreach( Change change in callChanges )
+				changes.Add( change );
+				
+			foreach( Change change in changes )
+				if( LookupBehaviour( change.Underlying, change.Property ).Log )
+					Logger.Instance().Log( change.Underlying.GetType().Name + " property " + change.Property + " has changed from " + change.ChangedFrom + " to " + change.ChangedTo );
+						
+			// Logging happens here:
+			foreach( CallChange change in callChanges ) {
+				if( change.Property == DeviceMonitor.PROPERTY_CALL_ACTIVITY ) {
+                    if ( change.ChangedTo == Activity.Connected.ToString() ) {
                         CallRecord call = new CallRecord( monitor.GetDeviceState(), GetLine( change.Call ), change.Call, DateTime.Now, new DateTime() );
 						
 						// FIXME add sanity check in case somehow call is already there
@@ -87,7 +101,7 @@ namespace LothianProductions.VoIP {
 							Logger.Instance().Log("Call #" + change.Call.Name + " had to be removed from the call list - did the previous call fail?");
 						}
                         mCalls.Add( change.Call, call );
-					} else if ( change.ChangedFrom == Activity.Connected.ToString() && change.ChangedTo != Activity.Connected.ToString() ) {
+					} else if ( change.ChangedFrom == Activity.Connected.ToString() ) {
 						CallRecord call = mCalls[change.Call];
 						call.EndTime = DateTime.Now;
 						CallLogger.Instance().Log(call);
@@ -103,40 +117,10 @@ namespace LothianProductions.VoIP {
 						mCalls[change.Call] = call;
 					}
 				}
-
-				bool log = false;
-				try {
-					log = LookupBehaviour(change.Call, change.Property).Log;
-				} catch (ConfigurationErrorsException) {
-				}
-				
-				if (log)
-					Logger.Instance().Log("Call property " + change.Property + " has changed from " + change.ChangedFrom + " to " + change.ChangedTo);
-			}
-
-			foreach (DeviceChange change in deviceChanges) {
-				bool log = false;
-				try {
-					log = LookupBehaviour(change.Device, change.Property).Log;
-				} catch (ConfigurationErrorsException) {
-				}
-				if ( log )
-					Logger.Instance().Log( "Device property " + change.Property + " has changed from " + change.ChangedFrom + " to " + change.ChangedTo );
 			}
 			
-			foreach (LineChange change in lineChanges) {
-				bool log = false;
-				try {
-					log = LookupBehaviour(change.Line, change.Property).Log;
-				} catch (ConfigurationErrorsException) {
-				}
-				if (log)
-					Logger.Instance().Log("Line property " + change.Property + " has changed from " + change.ChangedFrom + " to " + change.ChangedTo);
-			}
-
-			if (StateUpdate != null)
-				StateUpdate(monitor, new StateUpdateEventArgs(deviceChanges, lineChanges, callChanges));
-
+			if( StateUpdate != null )
+				StateUpdate( monitor, new StateUpdateEventArgs( deviceChanges, lineChanges, callChanges ) );
 		}
 		
 		public StateChangeBehaviour LookupBehaviour( Object state, String property ) {		
@@ -167,6 +151,7 @@ namespace LothianProductions.VoIP {
 				behaviour.Attributes[ "bubbleText" ].Value,
 				Boolean.Parse( behaviour.Attributes[ "systemTrayWarning" ].Value ),
 				Boolean.Parse( behaviour.Attributes[ "showApplication" ].Value ),
+				behaviour.Attributes[ "externalProcess" ].Value,
 				( behaviour.Attributes[ "warningCriteria" ] == null ? "" : behaviour.Attributes[ "warningCriteria" ].Value ).Split( ',' ),
 				Boolean.Parse( behaviour.Attributes[ "log" ].Value )
 			);
