@@ -97,10 +97,10 @@ namespace LothianProductions.VoIP {
 
 				if (change.Call.Activity != Activity.IdleDisconnected) {
 					if ( mCalls.ContainsKey( change.Call ) ) {
-					CallRecord call = mCalls[change.Call];
-					call.Call = change.Call;
-					call.Line = GetLine(change.Call);
-					mCalls[change.Call] = call;
+						CallRecord call = mCalls[change.Call];
+						call.Call = change.Call;
+						call.Line = GetLine(change.Call);
+						mCalls[change.Call] = call;
 					}
 				}
 
@@ -148,8 +148,6 @@ namespace LothianProductions.VoIP {
 			
 			if( ! propertyBehaviours.ContainsKey( property ) )
 				propertyBehaviours.Add( property, GetBehaviourFromXml( state.GetType().Name, property ) );
-			
-			//Console.WriteLine( state.GetType().Name + ":" + property + ":" + StringHelper.ToString( propertyBehaviours[ property ].WarningCriteria ) );
 			
 			return propertyBehaviours[ property ];	
 		}
