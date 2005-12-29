@@ -20,11 +20,12 @@ using LothianProductions.VoIP.State;
 
 namespace LothianProductions.VoIP.Forms {
     public partial class FormMain : Form {
+    
+		protected bool mFlashState = false;
+    
         public FormMain() {
             InitializeComponent();
-            // FIXME implement proper thread-handling, if the textbox is to remain
-            Control.CheckForIllegalCrossThreadCalls = false;
-			
+
 			LabelLinks.Links.Add( 2, 19, "www.lothianproductions.co.uk" );
 			LabelLinks.Links.Add( 49, 12, "www.lothianproductions.co.uk/hvoipm" );
 			
@@ -33,14 +34,9 @@ namespace LothianProductions.VoIP.Forms {
 			this.Hide();
         }
 
-        private void FormMain_FormClosing( object sender, FormClosingEventArgs e ) {
-            // Prevent closure of main window from ending application:
-            // cancel closure and hide instead.
-            e.Cancel = true;
-            this.Hide();
-        }
 
 		protected IList<String> mWarnings = new List<String>();
+		protected IList<DeviceMonitor> mMonitorsStarted = new List<DeviceMonitor>();
 		public void StateManagerUpdated( IDeviceMonitor monitor, StateUpdateEventArgs e ) {
 			
 			// Iterate through state changes and deal with them as appropriate:
@@ -84,15 +80,16 @@ namespace LothianProductions.VoIP.Forms {
 			}
 
 			if( showApplication )
-				this.Show();
+				this.Invoke(
+					new ShowFormDelegate( ShowFormMain ),
+					new Object[] {}
+				);
 
 			// Enable timer if there are warnings.
-			if( mWarnings.Count > 0 )
-				TimerFlash.Start();
-			else if ( TimerFlash.Enabled )
-				TimerFlash.Stop();
-			
-			Console.WriteLine( TimerFlash.Enabled + "!" );
+			this.Invoke(
+				new SetTimer( SetTimerFlash ),
+				new Object[] { mWarnings.Count > 0 }
+			);
 			
 			if( ! TimerFlash.Enabled )
 			    NotifyIcon.Icon = global::LothianProductions.VoIP.Properties.Resources.HVoIPM_48x;
@@ -105,101 +102,133 @@ namespace LothianProductions.VoIP.Forms {
 					ToolTipIcon.Info
 				);
 				
-			// FIXME need to support line and call addition or removal
-			
 			TreeStates.Invoke(
 			    new MonitorPassingDelegate( UpdateTree ),
-			    new Object[] { e.DeviceStateChanges, e.LineStateChanges, e.CallStateChanges }
+			    new Object[] { changes }
 			);
 		}
-	
-		public delegate void MonitorPassingDelegate(	IList<DeviceChange> deviceChanges, IList<LineChange> lineChanges,
-														IList<CallChange> callChanges );
 
-		private void UpdateTree(	IList<DeviceChange> deviceChanges, IList<LineChange> lineChanges,
-									IList<CallChange> callChanges ) {
+		private delegate void SetTimer( bool enabled );
+		private void SetTimerFlash( bool enabled ) {
+			TimerFlash.Enabled = enabled;
+		}
+
+		private delegate void ShowFormDelegate();
+		private void ShowFormMain() {
+			// Part of workaround for .NET bug as described
+			// in Program.cs.
+			this.Show();
+			
+			if( WindowState != FormWindowState.Normal )
+				WindowState = FormWindowState.Normal;
+				
+			if( ! ShowInTaskbar )
+				ShowInTaskbar = true;
+		}
+		
+		private delegate void MonitorPassingDelegate( IList<Change> changes );
+		private void UpdateTree( IList<Change> changes ) {
 			// If the change has occurred on an object that doesn't exist in the tree
 			// then create it. Otherwise, update it.
 			
-			// Ensure that each device is already in the tree:
-			foreach( DeviceChange change in deviceChanges ) {
+			// FIXME add support for name changes?	
+			foreach( Change change in changes ) {
+				TreeNode[] nodes = TreeStates.Nodes.Find( DeviceMonitor.PROPERTY_NAME, true );
 				bool found = false;
 				
-				foreach( TreeNode node in TreeStates.Nodes )
-					if( node.Tag == change.Device ) {
+				foreach( TreeNode node in nodes )
+					if( node.Tag == change.Underlying ) {
 						found = true;
-						node.Text = change.Device.Name;
+						EnsureNodeContains( node, change.Underlying, change.Property, change.ChangedFrom, change.ChangedTo );
+						break;
 					}
-									
-				if( ! found ) {
-					AddMonitorToTree( StateManager.Instance().GetMonitor( change.Device ) );
-					// FIXME inefficient
-					UpdateTree( deviceChanges, new List<LineChange>(), new List<CallChange>() );
-				}
-			}
-			
-			foreach( LineChange change in lineChanges ) {
-				bool found = false;
 				
-				foreach( TreeNode deviceNode in TreeStates.Nodes )
-					foreach( TreeNode node in deviceNode.Nodes )
-						if( node.Tag == change.Line ) {
-							found = true;
-							
-							if( ! node.Nodes.ContainsKey( change.Property ) )
-								node.Nodes.Add( change.Property, String.Format( StateManager.Instance().LookupBehaviour( change.Line, change.Property ).BubbleText, new String[] { change.Property, change.ChangedFrom, change.ChangedTo } ) ).Tag = change.Line;
-							else
-								node.Nodes[ change.Property ].Text = String.Format( StateManager.Instance().LookupBehaviour( change.Line, change.Property ).BubbleText, new String[] { change.Property, change.ChangedFrom, change.ChangedTo } );
-
-						}
-									
-				if( ! found ) {
-					AddMonitorToTree( StateManager.Instance().GetMonitor( change.Line ) );
-					// FIXME inefficient
-					UpdateTree( new List<DeviceChange>(), lineChanges, new List<CallChange>() );
-				}
-			}
-			
-			foreach( CallChange change in callChanges ) {
-				bool found = false;
-				
-				foreach( TreeNode deviceNode in TreeStates.Nodes )
-					foreach( TreeNode lineNode in deviceNode.Nodes )
-							foreach( TreeNode node in lineNode.Nodes )
-							if( node.Tag == change.Call ) {
-								found = true;
-								
-								if( ! node.Nodes.ContainsKey( change.Property ) )
-									node.Nodes.Add( change.Property, String.Format( StateManager.Instance().LookupBehaviour( change.Call, change.Property ).BubbleText, new String[] { change.Property, change.ChangedFrom, change.ChangedTo } ) ).Tag = change.Call;
-								else
-									node.Nodes[ change.Property ].Text = String.Format( StateManager.Instance().LookupBehaviour( change.Call, change.Property ).BubbleText, new String[] { change.Property, change.ChangedFrom, change.ChangedTo } );
-							}
-									
-				if( ! found ) {
-					AddMonitorToTree( StateManager.Instance().GetMonitor( change.Call ) );
-					// FIXME inefficient
-					UpdateTree( new List<DeviceChange>(), new List<LineChange>(), callChanges );
-				}
+				if( ! found )
+					AddMonitorToTree( change.GetDeviceMonitor() );
 			}
 		}
 		
-		protected void AddMonitorToTree( IDeviceMonitor monitor ) {
+		public static void EnsureNodeContains( TreeNode node, Object state, String property, String changedFrom, String changedTo ) {
+			if( ! node.Nodes.ContainsKey( property ) )
+				node.Nodes.Add( property, String.Format( StateManager.Instance().LookupBehaviour( state, property ).BubbleText, new String[] { property, changedFrom, changedTo } ) ).Tag = state;
+			else
+				node.Nodes[ property ].Text = String.Format( StateManager.Instance().LookupBehaviour( state, property ).BubbleText, new String[] { property, changedFrom, changedTo } );
+		}
+		
+		private void AddMonitorToTree( IDeviceMonitor monitor ) {
 		    // Use each node's key as a property name. Use each node's tag object as a state.
-		    // FIXME should we implement name-change support?
 			Device deviceState = monitor.GetDeviceState();
 			
-			TreeNode deviceNode = TreeStates.Nodes.Add( "name", deviceState.Name );
+			TreeNode deviceNode = TreeStates.Nodes.Add( DeviceMonitor.PROPERTY_NAME, deviceState.Name );
 			deviceNode.Tag = deviceState;
 			
 			for( int i = 0; i < deviceState.Lines.Length; i++ ) {
-				TreeNode lineNode = deviceNode.Nodes.Add( "name", deviceState.Lines[ i ].Name );
+				TreeNode lineNode = deviceNode.Nodes.Add( DeviceMonitor.PROPERTY_NAME, deviceState.Lines[ i ].Name );
 				lineNode.Tag = deviceState.Lines[ i ];
 				
-				for( int j = 0; j < deviceState.Lines[ i ].Calls.Length; j++ )
-					lineNode.Nodes.Add( "name", deviceState.Lines[ i ].Calls[ j ].Name ).Tag = deviceState.Lines[ i ].Calls[ j ];
+				EnsureNodeContains( lineNode, deviceState.Lines[ i ], DeviceMonitor.PROPERTY_LASTCALLEDNUMBER, "", deviceState.Lines[ i ].LastCalledNumber );
+				EnsureNodeContains( lineNode, deviceState.Lines[ i ], DeviceMonitor.PROPERTY_LASTCALLERNUMBER, "", deviceState.Lines[ i ].LastCallerNumber );
+				EnsureNodeContains( lineNode, deviceState.Lines[ i ], DeviceMonitor.PROPERTY_MESSAGEWAITING, "", deviceState.Lines[ i ].MessageWaiting.ToString() );
+				EnsureNodeContains( lineNode, deviceState.Lines[ i ], DeviceMonitor.PROPERTY_REGISTRATIONSTATE, "", deviceState.Lines[ i ].RegistrationState.ToString() );
+				
+				for( int j = 0; j < deviceState.Lines[ i ].Calls.Length; j++ ) {
+					TreeNode callNode = lineNode.Nodes.Add( DeviceMonitor.PROPERTY_NAME, deviceState.Lines[ i ].Calls[ j ].Name );
+					callNode.Tag = deviceState.Lines[ i ].Calls[ j ];
+					
+					EnsureNodeContains( callNode, deviceState.Lines[ i ].Calls[ j ], DeviceMonitor.PROPERTY_ACTIVITY, "", deviceState.Lines[ i ].Calls[ j ].Activity.ToString() );
+					EnsureNodeContains( callNode, deviceState.Lines[ i ].Calls[ j ], DeviceMonitor.PROPERTY_BYTESRECEIVED, "", deviceState.Lines[ i ].Calls[ j ].BytesReceived.ToString() );
+					EnsureNodeContains( callNode, deviceState.Lines[ i ].Calls[ j ], DeviceMonitor.PROPERTY_BYTESSENT, "", deviceState.Lines[ i ].Calls[ j ].BytesSent.ToString() );
+					EnsureNodeContains( callNode, deviceState.Lines[ i ].Calls[ j ], DeviceMonitor.PROPERTY_DECODELATENCY, "", deviceState.Lines[ i ].Calls[ j ].DecodeLatency.ToString() );
+					EnsureNodeContains( callNode, deviceState.Lines[ i ].Calls[ j ], DeviceMonitor.PROPERTY_DECODER, "", deviceState.Lines[ i ].Calls[ j ].Decoder );
+					EnsureNodeContains( callNode, deviceState.Lines[ i ].Calls[ j ], DeviceMonitor.PROPERTY_DURATION, "", deviceState.Lines[ i ].Calls[ j ].Duration );
+					EnsureNodeContains( callNode, deviceState.Lines[ i ].Calls[ j ], DeviceMonitor.PROPERTY_ENCODER, "", deviceState.Lines[ i ].Calls[ j ].Encoder );
+					EnsureNodeContains( callNode, deviceState.Lines[ i ].Calls[ j ], DeviceMonitor.PROPERTY_JITTER, "", deviceState.Lines[ i ].Calls[ j ].Jitter.ToString() );
+					EnsureNodeContains( callNode, deviceState.Lines[ i ].Calls[ j ], DeviceMonitor.PROPERTY_PACKETERROR, "", deviceState.Lines[ i ].Calls[ j ].PacketError.ToString() );
+					EnsureNodeContains( callNode, deviceState.Lines[ i ].Calls[ j ], DeviceMonitor.PROPERTY_PACKETLOSS, "", deviceState.Lines[ i ].Calls[ j ].PacketLoss.ToString() );
+					EnsureNodeContains( callNode, deviceState.Lines[ i ].Calls[ j ], DeviceMonitor.PROPERTY_ROUNDTRIPDELAY, "", deviceState.Lines[ i ].Calls[ j ].RoundTripDelay.ToString() );
+					EnsureNodeContains( callNode, deviceState.Lines[ i ].Calls[ j ], DeviceMonitor.PROPERTY_TONE, "", deviceState.Lines[ i ].Calls[ j ].Tone.ToString() );
+					EnsureNodeContains( callNode, deviceState.Lines[ i ].Calls[ j ], DeviceMonitor.PROPERTY_TYPE, "", deviceState.Lines[ i ].Calls[ j ].Type.ToString() );
+				}
 			}
 
 		    deviceNode.ExpandAll();
+		}
+
+		#region Form Events
+        private void FormMain_FormClosing( object sender, FormClosingEventArgs e ) {
+            // Prevent closure of main window from ending application:
+            // cancel closure and hide instead.
+            e.Cancel = true;
+            this.Hide();
+        }
+
+		private void NotifyIcon_MouseClick( object sender, MouseEventArgs e ) {
+			if( e.Button != MouseButtons.Left )
+				return;
+			
+			if( this.Visible )
+				this.Hide();
+			else
+				ShowFormMain();
+		}
+
+		private void TimerFlash_Tick( object sender, EventArgs e ) {					
+			// FIXME why can't we compare icons or their handles?
+			// if( NotifyIcon.Icon.Handle == global::LothianProductions.VoIP.Properties.Resources.HVoIPM.Handle ) 
+			if( mFlashState )
+				NotifyIcon.Icon = global::LothianProductions.VoIP.Properties.Resources.HVoIPM_48x_other;
+			else
+				NotifyIcon.Icon = global::LothianProductions.VoIP.Properties.Resources.HVoIPM_48x;
+				
+			mFlashState = ! mFlashState;
+		}
+		
+		private void LabelLinks_LinkClicked( object sender, LinkLabelLinkClickedEventArgs e ) {
+			Process.Start( e.Link.LinkData as String );
+		}
+
+		private void toolStripCallLog_Click(object sender, EventArgs e) {
+			new CallRecordViewer().Show();
 		}
 
 		private void toolStripQuit_Click( object sender, EventArgs e ) {
@@ -209,45 +238,9 @@ namespace LothianProductions.VoIP.Forms {
 			Environment.Exit( 1 );
 		}
 
-		private void NotifyIcon_MouseClick( object sender, MouseEventArgs e ) {
-			if( e.Button != MouseButtons.Left )
-				return;
-			if( this.Visible )
-				this.Hide();
-			else {		
-				// Part of workaround for .NET bug as described
-				// in Program.cs.
-				this.Show();
-				
-				if( WindowState != FormWindowState.Normal )
-					WindowState = FormWindowState.Normal;
-				
-				if( ! ShowInTaskbar )
-					ShowInTaskbar = true;
-			}
+		private void toolStripShowMain_Click( object sender, EventArgs e ) {
+			ShowFormMain();
 		}
-
-		protected bool mFlashState = false;
-		private void TimerFlash_Tick( object sender, EventArgs e ) {
-			// FIXME why can't we compare icons or their handles?
-			// if( NotifyIcon.Icon.Handle == global::LothianProductions.VoIP.Properties.Resources.HVoIPM.Handle ) 
-			Console.WriteLine( "timer!");
-			
-			if( mFlashState )
-				NotifyIcon.Icon = global::LothianProductions.VoIP.Properties.Resources.HVoIPM_flash;
-			else
-				NotifyIcon.Icon = global::LothianProductions.VoIP.Properties.Resources.HVoIPM_48x;
-				
-			mFlashState = ! mFlashState;									
-		}
-
-		private void callLogToolStripMenuItem_Click(object sender, EventArgs e) {
-			CallRecordViewer frm = new CallRecordViewer();
-			frm.Show();
-		}
-
-		private void LabelLinks_LinkClicked( object sender, LinkLabelLinkClickedEventArgs e ) {
-			Process.Start( e.Link.LinkData as String );
-		}
+		#endregion
     }
 }
