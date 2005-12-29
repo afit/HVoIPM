@@ -118,7 +118,7 @@ namespace LothianProductions.VoIP.Monitor.Impl
                         string oldCallerId = mDeviceState.Lines[0].LastCallerNumber;
                         string newCallerId = m_ActiveCall.CallerID.ToString();
                         if (oldCallerId != newCallerId) {
-                            lineChanges.Add(new LineChange(mDeviceState.Lines[0], PROPERTY_LASTCALLERNUMBER, oldCallerId, newCallerId));
+                            lineChanges.Add(new LineChange(mDeviceState.Lines[0], PROPERTY_LINE_LASTCALLERNUMBER, oldCallerId, newCallerId));
                             StateManager.Instance().DeviceStateUpdated(this, deviceChanges, lineChanges, callChanges);
                         }
                         mDeviceState.Lines[0].LastCallerNumber = newCallerId;
@@ -149,9 +149,9 @@ namespace LothianProductions.VoIP.Monitor.Impl
                         mDeviceState.Lines[0].Calls[0].Tone = Tone.Call;
                         tone = mDeviceState.Lines[0].Calls[0].Tone;
                         if ( tone != oldTone ) 
-                            callChanges.Add( new CallChange( mDeviceState.Lines[0].Calls[0], PROPERTY_TONE, oldTone.ToString(), tone.ToString() ) );
+                            callChanges.Add( new CallChange( mDeviceState.Lines[0].Calls[0], PROPERTY_CALL_TONE, oldTone.ToString(), tone.ToString() ) );
                     }
-                    callChanges.Add(new CallChange(mDeviceState.Lines[0].Calls[0], PROPERTY_ACTIVITY, oldActivity.ToString(), activity.ToString()));
+                    callChanges.Add(new CallChange(mDeviceState.Lines[0].Calls[0], PROPERTY_CALL_ACTIVITY, oldActivity.ToString(), activity.ToString()));
                     mDeviceState.Lines[0].Calls[0].Duration = "0";
                     break;
                 case CTapi.LineCallState.LINECALLSTATE_DISCONNECTED:
@@ -160,14 +160,14 @@ namespace LothianProductions.VoIP.Monitor.Impl
                     mDeviceState.Lines[0].Calls[0].Tone = Tone.None;
                     oldTone = mDeviceState.Lines[0].Calls[0].Tone;
                     tone = mDeviceState.Lines[0].Calls[0].Tone;
-                    callChanges.Add(new CallChange(mDeviceState.Lines[0].Calls[0], PROPERTY_ACTIVITY, oldActivity.ToString(), "IdleDisconnected"));
+                    callChanges.Add(new CallChange(mDeviceState.Lines[0].Calls[0], PROPERTY_CALL_ACTIVITY, oldActivity.ToString(), "IdleDisconnected"));
                     if (tone != oldTone)
-                        callChanges.Add(new CallChange(mDeviceState.Lines[0].Calls[0], PROPERTY_TONE, oldTone.ToString(), tone.ToString()));
+                        callChanges.Add(new CallChange(mDeviceState.Lines[0].Calls[0], PROPERTY_CALL_TONE, oldTone.ToString(), tone.ToString()));
                     break;
                 case CTapi.LineCallState.LINECALLSTATE_ONHOLD:
                     oldActivity = mDeviceState.Lines[0].Calls[0].Activity;
                     mDeviceState.Lines[0].Calls[0].Activity = Activity.Held;
-                    callChanges.Add(new CallChange(mDeviceState.Lines[0].Calls[0], PROPERTY_ACTIVITY, oldActivity.ToString(), "Held"));
+                    callChanges.Add(new CallChange(mDeviceState.Lines[0].Calls[0], PROPERTY_CALL_ACTIVITY, oldActivity.ToString(), "Held"));
                     break;
                 case CTapi.LineCallState.LINECALLSTATE_IDLE:
                     oldActivity = mDeviceState.Lines[0].Calls[0].Activity;
@@ -175,9 +175,9 @@ namespace LothianProductions.VoIP.Monitor.Impl
                     mDeviceState.Lines[0].Calls[0].Activity = Activity.IdleDisconnected;
                     mDeviceState.Lines[0].Calls[0].Tone = Tone.None;
                     tone = mDeviceState.Lines[0].Calls[0].Tone;
-                    callChanges.Add(new CallChange(mDeviceState.Lines[0].Calls[0], PROPERTY_ACTIVITY, oldActivity.ToString(), "IdleDisconnected"));
+                    callChanges.Add(new CallChange(mDeviceState.Lines[0].Calls[0], PROPERTY_CALL_ACTIVITY, oldActivity.ToString(), "IdleDisconnected"));
                     if (tone != oldTone)
-                        callChanges.Add(new CallChange(mDeviceState.Lines[0].Calls[0], PROPERTY_TONE, oldTone.ToString(), tone.ToString()));
+                        callChanges.Add(new CallChange(mDeviceState.Lines[0].Calls[0], PROPERTY_CALL_TONE, oldTone.ToString(), tone.ToString()));
                     break;
                 case CTapi.LineCallState.LINECALLSTATE_PROCEEDING:
                     CCall call = e.call;
@@ -186,22 +186,22 @@ namespace LothianProductions.VoIP.Monitor.Impl
                     mDeviceState.Lines[0].Calls[0].Tone = Tone.Dial;
                     mDeviceState.Lines[0].Calls[0].Type = CallType.Outbound;
                     mDeviceState.Lines[0].LastCalledNumber = call.CalledID.ToString();
-                    callChanges.Add(new CallChange(mDeviceState.Lines[0].Calls[0], PROPERTY_ACTIVITY, "IdleDisconnected", "Dialing"));
-                    callChanges.Add(new CallChange(mDeviceState.Lines[0].Calls[0], PROPERTY_TYPE, "IdleDisconnected", "Outbound"));
-                    lineChanges.Add(new LineChange(mDeviceState.Lines[0], PROPERTY_LASTCALLEDNUMBER, "", call.CalledID.ToString() ));
+                    callChanges.Add(new CallChange(mDeviceState.Lines[0].Calls[0], PROPERTY_CALL_ACTIVITY, "IdleDisconnected", "Dialing"));
+                    callChanges.Add(new CallChange(mDeviceState.Lines[0].Calls[0], PROPERTY_CALL_TYPE, "IdleDisconnected", "Outbound"));
+                    lineChanges.Add(new LineChange(mDeviceState.Lines[0], PROPERTY_LINE_LASTCALLEDNUMBER, "", call.CalledID.ToString() ));
                     break;
                 case CTapi.LineCallState.LINECALLSTATE_OFFERING:
                     mDeviceState.Lines[0].Calls[0].Activity = Activity.Ringing;
                     mDeviceState.Lines[0].Calls[0].Tone = Tone.None;
                     mDeviceState.Lines[0].Calls[0].Type = CallType.Inbound;
-                    callChanges.Add(new CallChange(mDeviceState.Lines[0].Calls[0], PROPERTY_ACTIVITY, "IdleDisconnected", "Ringing"));
-                    callChanges.Add(new CallChange(mDeviceState.Lines[0].Calls[0], PROPERTY_TYPE, "IdleDisconnected", "Inbound"));
+                    callChanges.Add(new CallChange(mDeviceState.Lines[0].Calls[0], PROPERTY_CALL_ACTIVITY, "IdleDisconnected", "Ringing"));
+                    callChanges.Add(new CallChange(mDeviceState.Lines[0].Calls[0], PROPERTY_CALL_TYPE, "IdleDisconnected", "Inbound"));
                     break;
                 case CTapi.LineCallState.LINECALLSTATE_ACCEPTED:
                     if (mDeviceState.Lines[0].Calls[0].Activity != Activity.Ringing) {
                         oldActivity = mDeviceState.Lines[0].Calls[0].Activity;
                         mDeviceState.Lines[0].Calls[0].Activity = Activity.Ringing;
-                        callChanges.Add(new CallChange(mDeviceState.Lines[0].Calls[0], PROPERTY_ACTIVITY, oldActivity.ToString(), "Ringing"));
+                        callChanges.Add(new CallChange(mDeviceState.Lines[0].Calls[0], PROPERTY_CALL_ACTIVITY, oldActivity.ToString(), "Ringing"));
                     }
                     break;
                 case CTapi.LineCallState.LINECALLSTATE_DIALING:
@@ -210,21 +210,21 @@ namespace LothianProductions.VoIP.Monitor.Impl
                     mDeviceState.Lines[0].Calls[0].Tone = Tone.Dial;
                     tone = mDeviceState.Lines[0].Calls[0].Tone;
                     mDeviceState.Lines[0].Calls[0].Activity = Activity.Dialing;
-                    callChanges.Add(new CallChange(mDeviceState.Lines[0].Calls[0], PROPERTY_ACTIVITY, oldActivity.ToString(), "Dialing"));
+                    callChanges.Add(new CallChange(mDeviceState.Lines[0].Calls[0], PROPERTY_CALL_ACTIVITY, oldActivity.ToString(), "Dialing"));
                     if ( tone != oldTone )
-                        callChanges.Add(new CallChange(mDeviceState.Lines[0].Calls[0], PROPERTY_TONE, oldTone.ToString(), tone.ToString()));
+                        callChanges.Add(new CallChange(mDeviceState.Lines[0].Calls[0], PROPERTY_CALL_TONE, oldTone.ToString(), tone.ToString()));
                     break;
                 case CTapi.LineCallState.LINECALLSTATE_RINGBACK:
                     oldActivity = mDeviceState.Lines[0].Calls[0].Activity;
                     mDeviceState.Lines[0].Calls[0].Activity = Activity.Ringing;
-                    callChanges.Add(new CallChange(mDeviceState.Lines[0].Calls[0], PROPERTY_ACTIVITY, oldActivity.ToString(), "Ringing"));
+                    callChanges.Add(new CallChange(mDeviceState.Lines[0].Calls[0], PROPERTY_CALL_ACTIVITY, oldActivity.ToString(), "Ringing"));
                     break;
                 case CTapi.LineCallState.LINECALLSTATE_BUSY:
                     oldTone = mDeviceState.Lines[0].Calls[0].Tone;
                     mDeviceState.Lines[0].Calls[0].Tone = Tone.Busy;
                     tone = mDeviceState.Lines[0].Calls[0].Tone;
                     if ( tone != oldTone ) 
-                        callChanges.Add(new CallChange(mDeviceState.Lines[0].Calls[0], PROPERTY_TONE, oldTone.ToString(), tone.ToString() ));
+                        callChanges.Add(new CallChange(mDeviceState.Lines[0].Calls[0], PROPERTY_CALL_TONE, oldTone.ToString(), tone.ToString() ));
                     break;
                 case CTapi.LineCallState.LINECALLSTATE_SPECIALINFO:
                     break;
@@ -247,7 +247,7 @@ namespace LothianProductions.VoIP.Monitor.Impl
             IList<LineChange> lineChanges = new List<LineChange>();
             IList<CallChange> callChanges = new List<CallChange>();
             mDeviceState.Lines[0].RegistrationState = RegistrationState.Offline;
-            lineChanges.Add(new LineChange(mDeviceState.Lines[0], PROPERTY_REGISTRATIONSTATE, "Online", "Offline"));
+            lineChanges.Add(new LineChange(mDeviceState.Lines[0], PROPERTY_LINE_REGISTRATIONSTATE, "Online", "Offline"));
             if (deviceChanges.Count > 0 || lineChanges.Count > 0 || callChanges.Count > 0)
                 StateManager.Instance().DeviceStateUpdated(this, deviceChanges, lineChanges, callChanges);
         }
