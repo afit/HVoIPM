@@ -27,6 +27,9 @@ namespace LothianProductions.VoIP.State {
     public enum Tone {
 		None,
 		Dial,
+		// Note that these call values relate to incoming
+		// calls, as outgoing ones typically don't report
+		// and "outgoing ring" tone.
 		SecureCall,
 		Call,
 		Busy,
