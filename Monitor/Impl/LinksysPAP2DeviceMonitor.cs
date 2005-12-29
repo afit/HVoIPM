@@ -78,22 +78,22 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 
 			String lastCalledNumber = StringHelper.EmptyToNull( StringHelper.ExtractSubstring( page, "Last Called Number:<td><font color=\"darkblue\">", "<", lineState.Name + " Status" ) );
 			if( lastCalledNumber != lineState.LastCalledNumber )
-				lineChanges.Add( new LineChange( lineState, PROPERTY_LASTCALLEDNUMBER, lineState.LastCalledNumber, lastCalledNumber ) );
+				lineChanges.Add( new LineChange( lineState, PROPERTY_LINE_LASTCALLEDNUMBER, lineState.LastCalledNumber, lastCalledNumber ) );
 			lineState.LastCalledNumber = lastCalledNumber;
 				
 			String lastCallerNumber = StringHelper.EmptyToNull( StringHelper.ExtractSubstring( page, "Last Caller Number:<td><font color=\"darkblue\">", "<", lineState.Name + " Status" ) );
 			if( lastCallerNumber != lineState.LastCallerNumber )
-				lineChanges.Add( new LineChange( lineState, PROPERTY_LASTCALLERNUMBER, lineState.LastCallerNumber, lastCallerNumber ) );
+				lineChanges.Add( new LineChange( lineState, PROPERTY_LINE_LASTCALLERNUMBER, lineState.LastCallerNumber, lastCallerNumber ) );
 			lineState.LastCallerNumber = lastCallerNumber;
 
 			RegistrationState registrationState = GetRegistrationState( StringHelper.ExtractSubstring( page, "Registration State:<td><font color=\"darkblue\">", "<", lineState.Name + " Status" ) );
 			if( registrationState != lineState.RegistrationState )
-				lineChanges.Add( new LineChange( lineState, PROPERTY_REGISTRATIONSTATE, lineState.RegistrationState.ToString(), registrationState.ToString() ) );
+				lineChanges.Add( new LineChange( lineState, PROPERTY_LINE_REGISTRATIONSTATE, lineState.RegistrationState.ToString(), registrationState.ToString() ) );
 			lineState.RegistrationState = registrationState;
 
 			bool messageWaiting = StringHelper.ExtractSubstring( page, "Message Waiting:<td><font color=\"darkblue\">", "<", lineState.Name + " Status" ) != "No";
 			if( messageWaiting != lineState.MessageWaiting )
-				lineChanges.Add( new LineChange( lineState, PROPERTY_MESSAGEWAITING, lineState.MessageWaiting.ToString(), messageWaiting.ToString() ) );
+				lineChanges.Add( new LineChange( lineState, PROPERTY_LINE_MESSAGEWAITING, lineState.MessageWaiting.ToString(), messageWaiting.ToString() ) );
 			lineState.MessageWaiting = messageWaiting;
 
 			// Analyse both calls for the line. (We know this device only
@@ -105,67 +105,67 @@ namespace LothianProductions.VoIP.Monitor.Impl {
         protected virtual void AnalyseCallState( String page, Call callState, Line lineState, IList<CallChange> callChanges ) {
 			Activity callActivity = GetActivity( StringHelper.ExtractSubstring( page, callState.Name + " State:<td><font color=\"darkblue\">", "<", lineState.Name + " Status" ) );
 			if( callActivity != callState.Activity )
-				callChanges.Add( new CallChange( callState, PROPERTY_ACTIVITY, callState.Activity.ToString(), callActivity.ToString() ) );
+				callChanges.Add( new CallChange( callState, PROPERTY_CALL_ACTIVITY, callState.Activity.ToString(), callActivity.ToString() ) );
 			callState.Activity = callActivity;
 			
 			String duration = StringHelper.EmptyToNull( StringHelper.ExtractSubstring( page, callState.Name + " Duration:<td><font color=\"darkblue\">", "<", lineState.Name + " Status" ) );
 			if( duration != callState.Duration )
-				callChanges.Add( new CallChange( callState, PROPERTY_DURATION, callState.Duration, duration ) );
+				callChanges.Add( new CallChange( callState, PROPERTY_CALL_DURATION, callState.Duration, duration ) );
 			callState.Duration = duration;
 
 			CallType type = GetCallType( StringHelper.ExtractSubstring( page, callState.Name + " Type:<td><font color=\"darkblue\">", "<", lineState.Name + " Status" ) );
 			if( type != callState.Type )
-				callChanges.Add( new CallChange( callState, PROPERTY_TYPE, callState.Type.ToString(), type.ToString() ) );
+				callChanges.Add( new CallChange( callState, PROPERTY_CALL_TYPE, callState.Type.ToString(), type.ToString() ) );
 			callState.Type = type;
 
 			Tone tone = GetTone( StringHelper.ExtractSubstring( page, callState.Name + " Tone:<td><font color=\"darkblue\">", "<", lineState.Name + " Status" ) );
 			if( tone != callState.Tone )
-				callChanges.Add( new CallChange( callState, PROPERTY_TONE, callState.Tone.ToString(), tone.ToString() ) );
+				callChanges.Add( new CallChange( callState, PROPERTY_CALL_TONE, callState.Tone.ToString(), tone.ToString() ) );
 			callState.Tone = tone;
 			
 			String encoder = StringHelper.EmptyToNull( StringHelper.ExtractSubstring( page, callState.Name + " Encoder:<td><font color=\"darkblue\">", "<", lineState.Name + " Status" ) );
 			if( encoder != callState.Encoder )
-				callChanges.Add( new CallChange( callState, PROPERTY_ENCODER, callState.Encoder, encoder ) );
+				callChanges.Add( new CallChange( callState, PROPERTY_CALL_ENCODER, callState.Encoder, encoder ) );
 			callState.Encoder = encoder;
 			
 			String decoder = StringHelper.EmptyToNull( StringHelper.ExtractSubstring( page, callState.Name + " Decoder:<td><font color=\"darkblue\">", "<", lineState.Name + " Status" ) );
 			if( decoder != callState.Decoder )
-				callChanges.Add( new CallChange( callState, PROPERTY_DECODER, callState.Decoder, decoder ) );
+				callChanges.Add( new CallChange( callState, PROPERTY_CALL_DECODER, callState.Decoder, decoder ) );
 			callState.Decoder = decoder;
 			
 			long bytesSent = ParseInt64( StringHelper.ExtractSubstring( page, callState.Name + " Bytes Sent:<td><font color=\"darkblue\">", "<", lineState.Name + " Status" ) );
 			if( bytesSent != callState.BytesSent )
-				callChanges.Add( new CallChange( callState, PROPERTY_BYTESSENT, callState.BytesSent, bytesSent ) );
+				callChanges.Add( new CallChange( callState, PROPERTY_CALL_BYTESSENT, callState.BytesSent, bytesSent ) );
 			callState.BytesSent = bytesSent;
 
 			long bytesReceived = ParseInt64( StringHelper.ExtractSubstring( page, callState.Name + " Bytes Recv:<td><font color=\"darkblue\">", "<", lineState.Name + " Status" ) );
 			if( bytesReceived != callState.BytesReceived )
-				callChanges.Add( new CallChange( callState, PROPERTY_BYTESRECEIVED, callState.BytesReceived, bytesReceived ) );
+				callChanges.Add( new CallChange( callState, PROPERTY_CALL_BYTESRECEIVED, callState.BytesReceived, bytesReceived ) );
 			callState.BytesReceived = bytesReceived;
 			
 			long packetLoss = ParseInt64( StringHelper.ExtractSubstring( page, callState.Name + " Packets Lost:<td><font color=\"darkblue\">", "<", lineState.Name + " Status" ) );
 			if( packetLoss != callState.PacketLoss )
-				callChanges.Add( new CallChange( callState, PROPERTY_PACKETLOSS, callState.PacketLoss, packetLoss ) );
+				callChanges.Add( new CallChange( callState, PROPERTY_CALL_PACKETLOSS, callState.PacketLoss, packetLoss ) );
 			callState.PacketLoss = packetLoss;
 			
 			long packetError = ParseInt64( StringHelper.ExtractSubstring( page, callState.Name + " Packet Error:<td><font color=\"darkblue\">", "<", lineState.Name + " Status" ) );
 			if( packetError != callState.PacketError )
-				callChanges.Add( new CallChange( callState, PROPERTY_PACKETERROR, callState.PacketError, packetError ) );
+				callChanges.Add( new CallChange( callState, PROPERTY_CALL_PACKETERROR, callState.PacketError, packetError ) );
 			callState.PacketError = packetError;
 			
 			long jitter = ParseInt64( StringHelper.ExtractSubstring( page, callState.Name + " Jitter:<td><font color=\"darkblue\">", "<", lineState.Name + " Status" ).Replace( " ms", "") );
 			if( jitter != callState.Jitter )
-				callChanges.Add( new CallChange( callState, PROPERTY_JITTER, callState.Jitter, jitter ) );
+				callChanges.Add( new CallChange( callState, PROPERTY_CALL_JITTER, callState.Jitter, jitter ) );
 			callState.Jitter = jitter;
 			
 			long decodeLatency = ParseInt64( StringHelper.ExtractSubstring( page, callState.Name + " Decode Latency:<td><font color=\"darkblue\">", "<", lineState.Name + " Status" ).Replace( " ms", "") );
 			if( decodeLatency != callState.DecodeLatency )
-				callChanges.Add( new CallChange( callState, PROPERTY_DECODELATENCY, callState.DecodeLatency, decodeLatency ) );
+				callChanges.Add( new CallChange( callState, PROPERTY_CALL_DECODELATENCY, callState.DecodeLatency, decodeLatency ) );
 			callState.DecodeLatency = decodeLatency;
 			
 			long roundTripDelay = ParseInt64( StringHelper.ExtractSubstring( page, callState.Name + " Round Trip Delay:<td><font color=\"darkblue\">", "<", lineState.Name + " Status" ).Replace( " ms", "") );
 			if( roundTripDelay != callState.RoundTripDelay )
-				callChanges.Add( new CallChange( callState, PROPERTY_ROUNDTRIPDELAY, callState.RoundTripDelay, roundTripDelay ) );
+				callChanges.Add( new CallChange( callState, PROPERTY_CALL_ROUNDTRIPDELAY, callState.RoundTripDelay, roundTripDelay ) );
 			callState.RoundTripDelay = roundTripDelay;
         }
         
@@ -199,21 +199,23 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 				return Tone.Dial;
 			else if( tone == "Secure Call Indication" )
 				return Tone.SecureCall;
-			// FIXME does this work?
 			else if( tone == "Busy" )
 				return Tone.Busy;
-			// FIXME does this work?
-			else if( tone == "Call" )
+			else if( tone == "Ring" )
 				return Tone.Call;
 			else if ( tone == "Ring Back" )
-				return Tone.Error;
+			    return Tone.Error;
+			    
+			// FIXME are the following states accurately described?
 			else if (tone == "SIT 1")
 				return Tone.InvalidNumber;
-			// FIXME what is "Reorder", I've seen the PAP2 throw it
 			else if (tone == "Reorder")
-				return Tone.Error;
+			    return Tone.Error;
 			else if (tone == "Off Hook Warning")
-				return Tone.Error;
+			    return Tone.Error;
+			    
+			// Note that an outgoing ringing call returns a tone of "none"
+			// so the call tone relates to an incoming call.
 			throw new ArgumentOutOfRangeException("Tone " + tone + " not found.");
 		}
 
@@ -229,6 +231,8 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 			else if( activity == "Invalid" )
 				return Activity.Error;
 			else if (activity == "Calling")
+				return Activity.Ringing;
+			else if (activity == "Answering")
 				return Activity.Ringing;
 			else if (activity == "Proceeding")
 				return Activity.Ringing;
