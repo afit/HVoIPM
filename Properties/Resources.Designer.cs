@@ -67,17 +67,17 @@ namespace LothianProductions.VoIP.Properties {
             }
         }
         
+        internal static System.Drawing.Icon HVoIPM_48x_other {
+            get {
+                object obj = ResourceManager.GetObject("HVoIPM_48x_other", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap HVoIPM_48x1 {
             get {
                 object obj = ResourceManager.GetObject("HVoIPM_48x1", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        internal static System.Drawing.Icon HVoIPM_flash {
-            get {
-                object obj = ResourceManager.GetObject("HVoIPM_flash", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
             }
         }
     }
