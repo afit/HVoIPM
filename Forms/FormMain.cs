@@ -16,7 +16,6 @@ using LothianProductions.Util;
 using LothianProductions.Util.Http;
 using LothianProductions.Util.Settings;
 using LothianProductions.VoIP;
-using LothianProductions.VoIP.Behaviour;
 using LothianProductions.VoIP.Monitor;
 using LothianProductions.VoIP.State;
 
@@ -26,7 +25,8 @@ namespace LothianProductions.VoIP.Forms {
 		protected bool mFlashState = false;
 		protected IList<String> mWarnings = new List<String>();
 		protected IList<DeviceMonitor> mMonitorsStarted = new List<DeviceMonitor>();
-		protected int BUBBLE_TIMEOUT = 1000;
+		protected const int BUBBLE_TIMEOUT = 1000;
+		protected const String UPDATE_URL = "http://www.lothianproductions.co.uk/hvoipm/latest-version";
     
         public FormMain() {
             InitializeComponent();
@@ -68,16 +68,16 @@ namespace LothianProductions.VoIP.Forms {
 			bool showApplication = false;
 			
 			// FIXME this is very inefficient
-			List<Change> changes = new List<Change>();
-			foreach( Change change in e.DeviceStateChanges )
+			List<PropertyChange> changes = new List<PropertyChange>();
+			foreach( PropertyChange change in e.DeviceStateChanges )
 				changes.Add( change );
-			foreach( Change change in e.LineStateChanges )
+			foreach( PropertyChange change in e.LineStateChanges )
 				changes.Add( change );
-			foreach( Change change in e.CallStateChanges )
+			foreach( PropertyChange change in e.CallStateChanges )
 				changes.Add( change );
 			
-			foreach( Change change in changes ) {
-				StateChangeBehaviour behaviour = StateManager.Instance().LookupBehaviour( change.Underlying, change.Property );
+			foreach( PropertyChange change in changes ) {
+				PropertyChangeBehaviour behaviour = StateManager.Instance().LookupPropertyChangeBehaviour( change.Underlying, change.Property, change.ChangedTo );
 			
 				if( behaviour.ShowBubble ) {
 					if( bubbleTextBuilder.Length > 0 )
@@ -87,21 +87,19 @@ namespace LothianProductions.VoIP.Forms {
 					bubbleTextBuilder.Append( FormatString( behaviour.BubbleText, change.Property, change.ChangedFrom, change.ChangedTo ) );
 				}
 				
-				if( behaviour.SystemTrayWarning ) {
-					// Check to see if warning criteria is met.
-					if( Array.IndexOf( behaviour.WarningCriteria, change.ChangedTo ) > -1 ) {
-						// Activate warning state, if it isn't already:
-						if( ! mWarnings.Contains( change.Underlying.GetHashCode() + ":" + change.Underlying.GetType().Name + ":" + change.Property ) )
-							mWarnings.Add( change.Underlying.GetHashCode() + ":" + change.Underlying.GetType().Name + ":" + change.Property );
-					} else {
-						mWarnings.Remove( change.Underlying.GetHashCode() + ":" + change.Underlying.GetType().Name + ":" + change.Property );
-					}
+				// Check to see if warning criteria is met.
+				if( behaviour.SystemTrayWarning ) {			
+					// Activate warning state, if it isn't already:
+					if( ! mWarnings.Contains( change.Underlying.GetHashCode() + ":" + change.Underlying.GetType().Name + ":" + change.Property ) )
+						mWarnings.Add( change.Underlying.GetHashCode() + ":" + change.Underlying.GetType().Name + ":" + change.Property );
+				} else {
+					mWarnings.Remove( change.Underlying.GetHashCode() + ":" + change.Underlying.GetType().Name + ":" + change.Property );
 				}
 				
-				if( behaviour.ShowApplication && Array.IndexOf( behaviour.WarningCriteria, change.ChangedTo ) > -1 )
+				if( behaviour.ShowApplication )
 					showApplication = true;
 
-				if( behaviour.ExternalProcess != "" && Array.IndexOf( behaviour.WarningCriteria, change.ChangedTo ) > -1 )
+				if( behaviour.ExternalProcess != "" )
 					externalProcesses.Add( FormatString( behaviour.ExternalProcess, change.Property, change.ChangedFrom, change.ChangedTo ) );
 			}
 
@@ -165,13 +163,13 @@ namespace LothianProductions.VoIP.Forms {
 				ShowInTaskbar = true;
 		}
 		
-		private delegate void MonitorPassingDelegate( IList<Change> changes );
-		private void UpdateTree( IList<Change> changes ) {
+		private delegate void MonitorPassingDelegate( IList<PropertyChange> changes );
+		private void UpdateTree( IList<PropertyChange> changes ) {
 			// If the change has occurred on an object that doesn't exist in the tree
 			// then create it. Otherwise, update it.
 			
 			// FIXME add support for name changes?	
-			foreach( Change change in changes ) {
+			foreach( PropertyChange change in changes ) {
 				TreeNode[] nodes = TreeStates.Nodes.Find( DeviceMonitor.PROPERTY_NAME, true );
 				bool found = false;
 				
@@ -189,9 +187,9 @@ namespace LothianProductions.VoIP.Forms {
 		
 		public static void EnsureNodeContains( TreeNode node, Object state, String property, String changedFrom, String changedTo ) {
 			if( ! node.Nodes.ContainsKey( property ) )
-				node.Nodes.Add( property, FormatString( StateManager.Instance().LookupBehaviour( state, property ).BubbleText, property, changedFrom, changedTo ) ).Tag = state;
+				node.Nodes.Add( property, FormatString( StateManager.Instance().LookupPropertyBehaviour( state, property ).Label, property, changedFrom, changedTo ) ).Tag = state;
 			else
-				node.Nodes[ property ].Text = FormatString( StateManager.Instance().LookupBehaviour( state, property ).BubbleText, property, changedFrom, changedTo );
+				node.Nodes[ property ].Text = FormatString( StateManager.Instance().LookupPropertyBehaviour( state, property ).Label, property, changedFrom, changedTo );
 		}
 		
 		private void AddMonitorToTree( IDeviceMonitor monitor ) {
@@ -234,7 +232,7 @@ namespace LothianProductions.VoIP.Forms {
 		}
 
 		public static String FindLatestVersion() {
-			return new UTF8Encoding().GetString( new WebClient().DownloadData( "http://www.lothianproductions.co.uk/hvoipm/latest-version" ) );
+			return new UTF8Encoding().GetString( new WebClient().DownloadData( UPDATE_URL ) );
 		}
 
 		#region Form Events
