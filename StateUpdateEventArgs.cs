@@ -6,25 +6,25 @@ using LothianProductions.VoIP.State;
 
 namespace LothianProductions.VoIP {
 	public class StateUpdateEventArgs : EventArgs {
-		public StateUpdateEventArgs(	IList<DeviceChange> deviceChanges, IList<LineChange> lineChanges,
-										IList<CallChange> callChanges ) {
+		public StateUpdateEventArgs(	IList<DevicePropertyChange> deviceChanges, IList<LinePropertyChange> lineChanges,
+										IList<CallPropertyChange> callChanges ) {
 			mDeviceStateChanges = deviceChanges;
 			mLineStateChanges = lineChanges;
 			mCallStateChanges = callChanges;
 		}
 
-		protected IList<DeviceChange> mDeviceStateChanges;
-		public IList<DeviceChange> DeviceStateChanges {
+		protected IList<DevicePropertyChange> mDeviceStateChanges;
+		public IList<DevicePropertyChange> DeviceStateChanges {
 			get{ return mDeviceStateChanges; }
 		}
 
-		protected IList<LineChange> mLineStateChanges;
-		public IList<LineChange> LineStateChanges {
+		protected IList<LinePropertyChange> mLineStateChanges;
+		public IList<LinePropertyChange> LineStateChanges {
 			get{ return mLineStateChanges; }
 		}
 
-		protected IList<CallChange> mCallStateChanges;
-		public IList<CallChange> CallStateChanges {
+		protected IList<CallPropertyChange> mCallStateChanges;
+		public IList<CallPropertyChange> CallStateChanges {
 			get{ return mCallStateChanges; }
 		}
 	}
