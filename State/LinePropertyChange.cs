@@ -5,8 +5,8 @@ using System.Text;
 using LothianProductions.VoIP.Monitor;
 
 namespace LothianProductions.VoIP.State {
-	public class LineChange : Change {
-		public LineChange( Line line, String property, String changedFrom, String changedTo ) {
+	public class LinePropertyChange : PropertyChange {
+		public LinePropertyChange( Line line, String property, String changedFrom, String changedTo ) {
 			mLine = line;
 			mProperty = property;
 			mChangedFrom = changedFrom;

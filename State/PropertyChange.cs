@@ -6,7 +6,7 @@ using LothianProductions.Util;
 using LothianProductions.VoIP.Monitor;
 
 namespace LothianProductions.VoIP.State {
-	public abstract class Change {
+	public abstract class PropertyChange {
 		protected String mProperty;
 		public String Property {
 			get{ return mProperty; }
