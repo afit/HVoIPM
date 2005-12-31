@@ -4,6 +4,8 @@ using System.Windows.Forms;
 
 using LothianProductions.VoIP.Forms;
 
+using Microsoft.Win32;
+
 namespace LothianProductions.VoIP {
     static class Program {
         /// <summary>
@@ -14,7 +16,9 @@ namespace LothianProductions.VoIP {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault( false );
             
-			AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler( MonitorFailureHandler );         
+			AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler( MonitorFailureHandler );
+			SystemEvents.SessionEnding += new SessionEndingEventHandler(SystemEvents_SessionEnding); 
+			
 			
             // Workaround for .NET bug -- have to show & then hide
             // form in order to create control handles for event-driven
@@ -37,7 +41,9 @@ namespace LothianProductions.VoIP {
 					"hvoipm@lothianproductions.co.uk, they may be able to help you fix the problem.\n\n" +
 					e.ExceptionObject.ToString(), "Hardware VoIP Monitor", MessageBoxButtons.OK );
 		}
-    }
-    
-    
+
+		private static void SystemEvents_SessionEnding(object sender, SessionEndingEventArgs e) {
+			Environment.Exit(1);
+		}
+	}
 }

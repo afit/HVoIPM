@@ -14,7 +14,7 @@
     <ManifestCertificateThumbprint>BDDECAD26AA6A198875A4821B10B6D3D43506E74</ManifestCertificateThumbprint>
     <ManifestKeyFile>Hardware VoIP Monitor_TemporaryKey.pfx</ManifestKeyFile>
     <GenerateManifests>true</GenerateManifests>
-    <SignManifests>true</SignManifests>
+    <SignManifests>false</SignManifests>
     <IsWebBootstrapper>true</IsWebBootstrapper>
     <PublishUrl>J:\www\html\hvoipm\install\</PublishUrl>
     <Install>true</Install>
@@ -70,12 +70,15 @@
       <DependentUpon>CallRecordViewer.cs</DependentUpon>
     </Compile>
     <Compile Include="Logger.cs" />
+    <Compile Include="Monitor\DeviceMonitor.cs" />
+    <Compile Include="Monitor\DeviceMonitorControl.cs" />
     <Compile Include="Monitor\DeviceNotRespondingException.cs" />
-    <Compile Include="Monitor\DeviceStateMonitor.cs" />
-    <Compile Include="Monitor\Impl\TAPIDeviceStateMonitor.cs" />
+    <Compile Include="Monitor\IDeviceMonitor.cs" />
+    <Compile Include="Monitor\Impl\LinksysPAP2DeviceMonitor.cs" />
+    <Compile Include="Monitor\Impl\TAPIDeviceMonitor.cs" />
     <Compile Include="StateUpdateEventArgs.cs" />
     <Compile Include="State\Call.cs" />
-    <Compile Include="Monitor\IDeviceStateMonitor.cs" />
+    <Compile Include="State\CallPropertyChange.cs" />
     <Compile Include="State\Device.cs" />
     <Compile Include="Forms\FormMain.cs">
       <SubType>Form</SubType>
@@ -83,7 +86,7 @@
     <Compile Include="Forms\FormMain.Designer.cs">
       <DependentUpon>FormMain.cs</DependentUpon>
     </Compile>
-    <Compile Include="Monitor\Impl\LinksysPAP2DeviceStateMonitor.cs" />
+    <Compile Include="State\DevicePropertyChange.cs" />
     <Compile Include="State\Line.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -116,8 +119,10 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="StateManager.cs" />
-    <Compile Include="State\Change.cs" />
-    <Compile Include="Behaviour\StateBehaviour.cs" />
+    <Compile Include="State\LinePropertyChange.cs" />
+    <Compile Include="State\PropertyBehaviour.cs" />
+    <Compile Include="State\PropertyChange.cs" />
+    <Compile Include="State\PropertyChangeBehaviour.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LothianProductionsCommon2\LothianProductionsCommon.csproj">
@@ -139,6 +144,9 @@
       <ProductName>.NET Framework 2.0</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Behaviour\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

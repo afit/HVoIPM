@@ -29,6 +29,8 @@ namespace LothianProductions.VoIP.Forms {
 		protected IList<DeviceMonitor> mMonitorsStarted = new List<DeviceMonitor>();
 		protected const int BUBBLE_TIMEOUT = 1000;
 		protected const String UPDATE_URL = "http://www.lothianproductions.co.uk/hvoipm/latest-version";
+		protected static int WM_QUERYENDSESSION = 0x11;
+		protected static bool systemShutdown = false; 
     
         public FormMain() {
             InitializeComponent();
@@ -261,9 +263,9 @@ namespace LothianProductions.VoIP.Forms {
         private void FormMain_FormClosing( object sender, FormClosingEventArgs e ) {
             // Prevent closure of main window from ending application:
             // cancel closure and hide instead.
-            e.Cancel = true;
-            this.Hide();
-        }
+			e.Cancel = true;
+			this.Hide();
+		}
 
 		private void NotifyIcon_MouseClick( object sender, MouseEventArgs e ) {
 			if( e.Button != MouseButtons.Left )
@@ -354,5 +356,5 @@ namespace LothianProductions.VoIP.Forms {
 				}
 			}
 		}
-    }
+	}
 }
