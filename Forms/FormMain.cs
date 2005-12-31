@@ -19,6 +19,8 @@ using LothianProductions.VoIP;
 using LothianProductions.VoIP.Monitor;
 using LothianProductions.VoIP.State;
 
+using Microsoft.Win32;
+
 namespace LothianProductions.VoIP.Forms {
     public partial class FormMain : Form {
     
@@ -30,6 +32,10 @@ namespace LothianProductions.VoIP.Forms {
     
         public FormMain() {
             InitializeComponent();
+
+			bool runOnStartup = CheckStartupRegKey();
+			if ( runOnStartup )
+				toolStripRunOnStartup.Checked = true;
 
 			LabelLinks.Links.Add( 2, 19, "http://www.lothianproductions.co.uk" );
 			LabelLinks.Links.Add( 49, 12, "http://www.lothianproductions.co.uk/hvoipm" );
@@ -235,6 +241,22 @@ namespace LothianProductions.VoIP.Forms {
 			return new UTF8Encoding().GetString( new WebClient().DownloadData( UPDATE_URL ) );
 		}
 
+		public static bool CheckStartupRegKey() {
+			try {
+				RegistryKey rkApp = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+				string regkey = rkApp.GetValue( Application.ProductName, null).ToString();
+				if (regkey == null) {
+					return false;
+				} else {
+					return true;
+				}
+			} catch (Exception ex) {
+				Logger.Instance().Log("Unable to get current application startup state from registry: ", ex);
+				return false;
+			}
+			return false;
+		}
+
 		#region Form Events
         private void FormMain_FormClosing( object sender, FormClosingEventArgs e ) {
             // Prevent closure of main window from ending application:
@@ -311,5 +333,26 @@ namespace LothianProductions.VoIP.Forms {
 			Process.Start( (String) e.Link.LinkData );
 		}
 		#endregion
+
+		private void toolStripRunOnStartup_Click(object sender, EventArgs e) {
+			if (toolStripRunOnStartup.Checked == true) {
+				RegistryKey hkcu = Registry.CurrentUser;
+				try {
+					RegistryKey rkApp = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+					rkApp.DeleteValue( Application.ProductName, false);
+					toolStripRunOnStartup.Checked = false;
+				} catch (Exception ex) {
+					Logger.Instance().Log("Unable to remove application startup key from registry: ", ex);
+				}
+			} else {
+				try {
+					RegistryKey rkApp = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+					rkApp.SetValue(Application.ProductName, Application.ExecutablePath);
+					toolStripRunOnStartup.Checked = true;
+				} catch (Exception ex) {
+					Logger.Instance().Log("Unable to change application startup state from registry: ", ex);
+				}
+			}
+		}
     }
 }
