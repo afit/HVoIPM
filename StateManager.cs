@@ -75,8 +75,8 @@ namespace LothianProductions.VoIP {
 			get{ return mDeviceMonitorControls.Keys; }
 		}
 
-		public void DeviceStateUpdated(	IDeviceMonitor monitor, IList<DevicePropertyChange> deviceChanges,
-										IList<LinePropertyChange> lineChanges, IList<CallPropertyChange> callChanges ) {
+		public void DeviceUpdated(	IDeviceMonitor monitor, IList<DevicePropertyChange> deviceChanges,
+									IList<LinePropertyChange> lineChanges, IList<CallPropertyChange> callChanges ) {
 			// FIXME this is very inefficient
 			List<PropertyChange> changes = new List<PropertyChange>();
 			foreach( PropertyChange change in deviceChanges )
