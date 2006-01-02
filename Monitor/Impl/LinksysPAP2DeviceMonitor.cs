@@ -21,7 +21,7 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 	/// at all efficient. There's a heck of a lot of String creation
 	/// & disposal that's highly unecessary.
 	/// </summary>
-    public class LinksysPAP2DeviceMonitor : DeviceMonitor {
+    public class LinksysPAP2DeviceMonitor : AbstractWebDeviceMonitor {
 
 		public LinksysPAP2DeviceMonitor( String name ) {
 			mName = name;
@@ -33,48 +33,13 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 				new Line( "Line 2", new Call[] { new Call( "Call 1" ), new Call( "Call 2" ) } )
 			} );
 		}
-	    
-        public override void Run() {
-			int sleepTime = Int32.Parse( GetConfigurationValue( "PollInterval" ) );
-			String hostname = GetConfigurationValue( "Hostname" );
-			
-			WebClient webClient = new WebClient();
-			webClient.Headers.Add( "User-Agent", "HVoIPM / LinksysPAP2DeviceStateMonitor" );
-			
-			if( GetConfigurationValue( "Username" ) != "" || GetConfigurationValue( "Password" ) != "" )
-				webClient.Credentials = new NetworkCredential( GetConfigurationValue( "Username" ), GetConfigurationValue( "Password" ) );
-			
-			while( true ) {
-				// Lock to prevent recursion synchronicity problems
-				// caused by slow wgetting.
-				lock (this) {
-					String page;
-					try {
-						page = new UTF8Encoding().GetString( webClient.DownloadData( hostname ) );
-					} catch (WebException e) {
-					    if( e.Status == WebExceptionStatus.ProtocolError )
-							if( ( (HttpWebResponse) e.Response ).StatusCode == HttpStatusCode.Unauthorized )
-					            throw new DeviceAccessUnauthorizedException( "Not authorized to request \"" + hostname + "\"; perhaps username and password are incorrect?", e );
-					            
-					    throw new DeviceNotRespondingException( "The device \"" + hostname + "\" is not responding to status requests", e );
-					}
-					
-					IList<DevicePropertyChange> deviceChanges = new List<DevicePropertyChange>();
-					IList<LinePropertyChange> lineChanges = new List<LinePropertyChange>();
-					IList<CallPropertyChange> callChanges = new List<CallPropertyChange>();
-				
-					AnalyseLineState( page, mDeviceState.Lines[ 0 ], lineChanges, callChanges );	
-					AnalyseLineState( page, mDeviceState.Lines[ 1 ], lineChanges, callChanges );
-				
-					if( deviceChanges.Count > 0 || lineChanges.Count > 0 || callChanges.Count > 0 )
-						StateManager.Instance().DeviceStateUpdated( this, deviceChanges, lineChanges, callChanges );
-				}			
-				
-				Thread.Sleep( sleepTime );
-			}
-        }
         
-        protected virtual void AnalyseLineState( String page, Line lineState, IList<LinePropertyChange> lineChanges, IList<CallPropertyChange> callChanges ) {
+        protected override void AnalyseDevice( String page, IList<DevicePropertyChange> deviceChanges, IList<LinePropertyChange> lineChanges, IList<CallPropertyChange> callChanges ) {
+			foreach( Line line in mDeviceState.Lines )
+				AnalyseLine( page, line, lineChanges, callChanges );	
+		}		
+        
+        protected override void AnalyseLine( String page, Line lineState, IList<LinePropertyChange> lineChanges, IList<CallPropertyChange> callChanges ) {
 
 			String lastCalledNumber = StringHelper.EmptyToNull( StringHelper.ExtractSubstring( page, "Last Called Number:<td><font color=\"darkblue\">", "<", lineState.Name + " Status" ) );
 			if( lastCalledNumber != lineState.LastCalledNumber )
@@ -96,13 +61,12 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 				lineChanges.Add( new LinePropertyChange( lineState, PROPERTY_LINE_MESSAGEWAITING, lineState.MessageWaiting.ToString(), messageWaiting.ToString() ) );
 			lineState.MessageWaiting = messageWaiting;
 
-			// Analyse both calls for the line. (We know this device only
-			// supports two calls per line.)
-			AnalyseCallState( page, lineState.Calls[ 0 ], lineState, callChanges );
-			AnalyseCallState( page, lineState.Calls[ 1 ], lineState, callChanges );
+			// Analyse all calls for the line.
+			foreach( Call call in lineState.Calls )
+				AnalyseCall( page, call, lineState, callChanges );
         }
         
-        protected virtual void AnalyseCallState( String page, Call callState, Line lineState, IList<CallPropertyChange> callChanges ) {
+        protected override void AnalyseCall( String page, Call callState, Line lineState, IList<CallPropertyChange> callChanges ) {
 			Activity callActivity = GetActivity( StringHelper.ExtractSubstring( page, callState.Name + " State:<td><font color=\"darkblue\">", "<", lineState.Name + " Status" ) );
 			if( callActivity != callState.Activity )
 				callChanges.Add( new CallPropertyChange( callState, PROPERTY_CALL_ACTIVITY, callState.Activity.ToString(), callActivity.ToString() ) );
@@ -168,64 +132,5 @@ namespace LothianProductions.VoIP.Monitor.Impl {
 				callChanges.Add( new CallPropertyChange( callState, PROPERTY_CALL_ROUNDTRIPDELAY, callState.RoundTripDelay, roundTripDelay ) );
 			callState.RoundTripDelay = roundTripDelay;
         }
-        
-        public static long ParseInt64( String parse ) {
-			long value = 0L;
-			
-			try {
-				if( parse != null && parse != "" )
-					value = Int64.Parse( parse );
-			} catch (FormatException) {
-				// Safe to do nothing.
-			}
-			
-			return value;
-        }
-
-		public virtual CallType GetCallType( String type ) {
-			String mapping = ConfigurationManager.AppSettings[ this.GetType().Name + ":CallType:" + type ];
-			
-			if( mapping != null )
-				try {
-					return (CallType) Enum.Parse( typeof(CallType), mapping );
-				} catch (ArgumentException) {
-				}
-				
-			throw new DeviceConfigurationException( "CallType \"" + type + "\" incorrectly mapped to \"" + mapping + "\". Perhaps a configuration entry is missing?" );			
-		}
-		
-		public virtual Tone GetTone( String tone ) {
-			String mapping = ConfigurationManager.AppSettings[ this.GetType().Name + ":Tone:" + tone ];
-
-			if( mapping != null )
-				try {
-					return (Tone) Enum.Parse( typeof(Tone), mapping );
-				} catch (ArgumentException) {
-				}
-			
-			throw new DeviceConfigurationException( "Tone \"" + tone + "\" incorrectly mapped to \"" + mapping + "\". Perhaps a configuration entry is missing?" );			
-		}
-
-		public virtual Activity GetActivity( String activity ) {
-			String mapping = ConfigurationManager.AppSettings[ this.GetType().Name + ":Activity:" + activity ];
-			if( mapping != null )
-				try {
-					return (Activity) Enum.Parse( typeof(Activity), mapping );
-				} catch (ArgumentException) {
-				}
-			
-			throw new DeviceConfigurationException( "Activity \"" + activity + "\" incorrectly mapped to \"" + mapping + "\". Perhaps a configuration entry is missing?" );			
-		}
-        
-        public virtual RegistrationState GetRegistrationState( String state ) {
-			String mapping = ConfigurationManager.AppSettings[ this.GetType().Name + ":RegistrationState:" + state ];
-			if( mapping != null )
-				try {
-					return (RegistrationState) Enum.Parse( typeof(RegistrationState), mapping );
-				} catch (ArgumentException) {
-				}			
-			
-			throw new DeviceConfigurationException( "Registration state \"" + state + "\" incorrectly mapped to \"" + mapping + "\". Perhaps a configuration entry is missing?" );			
-        }
-    }
+	}
 }
