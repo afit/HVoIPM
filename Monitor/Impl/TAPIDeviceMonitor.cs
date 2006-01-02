@@ -119,14 +119,14 @@ namespace LothianProductions.VoIP.Monitor.Impl
                         string newCallerId = m_ActiveCall.CallerID.ToString();
                         if (oldCallerId != newCallerId) {
                             lineChanges.Add(new LinePropertyChange(mDeviceState.Lines[0], PROPERTY_LINE_LASTCALLERNUMBER, oldCallerId, newCallerId));
-                            StateManager.Instance().DeviceStateUpdated(this, deviceChanges, lineChanges, callChanges);
+                            StateManager.Instance().DeviceUpdated(this, deviceChanges, lineChanges, callChanges);
                         }
                         mDeviceState.Lines[0].LastCallerNumber = newCallerId;
                     }
                 }
             }
 			if( deviceChanges.Count > 0 || lineChanges.Count > 0 || callChanges.Count > 0 )
-				StateManager.Instance().DeviceStateUpdated( this, deviceChanges, lineChanges, callChanges );
+				StateManager.Instance().DeviceUpdated( this, deviceChanges, lineChanges, callChanges );
         }
 
         public void MyCallStateEventHandler(Object sender, CTapi.CallStateEventArgs e) {
@@ -230,7 +230,7 @@ namespace LothianProductions.VoIP.Monitor.Impl
                     break;
             }
             if (deviceChanges.Count > 0 || lineChanges.Count > 0 || callChanges.Count > 0)
-                StateManager.Instance().DeviceStateUpdated(this, deviceChanges, lineChanges, callChanges);
+                StateManager.Instance().DeviceUpdated(this, deviceChanges, lineChanges, callChanges);
         }
 
         public void MyLineReplyEventHandler(Object sender, CTapi.LineReplyEventArgs e) {
@@ -249,7 +249,7 @@ namespace LothianProductions.VoIP.Monitor.Impl
             mDeviceState.Lines[0].RegistrationState = RegistrationState.Offline;
             lineChanges.Add(new LinePropertyChange(mDeviceState.Lines[0], PROPERTY_LINE_REGISTRATIONSTATE, "Online", "Offline"));
             if (deviceChanges.Count > 0 || lineChanges.Count > 0 || callChanges.Count > 0)
-                StateManager.Instance().DeviceStateUpdated(this, deviceChanges, lineChanges, callChanges);
+                StateManager.Instance().DeviceUpdated(this, deviceChanges, lineChanges, callChanges);
         }
 
         #endregion // Event Handling
