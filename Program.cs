@@ -42,7 +42,8 @@ namespace LothianProductions.VoIP {
 					e.ExceptionObject.ToString(), "Hardware VoIP Monitor", MessageBoxButtons.OK );
 		}
 
-		private static void SystemEvents_SessionEnding(object sender, SessionEndingEventArgs e) {
+		public static void SystemEvents_SessionEnding(object sender, SessionEndingEventArgs e) {
+			Logger.Instance().Log( "Ended Hardware VoIP Monitor application" );
 			Environment.Exit(1);
 		}
 	}
