@@ -12,6 +12,8 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
 
+//using Microsoft.Office.Interop.Outlook;
+
 using LothianProductions.Util;
 using LothianProductions.Util.Http;
 using LothianProductions.Util.Settings;
@@ -29,15 +31,14 @@ namespace LothianProductions.VoIP.Forms {
 		protected IList<DeviceMonitor> mMonitorsStarted = new List<DeviceMonitor>();
 		protected const int BUBBLE_TIMEOUT = 1000;
 		protected const String UPDATE_URL = "http://www.lothianproductions.co.uk/hvoipm/latest-version";
-		protected static int WM_QUERYENDSESSION = 0x11;
-		protected static bool systemShutdown = false; 
+		protected const String STARTUP_REG_KEY = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run";
     
         public FormMain() {
             InitializeComponent();
 
 			bool runOnStartup = CheckStartupRegKey();
 			if ( runOnStartup )
-				toolStripRunOnStartup.Checked = true;
+				toolStripLoadAtStartup.Checked = true;
 
 			LabelLinks.Links.Add( 2, 19, "http://www.lothianproductions.co.uk" );
 			LabelLinks.Links.Add( 49, 12, "http://www.lothianproductions.co.uk/hvoipm" );
@@ -164,7 +165,7 @@ namespace LothianProductions.VoIP.Forms {
 			// in Program.cs.
 			this.Show();
 			
-			if( WindowState != FormWindowState.Normal )
+			if( WindowState == FormWindowState.Minimized )
 				WindowState = FormWindowState.Normal;
 				
 			if( ! ShowInTaskbar )
@@ -244,19 +245,28 @@ namespace LothianProductions.VoIP.Forms {
 		}
 
 		public static bool CheckStartupRegKey() {
-			try {
-				RegistryKey rkApp = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
-				string regkey = rkApp.GetValue( Application.ProductName, null).ToString();
-				if (regkey == null) {
-					return false;
-				} else {
-					return true;
-				}
-			} catch (Exception ex) {
-				Logger.Instance().Log("Unable to get current application startup state from registry: ", ex);
+			// Check for existance of startup key.
+			RegistryKey key = Registry.CurrentUser.OpenSubKey( STARTUP_REG_KEY, true );
+			
+			if( key == null || key.GetValue( Application.ProductName, null ) == null )
 				return false;
+			
+			// If the key exists, but the path is wrong (ie. app has moved), correct it.
+			if( ((String) key.GetValue( Application.ProductName, null )) != Application.ExecutablePath ) {
+				Logger.Instance().Log( "Application is set to load on startup, but startup path is wrong. Correcting now." );
+				key.SetValue( Application.ProductName, Application.ExecutablePath );
 			}
-			return false;
+
+			return true;
+		}
+
+		private void toolStripRunOnStartup_Click( object sender, EventArgs e ) {
+			if( toolStripLoadAtStartup.Checked )
+				Registry.CurrentUser.OpenSubKey( STARTUP_REG_KEY, true ).DeleteValue( Application.ProductName, false );
+			else
+				Registry.CurrentUser.OpenSubKey( STARTUP_REG_KEY, true ).SetValue( Application.ProductName, Application.ExecutablePath );					
+			
+			toolStripLoadAtStartup.Checked = ! toolStripLoadAtStartup.Checked;
 		}
 
 		#region Form Events
@@ -293,14 +303,13 @@ namespace LothianProductions.VoIP.Forms {
 		}
 
 		private void toolStripCallLog_Click(object sender, EventArgs e) {
-			new CallRecordViewer().Show();
+			new FormCallRecords().Show();
 		}
 
-		private void toolStripQuit_Click( object sender, EventArgs e ) {
-            Logger.Instance().Log( "Ended Hardware VoIP Monitor application" );
+		private void toolStripQuit_Click( object sender, EventArgs e ) {            
             NotifyIcon.Visible = false;
 			this.Hide();
-			Environment.Exit( 1 );
+			Program.SystemEvents_SessionEnding( this, null );
 		}
 
 		private void toolStripShowMain_Click( object sender, EventArgs e ) {
@@ -335,26 +344,40 @@ namespace LothianProductions.VoIP.Forms {
 			Process.Start( (String) e.Link.LinkData );
 		}
 		#endregion
+	
+		  //Microsoft.Office.Interop.Outlook.ApplicationClass outLookApp = new Microsoft.Office.Interop.Outlook.ApplicationClass();
+		  
+		  ////outLookApp.
 
-		private void toolStripRunOnStartup_Click(object sender, EventArgs e) {
-			if (toolStripRunOnStartup.Checked == true) {
-				RegistryKey hkcu = Registry.CurrentUser;
-				try {
-					RegistryKey rkApp = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
-					rkApp.DeleteValue( Application.ProductName, false);
-					toolStripRunOnStartup.Checked = false;
-				} catch (Exception ex) {
-					Logger.Instance().Log("Unable to remove application startup key from registry: ", ex);
-				}
-			} else {
-				try {
-					RegistryKey rkApp = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
-					rkApp.SetValue(Application.ProductName, Application.ExecutablePath);
-					toolStripRunOnStartup.Checked = true;
-				} catch (Exception ex) {
-					Logger.Instance().Log("Unable to change application startup state from registry: ", ex);
-				}
-			}
-		}
+		  //  //Get Calender Item 
+		  //  Microsoft.Office.Interop.Outlook.NameSpace outlookNS = outLookApp.GetNamespace("MAPI");
+			
+		  //  Microsoft.Office.Interop.Outlook.AddressLists addressLists = outlookNS.AddressLists;
+			
+		  //  foreach( Microsoft.Office.Interop.Outlook.AddressList addressList in addressLists ) {
+		  //      MessageBox.Show( addressList.Name + ":" + addressList.ToString() );
+		  //      try {
+		  //      foreach( Microsoft.Office.Interop.Outlook.AddressEntries addressEntry in addressList.AddressEntries ) {
+		  //          MessageBox.Show( "entry:" + addressEntry.Class + ":" + addressEntry.ToString() + ":" + addressEntry.RawTable );
+		  //      }
+		  //      } catch (System.Runtime.InteropServices.COMException) {}
+		  //  }		
+			
+		//    MAPI.SessionClass oSession = new MAPI.SessionClass();
+		//    oSession.Logon("OUTLOOK", System.Reflection.Missing.Value, true, true,
+		//    System.Reflection.Missing.Value, false, System.Reflection.Missing.Value);
+
+		//    MAPI.AddressList oAddressList = (MAPI.AddressList)
+		//    oSession.GetAddressList(MAPI.CdoAddressListTypes.CdoAddressListGAL);
+		//    Console.WriteLine(oAddressList.Name);
+		//    MAPI.AddressEntries oAddressEntries = (MAPI.AddressEntries)oAddressList.AddressEntries;
+
+		//    for(int j = 1; j <= (int)oAddressEntries.Count; j++) {
+		//        MAPI.AddressEntry oAddressEntry = (MAPI.AddressEntry)oAddressEntries.get_Item(j);
+
+		//        if(oAddressEntry.DisplayType.Equals(0) ||oAddressEntry.DisplayType.Equals(6))	{
+		//            Console.WriteLine(" " + oAddressEntry.Name + " " + oAddressEntry.Fields);
+		//        }
+		//    }
 	}
 }

@@ -7,11 +7,9 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 
-namespace LothianProductions.VoIP.Forms
-{
-	public partial class CallRecordViewer : Form
-	{
-		public CallRecordViewer() {
+namespace LothianProductions.VoIP.Forms {
+	public partial class FormCallRecords : Form	{
+		public FormCallRecords() {
 			InitializeComponent();
 		}
 
@@ -30,7 +28,7 @@ namespace LothianProductions.VoIP.Forms
 				}
 
 				DataTable dt = new DataTable("calls");
-				dt.Columns.Add( new DataColumn( "Date and Time", typeof(DateTime) ) );
+				dt.Columns.Add( new DataColumn( "Date and time", typeof(DateTime) ) );
 				dt.Columns.Add( new DataColumn( "Direction", typeof(string) ) );
 				dt.Columns.Add( new DataColumn( "Number", typeof(string) ) );
 				dt.Columns.Add( new DataColumn( "Duration", typeof(string) ) );
@@ -52,7 +50,7 @@ namespace LothianProductions.VoIP.Forms
                     stream.Close();
                     fs.Close();
                 } catch (FileNotFoundException) {
-                    MessageBox.Show("The call log is empty, so we cannot show your call history. Please click OK to close this form.", "HVoIPM Call Record Viewer", MessageBoxButtons.OK);
+                    MessageBox.Show( "You have no call records stored yet.", "HVoIPM Call Records", MessageBoxButtons.OK );
                     this.Close();
                 }
 			}

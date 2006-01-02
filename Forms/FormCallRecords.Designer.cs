@@ -1,6 +1,6 @@
 namespace LothianProductions.VoIP.Forms
 {
-	partial class CallRecordViewer
+	partial class FormCallRecords
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -25,9 +25,9 @@ namespace LothianProductions.VoIP.Forms
 		/// the contents of this method with the code editor.
 		/// </summary>
 		private void InitializeComponent() {
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CallRecordViewer));
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager( typeof( FormCallRecords ) );
 			this.gridCalls = new System.Windows.Forms.DataGridView();
-			((System.ComponentModel.ISupportInitialize)(this.gridCalls)).BeginInit();
+			( (System.ComponentModel.ISupportInitialize) ( this.gridCalls ) ).BeginInit();
 			this.SuspendLayout();
 			// 
 			// gridCalls
@@ -37,26 +37,26 @@ namespace LothianProductions.VoIP.Forms
 			this.gridCalls.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
 			this.gridCalls.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
 			this.gridCalls.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.gridCalls.Location = new System.Drawing.Point(0, 0);
+			this.gridCalls.Location = new System.Drawing.Point( 0, 0 );
 			this.gridCalls.Name = "gridCalls";
 			this.gridCalls.ReadOnly = true;
 			this.gridCalls.RowHeadersVisible = false;
 			this.gridCalls.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.gridCalls.Size = new System.Drawing.Size(512, 418);
+			this.gridCalls.Size = new System.Drawing.Size( 512, 418 );
 			this.gridCalls.TabIndex = 0;
 			// 
-			// CallRecordViewer
+			// FormCallRecords
 			// 
-			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+			this.AutoScaleDimensions = new System.Drawing.SizeF( 6F, 13F );
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(512, 418);
-			this.Controls.Add(this.gridCalls);
-			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-			this.Name = "CallRecordViewer";
-			this.Text = "Call Record Viewer";
-			this.Load += new System.EventHandler(this.CallRecordViewer_Load);
-			((System.ComponentModel.ISupportInitialize)(this.gridCalls)).EndInit();
-			this.ResumeLayout(false);
+			this.ClientSize = new System.Drawing.Size( 512, 418 );
+			this.Controls.Add( this.gridCalls );
+			this.Icon = ( (System.Drawing.Icon) ( resources.GetObject( "$this.Icon" ) ) );
+			this.Name = "FormCallRecords";
+			this.Text = "Call Records";
+			this.Load += new System.EventHandler( this.CallRecordViewer_Load );
+			( (System.ComponentModel.ISupportInitialize) ( this.gridCalls ) ).EndInit();
+			this.ResumeLayout( false );
 
 		}
 
