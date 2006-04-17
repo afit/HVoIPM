@@ -1,3 +1,13 @@
+/// ***************************************************************************
+/// This file and its related files are protected by copyright and intellectual
+/// property disclaimers. Use of it by you or your organisation must be covered
+/// by prior agreement, and may involve NDA and other restriction. Duplication,
+/// distribution or disclosure of any part of this file are likely prohibited,
+/// and violations of the licensing terms will be pursued by law.
+/// ***************************************************************************
+/// Further details of the stock LothianProductionsCommon usage agreement are
+/// available at: http://www.lothianproductions.co.uk/lpc/#license
+/// ***************************************************************************
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -12,6 +22,15 @@ using LothianProductions.VoIP.State;
 
 namespace LothianProductions.VoIP.Monitor {
 
+	/// <summary>
+	/// The abstract web device monitor is a specific abstract implementation
+	/// of the device monitor for devices that expose data over an HTTP or HTTPS
+	/// interface.
+	/// 
+	/// As well as providing a framework for updating a Device as in the superclass
+	/// it also uses Device, Line and Property change objects to allow reporting of
+	/// non-standard of device specific data and changes.
+	/// </summary>
     public abstract class AbstractWebDeviceMonitor : DeviceMonitor {
 
         public override void Run() {
@@ -69,7 +88,10 @@ namespace LothianProductions.VoIP.Monitor {
 			
 			return value;
         }
-
+        
+		/// <summary>
+        /// Simple string to enumeration mapping, calling the config file for lookups.
+        /// </summary>
 		public virtual CallType GetCallType( String type ) {
 			String mapping = ConfigurationManager.AppSettings[ this.GetType().Name + ":CallType:" + type ];
 			
@@ -82,6 +104,9 @@ namespace LothianProductions.VoIP.Monitor {
 			throw new DeviceConfigurationException( "CallType \"" + type + "\" incorrectly mapped to \"" + mapping + "\". Perhaps a configuration entry is missing?" );			
 		}
 		
+		/// <summary>
+        /// Simple string to enumeration mapping, calling the config file for lookups.
+        /// </summary>
 		public virtual Tone GetTone( String tone ) {
 			String mapping = ConfigurationManager.AppSettings[ this.GetType().Name + ":Tone:" + tone ];
 
@@ -93,7 +118,10 @@ namespace LothianProductions.VoIP.Monitor {
 			
 			throw new DeviceConfigurationException( "Tone \"" + tone + "\" incorrectly mapped to \"" + mapping + "\". Perhaps a configuration entry is missing?" );			
 		}
-
+		
+        /// <summary>
+        /// Simple string to enumeration mapping, calling the config file for lookups.
+        /// </summary>
 		public virtual Activity GetActivity( String activity ) {
 			String mapping = ConfigurationManager.AppSettings[ this.GetType().Name + ":Activity:" + activity ];
 			if( mapping != null )
@@ -105,6 +133,9 @@ namespace LothianProductions.VoIP.Monitor {
 			throw new DeviceConfigurationException( "Activity \"" + activity + "\" incorrectly mapped to \"" + mapping + "\". Perhaps a configuration entry is missing?" );			
 		}
         
+        /// <summary>
+        /// Simple string to enumeration mapping, calling the config file for lookups.
+        /// </summary>
         public virtual RegistrationState GetRegistrationState( String state ) {
 			String mapping = ConfigurationManager.AppSettings[ this.GetType().Name + ":RegistrationState:" + state ];
 			if( mapping != null )
