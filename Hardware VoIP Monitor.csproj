@@ -1,21 +1,27 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.50727</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{D219639B-B6AA-4D12-9B39-887D8FC7D01C}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>LothianProductions.VoIP</RootNamespace>
     <AssemblyName>Hardware VoIP Monitor</AssemblyName>
-    <StartupObject>LothianProductions.VoIP.Program</StartupObject>
+    <StartupObject>
+    </StartupObject>
     <ApplicationIcon>Resources\HVoIPM-48x.ico</ApplicationIcon>
     <ManifestCertificateThumbprint>BDDECAD26AA6A198875A4821B10B6D3D43506E74</ManifestCertificateThumbprint>
     <ManifestKeyFile>Hardware VoIP Monitor_TemporaryKey.pfx</ManifestKeyFile>
     <GenerateManifests>true</GenerateManifests>
-    <SignManifests>false</SignManifests>
+    <SignManifests>true</SignManifests>
     <IsWebBootstrapper>true</IsWebBootstrapper>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
     <PublishUrl>J:\www\html\hvoipm\install\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Web</InstallFrom>
@@ -27,7 +33,13 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <InstallUrl>http://www.lothianproductions.co.uk/hvoipm/install/</InstallUrl>
-    <ApplicationVersion>0.1.0.0</ApplicationVersion>
+    <SupportUrl>http://www.lothianproductions.co.uk/hvoipm</SupportUrl>
+    <ProductName>Hardware VoIP Monitor</ProductName>
+    <PublisherName>Lothian Productions</PublisherName>
+    <WebPage>index.html</WebPage>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>0.2.0.0</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -55,7 +67,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="Tapi2Lib, Version=1.0.2.5, Culture=neutral">
+    <Reference Include="Tapi2Lib, Version=1.0.2.5, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>.\Tapi2Lib.dll</HintPath>
     </Reference>
@@ -63,18 +75,21 @@
   <ItemGroup>
     <Compile Include="CallRecord.cs" />
     <Compile Include="CallLogger.cs" />
-    <Compile Include="Forms\CallRecordViewer.cs">
+    <Compile Include="Forms\FormCallRecords.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\CallRecordViewer.Designer.cs">
-      <DependentUpon>CallRecordViewer.cs</DependentUpon>
+    <Compile Include="Forms\FormCallRecords.Designer.cs">
+      <DependentUpon>FormCallRecords.cs</DependentUpon>
     </Compile>
     <Compile Include="Logger.cs" />
-    <Compile Include="Monitor\DeviceMonitor.cs" />
+    <Compile Include="Monitor\AbstractWebDeviceMonitor.cs" />
     <Compile Include="Monitor\DeviceMonitorControl.cs" />
     <Compile Include="Monitor\DeviceNotRespondingException.cs" />
-    <Compile Include="Monitor\IDeviceMonitor.cs" />
-    <Compile Include="Monitor\Impl\LinksysPAP2DeviceMonitor.cs" />
+    <Compile Include="Monitor\DeviceMonitor.cs" />
+    <Compile Include="Monitor\IDeviceMonitor.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Monitor\Impl\SipuraSPA3000DeviceMonitor.cs" />
     <Compile Include="Monitor\Impl\TAPIDeviceMonitor.cs" />
     <Compile Include="StateUpdateEventArgs.cs" />
     <Compile Include="State\Call.cs" />
@@ -86,12 +101,13 @@
     <Compile Include="Forms\FormMain.Designer.cs">
       <DependentUpon>FormMain.cs</DependentUpon>
     </Compile>
+    <Compile Include="Monitor\Impl\LinksysPAP2DeviceMonitor.cs" />
     <Compile Include="State\DevicePropertyChange.cs" />
     <Compile Include="State\Line.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Forms\CallRecordViewer.resx">
-      <DependentUpon>CallRecordViewer.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\FormCallRecords.resx">
+      <DependentUpon>FormCallRecords.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormMain.resx">
@@ -119,19 +135,10 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="StateManager.cs" />
-    <Compile Include="State\LinePropertyChange.cs" />
     <Compile Include="State\PropertyBehaviour.cs" />
     <Compile Include="State\PropertyChange.cs" />
+    <Compile Include="State\LinePropertyChange.cs" />
     <Compile Include="State\PropertyChangeBehaviour.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\LothianProductionsCommon2\LothianProductionsCommon.csproj">
-      <Project>{7F933AFE-0DCF-48C8-8881-2962FE99AED9}</Project>
-      <Name>LothianProductionsCommon</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\HVoIPM-flash.ico" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Hardware VoIP Monitor_TemporaryKey.pfx" />
@@ -141,12 +148,42 @@
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
       <Visible>False</Visible>
-      <ProductName>.NET Framework 2.0</ProductName>
+      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
       <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5</ProductName>
+      <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Behaviour\" />
+    <PublishFile Include="nunit.framework">
+      <Visible>False</Visible>
+      <Group>
+      </Group>
+      <TargetPath>
+      </TargetPath>
+      <PublishState>Exclude</PublishState>
+      <FileType>Assembly</FileType>
+    </PublishFile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\HVoIPM-48x-other.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\HVoIPM-48x-other.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LothianProductionsCommon\LothianProductionsCommon.csproj">
+      <Project>{7F933AFE-0DCF-48C8-8881-2962FE99AED9}</Project>
+      <Name>LothianProductionsCommon</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
