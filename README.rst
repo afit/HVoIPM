@@ -49,13 +49,13 @@ What does it look like?
 
 That depends what's happening with your device. Sometimes it might look like these screenshots.
 
-.. image:: http://s.reincubate.com/res/i/labs/HVoIPM-Systray.gif
+.. image:: https://github.com/afit/HVoIPM/raw/master/Release/HVoIPM-Systray.gif
    :alt: Hardware VoIP Monitor: System tray
 
-.. image:: http://s.reincubate.com/res/i/labs/HVoIPM-Main.gif
+.. image:: https://github.com/afit/HVoIPM/raw/master/Release/HVoIPM-Main.gif
    :alt: Hardware VoIP Monitor: Main window
 
-.. image:: http://s.reincubate.com/res/i/labs/HVoIPM-Log.gif
+.. image:: https://github.com/afit/HVoIPM/raw/master/Release/HVoIPM-Log.gif
    :alt: Hardware VoIP Monitor: Call records
 
 Where can I get it?
@@ -63,25 +63,25 @@ Where can I get it?
 
 You will need the `Microsoft .NET Framework Version 2.0 <http://www.microsoft.com/downloads/details.aspx?FamilyID=0856eacb-4362-4b0d-8edd-aab15c5e04f5&displaylang=en>`_ installed before you can run this application. Download links are below:
 
- `HVoIPM 0.5.31 Alpha </res/labs/HVoIPM-0.5.31.zip>`_ (11th February 2007)
+ `HVoIPM 0.5.31 Alpha <https://github.com/afit/HVoIPM/raw/master/Release/0.5.31/HVoIPM-0.5.31.zip>`_ (11th February 2007)
 
 * Configuration file update with extra mappings
 
- `HVoIPM 0.5.3 Alpha </res/labs/HVoIPM-0.5.3.zip>`_ (2nd January 2006)
+ HVoIPM 0.5.3 Alpha (2nd January 2006)
 
 * No longer prevents system shutdown
 * Sipura SPA-3000 support added
 * Added "load at startup" option
 
- `HVoIPM 0.5.2 Alpha </res/labs/HVoIPM-0.5.2.zip>`_ (30th December 2005)
+ HVoIPM 0.5.2 Alpha (30th December 2005)
 
 * Retry option after device monitor errors
 
- `HVoIPM 0.5.1 Alpha </res/labs/HVoIPM-0.5.1.zip>`_ (30th December 2005)
+ HVoIPM 0.5.1 Alpha (30th December 2005)
 
 * Configuration file bugfix
 
- `HVoIPM 0.5 Alpha </res/labs/HVoIPM-0.5.zip>`_ (30th December 2005)
+ HVoIPM 0.5 Alpha (30th December 2005)
 
 * Main window is now resizable
 * Can check availability of upgrades
@@ -90,27 +90,27 @@ You will need the `Microsoft .NET Framework Version 2.0 <http://www.microsoft.co
 * State lookups are broken out into configuration and handled more safely
 * Known issues: Call logging is a bit hit-and-miss
 
- `HVoIPM 0.4 Alpha </res/labs/HVoIPM-0.4.zip>`_ (29th December 2005)
+ HVoIPM 0.4 Alpha (29th December 2005)
 
 * Support for launching external processes
 * Safely handles more PAP2 ring tones
 * Application version now displayed in application
 * Known issues: Call logging is a bit hit-and-miss
 
- `HVoIPM 0.3 Alpha </res/labs/HVoIPM-0.3.zip>`_ (28th December 2005)
+ HVoIPM 0.3 Alpha (28th December 2005)
 
 * TAPI monitor confirmed working
 * Flashing systray notification fixed
 * Support for password protected PAP2s fixed
 * Safely handles for PAP2 "reorder" and "off hook warning" ring tones
 
- `HVoIPM 0.2 Alpha </res/labs/HVoIPM-0.2.zip>`_ (28th December 2005)
+ HVoIPM 0.2 Alpha (28th December 2005)
 
 * Documentation embedded in configuration file
 * Better error handling with faulty monitors
 * Known issues: TAPI implementation largely untested, flashing system tray notification broken
 
- `HVoIPM 0.1 Alpha </res/labs/HVoIPM-0.1.zip>`_ (23rd December 2005)
+ HVoIPM 0.1 Alpha (23rd December 2005)
 
 * First release of HVoIPM
 * Known issues: TAPI implementation broken, flashing system tray notification broken
