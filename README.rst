@@ -32,6 +32,7 @@ If your device isn't on the list, please see extending HVoIPM.
 
 What does it look like?
 -----------------------
+
 That depends what's happening with your device. Sometimes it might look like these screenshots.
 
 .. image:: http://s.reincubate.com/res/i/labs/HVoIPM-Systray.gif
@@ -45,6 +46,7 @@ That depends what's happening with your device. Sometimes it might look like the
 
 Where can I get it?
 -------------------
+
 You will need the `Microsoft .NET Framework Version 2.0 <http://www.microsoft.com/downloads/details.aspx?FamilyID=0856eacb-4362-4b0d-8edd-aab15c5e04f5&displaylang=en>`_ installed before you can run this application. Download links are below:
 
  `HVoIPM 0.5.31 Alpha </res/labs/HVoIPM-0.5.31.zip>`_ (11th February 2007)
@@ -101,9 +103,10 @@ You will need the `Microsoft .NET Framework Version 2.0 <http://www.microsoft.co
 
 How do I make it work?
 ----------------------
+
 If you have a Linksys PAP2 device, all you will need to do to get HVoIPM working is edit the configuration file ("Hardware VoIP Monitor.exe.config"), changing the LinksysPAP2DeviceMonitor:Hostname value to that of your device's URL, including the http:// prefix.
 
-If it doesn't work, read the configuration file. If that doesn't help, refer to our forum threads ( `1 <http://forums.whirlpool.net.au/forum-replies.cfm?t=447063>`_ , `2 <http://bbs.adslguide.org.uk/showthreaded.php?Cat=&Board=voip&Number=2199351&page=0&view=collapsed&sb=5&o=0>`_ ). When reporting problems, include a copy of your "system.xml" log file with any report.
+If it doesn't work, read the configuration file. If that doesn't help, refer to our forum threads (`1 <http://forums.whirlpool.net.au/forum-replies.cfm?t=447063>`_, `2 <http://bbs.adslguide.org.uk/showthreaded.php?Cat=&Board=voip&Number=2199351&page=0&view=collapsed&sb=5&o=0>`_). When reporting problems, include a copy of your "system.xml" log file with any report.
 
 Alternately, if HVoIPM doesn't quite do what you want, have a look at the `Sipura 3000 System Tray Monitor <http://www.clacy.com/sipura/>`_ .
 
@@ -132,13 +135,6 @@ Support for further devices is provided by writing simple device monitor plugins
 *If your SPA-2000 doesn't have a decent enough web interface (or other interface), possibly it could be flashed with the PAP2 firmware. (If it really is the same device inside.). Alternately, HVoIPM could pull data out of its telnet interface, if it has one, or from any SNMP flags it has.*
 
 *If you load up Visual Studio, and create a new project with these files you should be able to build your own device monitor classes, which can then be specified in the HVoIPM configuration. It's possible for HVoIPM to report on additional properties as well as the basic ones that it does now, too. It should be easy enough to adapt the code to work with an SPA-2000.*
-
-*I think I've included most of the relevant source files here -- you'll probably need to comment out a few references to get it all to build, but you should get the picture if you're familiar with C#. Excuse the poor code -- I know that the LinksysPAP2DeviceMonitor class is extremely suboptimal in many ways, especially with all of the String creation & disposal it does.*
-
-* `IDeviceMonitor.cs <https://github.com/afit/HVoIPM/blob/master/Monitor/IDeviceMonitor.cs>`_ 
-* `DeviceMonitor.cs <https://github.com/afit/HVoIPM/blob/master/Monitor/DeviceMonitor.cs>`_ 
-* `AbstractWebDeviceMonitor.cs <https://github.com/afit/HVoIPM/blob/master/Monitor/AbstractWebDeviceMonitor.cs>`_ 
-* `LinksysPAP2DeviceMonitor.cs <https://github.com/afit/HVoIPM/blob/master/Monitor/Impl/LinksysPAP2DeviceMonitor.cs>`_ 
 
 Contributors
 ------------
