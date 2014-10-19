@@ -10,21 +10,35 @@ Which devices does HVoIPM support?
 
 +--------------------------------------+------------------------------------------------+----------------------------+
 | Device                               | Supported                                      | Supported by               |
-|======================================|================================================+============================+
++======================================+================================================+============================+
 | Linksys PAP2 (2.0.12(LS), 3.1.3(LS)) | Yes, since 0.1                                 | LinksysPAP2DeviceMonitor   |
++--------------------------------------+------------------------------------------------+----------------------------+
 | Linksys PAP2 (3.1.7(LSd))            | Yes, since 0.5.3                               | LinksysPAP2DeviceMonitor   |
++--------------------------------------+------------------------------------------------+----------------------------+
 | Nortel BCM                           | Yes, since 0.3                                 | TAPIDeviceMonitor          |
++--------------------------------------+------------------------------------------------+----------------------------+
 | *Any TAPI-compliant device*          | Theoretically, since 0.3                       | TAPIDeviceMonitor          |
++--------------------------------------+------------------------------------------------+----------------------------+
 | Sipura SPA-3000                      | Yes, since 0.5.3                               | SipuraSPA3000DeviceMonitor |
++--------------------------------------+------------------------------------------------+----------------------------+
 | Netgear TA612V                       | Theoretically, see extending HVoIPM.           |                            |
++--------------------------------------+------------------------------------------------+----------------------------+
 | Sipura SPA-2000                      | Theoretically, see extending HVoIPM.           |                            |
++--------------------------------------+------------------------------------------------+----------------------------+
 | Sipura SPA-2002                      | Theoretically, see extending HVoIPM.           |                            |
++--------------------------------------+------------------------------------------------+----------------------------+
 | Linksys RTP300                       | Theoretically, see extending HVoIPM.           |                            |
++--------------------------------------+------------------------------------------------+----------------------------+
 | Grandstream 486                      | Theoretically, see extending HVoIPM.           |                            |
++--------------------------------------+------------------------------------------------+----------------------------+
 | Cisco ATA 186                        | Theoretically, see extending HVoIPM.           |                            |
++--------------------------------------+------------------------------------------------+----------------------------+
 | Netcomm V100                         | Theoretically, see extending HVoIPM.           |                            |
++--------------------------------------+------------------------------------------------+----------------------------+
 | AVM Fritz Box 7050                   | Theoretically, see extending HVoIPM.           |                            |
++--------------------------------------+------------------------------------------------+----------------------------+
 | Speedtouch 190 ATA                   | No. Apparently these don't expose enough data. |                            |
++--------------------------------------+------------------------------------------------+----------------------------+
 | Linksys WRT54GP2                     | No. Apparently these don't expose enough data. |                            |
 +--------------------------------------+------------------------------------------------+----------------------------+
 
@@ -126,7 +140,7 @@ Support for further devices is provided by writing simple device monitor plugins
 
 *It should be possible to get HVoIPM working against your Sipura SPA-2000. As you've asked for the source code, I'll explain roughly how. Basically, there are two ways to figure out what a VoIP device is doing: the first is to packet sniff and examine the RTP/VoIP traffic that's going back and forth, and the second is to introspect the device itself, over whichever interfaces it exposes.*
 
-*The first technique is almost foolproof -- it'll work with any VoIP-compliant device to return a fairly limited set of base information. The problem it that in order for this to work, the machine that you're running the sniffing software on either needs to have it's network adapter running in promiscuous mode, or be sitting on a monitor port on your switch. (Because if you have a switch rather than a hub, like most people, your SPA-2000 won't route traffic to your computer.) There are a few tools that take this approach. `Vomit <http://vomit.xtdnet.nl/>`_ , for instance.*
+*The first technique is almost foolproof -- it'll work with any VoIP-compliant device to return a fairly limited set of base information. The problem it that in order for this to work, the machine that you're running the sniffing software on either needs to have it's network adapter running in promiscuous mode, or be sitting on a monitor port on your switch. (Because if you have a switch rather than a hub, like most people, your SPA-2000 won't route traffic to your computer.) There are a few tools that take this approach: Vomit, for instance.*
 
 *This won't really work very well for a lot of small-end consumer VoIP devices of the sort that HVoIPM works with, otherwise I'd port some of the GPLed Linux C to .NET. (It'd work well with Softphones and Skype clones, though.)*
 
