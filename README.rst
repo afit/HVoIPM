@@ -7,7 +7,28 @@ HVoIPM is a small desktop application that can be used to monitor one or more he
 
 Which devices does HVoIPM support?
 ----------------------------------
-DeviceSupportedSupported byLinksys PAP2 (2.0.12(LS), 3.1.3(LS))Yes, since 0.1LinksysPAP2DeviceMonitorLinksys PAP2 (3.1.7(LSd))Yes, since 0.5.3LinksysPAP2DeviceMonitorNortel BCMYes, since 0.3TAPIDeviceMonitor *Any TAPI-compliant device* Theoretically, since 0.3TAPIDeviceMonitorSipura SPA-3000Yes, since 0.5.3SipuraSPA3000DeviceMonitorNetgear TA612VTheoretically, see `extending HVoIPM <#extension>`_ Sipura SPA-2000Theoretically, see `extending HVoIPM <#extension>`_ Sipura SPA-2002Theoretically, see `extending HVoIPM <#extension>`_ Linksys RTP300Theoretically, see `extending HVoIPM <#extension>`_ Grandstream 486Theoretically, see `extending HVoIPM <#extension>`_ Cisco ATA 186Theoretically, see `extending HVoIPM <#extension>`_ Netcomm V100Theoretically, see `extending HVoIPM <#extension>`_ AVM Fritz Box 7050Theoretically, see `extending HVoIPM <#extension>`_ Speedtouch 190 ATANo. Apparently these don't expose enough data.Linksys WRT54GP2No. Apparently these don't expose enough data.If your device isn't on the list, please see `below <#extension>`_ .
+
++--------------------------------------+------------------------------------------------+----------------------------+
+| Device                               | Supported                                      | Supported by               |
+|======================================|================================================+============================+
+| Linksys PAP2 (2.0.12(LS), 3.1.3(LS)) | Yes, since 0.1                                 | LinksysPAP2DeviceMonitor   |
+| Linksys PAP2 (3.1.7(LSd))            | Yes, since 0.5.3                               | LinksysPAP2DeviceMonitor   |
+| Nortel BCM                           | Yes, since 0.3                                 | TAPIDeviceMonitor          |
+| *Any TAPI-compliant device*          | Theoretically, since 0.3                       | TAPIDeviceMonitor          |
+| Sipura SPA-3000                      | Yes, since 0.5.3                               | SipuraSPA3000DeviceMonitor |
+| Netgear TA612V                       | Theoretically, see extending HVoIPM.           |                            |
+| Sipura SPA-2000                      | Theoretically, see extending HVoIPM.           |                            |
+| Sipura SPA-2002                      | Theoretically, see extending HVoIPM.           |                            |
+| Linksys RTP300                       | Theoretically, see extending HVoIPM.           |                            |
+| Grandstream 486                      | Theoretically, see extending HVoIPM.           |                            |
+| Cisco ATA 186                        | Theoretically, see extending HVoIPM.           |                            |
+| Netcomm V100                         | Theoretically, see extending HVoIPM.           |                            |
+| AVM Fritz Box 7050                   | Theoretically, see extending HVoIPM.           |                            |
+| Speedtouch 190 ATA                   | No. Apparently these don't expose enough data. |                            |
+| Linksys WRT54GP2                     | No. Apparently these don't expose enough data. |                            |
++--------------------------------------+------------------------------------------------+----------------------------+
+
+If your device isn't on the list, please see extending HVoIPM.
 
 What does it look like?
 -----------------------
